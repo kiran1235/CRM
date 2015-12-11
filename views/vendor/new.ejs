@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %> Vendor</title>
+</head>
+<body>
+<h1>New <%= title %> Vendor</h1>
+<form method="post" action="new">
+  <input placeholder="Vendor Name" name="vendor[name]"/>
+  <input placeholder="Address Line 1" name="vendor[addr1]"/>
+  <input placeholder="Address Line 2" name="vendor[addr2]"/>
+  <input placeholder="Street name" name="vendor[street]"/>
+  <input placeholder="City" name="vendor[city]"/>
+  <input placeholder="Country" name="vendor[country]"/>
+  <input placeholder="Zipcode" name="vendor[zip]"/>
+  <input placeholder="Customer Service Number" name="vendor[csn]"/>
+  <input placeholder="Website" name="vendor[url]"/>
+  <button type="submit">Create</button>
+  <button type="reset">Reset</button>
+</form>
+</body>
+</html>
