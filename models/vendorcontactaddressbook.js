@@ -32,7 +32,7 @@ module.exports = function(sequelize, DataTypes) {
               is: ["^[a-zA-Z0-9 \-\\\/\#\.]+$", 'i']
           }
       },
-      City:{
+      city:{
           type:DataTypes.STRING,
           allowNull:false,
           validate: {
@@ -40,7 +40,7 @@ module.exports = function(sequelize, DataTypes) {
               is: ["^[a-zA-Z ]+$", 'i']
           }
       },
-      Country:{
+      country:{
           type:DataTypes.STRING,
           allowNull:false,
           validate: {
@@ -48,7 +48,7 @@ module.exports = function(sequelize, DataTypes) {
               is: ["^[a-zA-Z ]+$", 'i']
           }
       },
-      Zipcode:{
+      zipcode:{
           type:DataTypes.STRING,
           allowNull:false,
           notEmpty: true,

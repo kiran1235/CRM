@@ -2,7 +2,7 @@
 
 var Application = {
     'name':"SMB"
-}
+};
 
 module.exports = Application;
 

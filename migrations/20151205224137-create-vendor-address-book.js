@@ -8,6 +8,10 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+        VendorId:{
+            type: Sequelize.INTEGER,
+            allowNull:false
+        },
       addressline1:{
         type:Sequelize.TEXT,
           allowNull:false
@@ -20,15 +24,15 @@ module.exports = {
             type:Sequelize.TEXT,
             allowNull:false
         },
-        City:{
+        city:{
             type:Sequelize.STRING,
             allowNull:false
         },
-        Country:{
+        country:{
             type:Sequelize.STRING,
             allowNull:false
         },
-        Zipcode:{
+        zipcode:{
             type:Sequelize.STRING,
             allowNull:false
         },
