@@ -11,7 +11,7 @@ var path = require('path');
 /** routers & controllers **/
 var vendor=require('../controllers/vendor.js');
 var vendorrouter = express.Router();
-vendorrouter.get('/vendor/',function(req,res,next){
+vendorrouter.get('/vendors/',function(req,res,next){
     vendor.get().then(function(vendors){
         res.json({rc:0,data:vendors});
     });
@@ -39,7 +39,17 @@ vendorrouter.get('/vendor/',function(req,res,next){
                 });
             });
     });
-}).get('/vendor/:id/address/',function(req,res,next){
+}).get('/vendor/:id/',function(req,res,next){
+  vendor.getById(req.params.id).then(function(vendors){
+    res.json({rc:0,data:vendors});
+  }).catch(function(err){
+    res.json({rc:-1,message:'no vendor found'});
+  });
+}).delete('/vendor/:id',function(req,res,next){
+  vendor.delete(req.params.id).then(function(vendor){
+    res.json({rc:0,data:vendor});
+  });
+}).get('/vendor/:id/addresses/',function(req,res,next){
       vendor.getAddressBookByVendorId(req.params.id).then(function(vendors){
           res.json({rc:0,data:vendors});
       }).catch(function(err){
@@ -65,7 +75,17 @@ vendorrouter.get('/vendor/',function(req,res,next){
       }).catch(function(err){
           res.json({rc:-1,message:'few details are not provided',details:err});
       });
-}).get('/vendor/:id/contact/',function(req,res,next){
+}).delete('/vendor/:vendorid/address/:id',function(req,res,next){
+  vendor.getVendorAddressBookById(req.params.vendorid,req.params.id).then(function(address){
+    vendor.deleteVendorAddressBook(address).then(function(callback){
+      res.json({rc:0,message:'given vendor address is deleted'});
+    }).catch(function(error){
+      res.json({rc:-1,message:'error occurred while removing vendor address',details:error});
+    });
+  }).catch(function(error){
+    res.json({rc:-1,message:'error occurred while removing vendor address',details:error});
+  });
+}).get('/vendor/:id/contacts/',function(req,res,next){
       vendor.getContactByVendorId(req.params.id).then(function(vendors){
           res.json({rc:0,data:vendors});
       }).catch(function(err){
@@ -90,16 +110,32 @@ vendorrouter.get('/vendor/',function(req,res,next){
             res.json({"error":"errored",message:err});
         });
     });
-}).get('/vendor/:id/contact/:contactid/address/',function(req,res,next){
-    vendor.getAddressBookByVendorId(req.params.id).then(function(vendors){
-        res.json({rc:0,data:vendors});
-    }).catch(function(err){
-        res.json({rc:-1,message:'no address is provided'});
+}).get('/vendor/:vendorid/contact/:id/',function(req,res,next){
+  vendor.getContactById(req.params.vendorid,req.params.id).then(function(_contact){
+    res.json({rc:0,data:_contact});
+  }).catch(function(err){
+    res.json({rc:-1,message:'error occurred while fetching contacts'});
+  });
+}).delete('/vendor/:vendorid/contact/:id',function(req,res,next){
+  vendor.getContactById(req.params.vendorid,req.params.id).then(function(_contact){
+    vendor.deleteContact(_contact).then(function(callback){
+      res.json({rc:0,message:'given contact is deleted'});
+    }).catch(function(error){
+      res.json({rc:-1,message:'error occurred while removing contact',details:error});
     });
-}).post('/vendor/:id/contact/:contactid/address/',function(req,res,next){
-    vendor.getById(req.params.id).then(function(_vendor){
+  }).catch(function(error){
+    res.json({rc:-1,message:'error occurred while removing contact',details:error});
+  });
+}).get('/vendor/:vendorid/contact/:id/addresses/',function(req,res,next){
+    vendor.getAddressBookByContactId(req.params.vendorid,req.params.id).then(function(_contact){
+        res.json({rc:0,data:_contact});
+    }).catch(function(err){
+        res.json({rc:-1,message:'error occurred while fetching contact address book'});
+    });
+}).post('/vendor/:vendorid/contact/:id/address/',function(req,res,next){
+    vendor.getContactById(req.params.vendorid,req.params.id).then(function(_contact){
         vendor
-          .addAddressBook(_vendor,{
+          .addContactAddressBook(_contact,{
               addressline1:req.body['entity[addressline1]'],
               addressline2:req.body['entity[addressline2]'],
               street:req.body['entity[street]'],
@@ -107,15 +143,25 @@ vendorrouter.get('/vendor/',function(req,res,next){
               country:req.body['entity[country]'],
               zipcode:req.body['entity[zipcode]']
           })
-          .then(function(_vendor){
-              res.json(_vendor);
+          .then(function(_contact){
+              res.json(_contact);
           })
           .catch(function(err){
-              res.json({rc:-1,message:'few address details are not provided',details:err});
+              res.json({rc:-1,message:'few contact address details are not provided',details:err});
           });
     }).catch(function(err){
-        res.json({rc:-1,message:'few details are not provided',details:err});
+        res.json({rc:-1,message:'few contact details are not provided',details:err});
     });
+}).delete('/vendor/:vendorid/contact/:contactid/address/:id',function(req,res,next){
+  vendor.getContactAddressBookById(req.params.contactid,req.params.id).then(function(address){
+    vendor.deleteContactAddressBook(address).then(function(callback){
+      res.json({rc:0,message:'given contact address is deleted'});
+    }).catch(function(error){
+      res.json({rc:-1,message:'error occurred while removing contact address',details:error});
+    });
+  }).catch(function(error){
+    res.json({rc:-1,message:'error occurred while removing contact address',details:error});
+  });
 })
 
 

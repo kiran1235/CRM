@@ -22,7 +22,11 @@ var Vendor = {
             models.Vendor.findOne({
                 where: {id: id}
             }).then(function (vendor) {
-                resolve(vendor);
+                if(vendor.length<=0){
+                    throw new Error("no vendor found");
+                }else{
+                    resolve(vendor);
+                }
             }).catch(function (error) {
                 reject(error);
             });
@@ -56,10 +60,10 @@ var Vendor = {
             });
         });
     },
-    'delete':function(options){
+    'delete':function(id){
         return new Promise(function(resolve,reject) {
             models.Vendor.destroy({
-                where:{id:[options['id']]}
+                where:{id:id}
             }).then(function(vendor){
                 resolve(vendor);
             }).catch(function(error){
@@ -95,12 +99,39 @@ var Vendor = {
             });
         });
     },
+    'getVendorAddressBookById':function(vendorid,id){
+        return new Promise(function(resolve,reject){
+            models.VendorAddressBook.findOne({
+                where:{
+                    VendorId: vendorid,
+                    id:id
+                }
+            }).then(function(address){
+                if(address.length<=0){
+                    throw new Error("no vendor address found");
+                }else{
+                    resolve(address);
+                }
+            }).catch(function(error){
+                reject(error);
+            });
+        });
+    },
     'addAddressBook':function(vendor,options){
         return new Promise(function(resolve,reject) {
             vendor.createVendorAddressBook(options).then(function(v){
                 resolve(v);
             }).catch(function(error){
                 reject(error);
+            });
+        });
+    },
+    'deleteVendorAddressBook':function(address){
+        return new Promise(function(resolve,reject) {
+            address.destroy().then(function(v){
+                resolve(v);
+            }).catch(function(error){
+                resolve(error);
             });
         });
     },
@@ -125,6 +156,24 @@ var Vendor = {
             });
         });
     },
+    'getContactById':function(vendorid,contactid){
+        return new Promise(function(resolve,reject){
+            models.VendorContact.findOne({attributes:["id","name"],
+                where:{
+                    VendorId: vendorid,
+                    id:contactid
+                }
+            }).then(function(contact){
+                if(contact.length<=0){
+                    throw new Error("no contact found");
+                }else{
+                    resolve(contact);
+                }
+            }).catch(function(error){
+                reject(error);
+            });
+        });
+    },
     'addContact':function(options){
         return new Promise(function(resolve,reject) {
             models.Vendor.findOne({
@@ -142,6 +191,53 @@ var Vendor = {
             });
         });
     },
+    'deleteContact':function(contact){
+        return new Promise(function(resolve,reject) {
+            contact.destroy().then(function(v){
+                resolve(v);
+            }).catch(function(error){
+                resolve(error);
+            });
+        });
+    },
+    'getAddressBookByContactId':function(vendorid,contactid){
+        return new Promise(function(resolve,reject){
+            models.VendorContact.findAll({include:{
+                model:models.VendorContactAddressBook
+            },attributes:["id","name"],
+                where:{
+                    VendorId: vendorid,
+                    id:contactid
+                }
+            }).then(function(vendor){
+                if(vendor.length<=0){
+                    throw new Error("no address found");
+                }else{
+                    resolve(vendor);
+                }
+            }).catch(function(error){
+                reject(error);
+            });
+        });
+    },
+    'getContactAddressBookById':function(vendorcontactid,id){
+        return new Promise(function(resolve,reject){
+            models.VendorContactAddressBook.findOne({
+                where:{
+                    VendorContactId: vendorcontactid,
+                    id:id
+                }
+            }).then(function(address){
+                if(address.length<=0){
+                    throw new Error("no contact address found");
+                }else{
+                    resolve(address);
+                }
+            }).catch(function(error){
+                reject(error);
+            });
+        });
+    },
     'addContactAddressBook':function(vendorcontact,options){
         return new Promise(function(resolve,reject) {
             vendorcontact.createVendorContactAddressBook(options).then(function(v){
@@ -150,6 +246,15 @@ var Vendor = {
                 vendorcontact.destroy().then(function(d){
                     resolve(error);
                 });
+            });
+        });
+    },
+    'deleteContactAddressBook':function(address){
+        return new Promise(function(resolve,reject) {
+            address.destroy().then(function(v){
+                resolve(v);
+            }).catch(function(error){
+                    resolve(error);
             });
         });
     }
