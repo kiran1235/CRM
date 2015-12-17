@@ -6,12 +6,12 @@ var Promise = require("bluebird");
 var models = require('../models/index.js');
 
 
-var Vendor = {
+var Product = {
     'get':function(options){
        return new Promise(function(resolve,reject) {
-           models.Vendor.findAll({
-           }).then(function (vendors) {
-               resolve(vendors);
+           models.Product.findAll({
+           }).then(function (products) {
+               resolve(products);
            }).catch(function (error) {
                reject(error);
            });
@@ -19,13 +19,13 @@ var Vendor = {
     },
     'getById':function(id){
         return new Promise(function(resolve,reject) {
-            models.Vendor.findOne({
+            models.Product.findOne({
                 where: {id: id}
-            }).then(function (vendor) {
-                if(vendor.length<=0){
-                    throw new Error("Vendor Not Found");
+            }).then(function (product) {
+                if(product.length<=0){
+                    throw new Error("Product Not Found");
                 }else{
-                    resolve(vendor);
+                    resolve(product);
                 }
             }).catch(function (error) {
                 reject(error);
@@ -34,10 +34,10 @@ var Vendor = {
     },
     'create':function(options){
         return new Promise(function(resolve,reject) {
-            models.Vendor.create({
+            models.Product.create({
                 name: options['name']
-            }).then(function (vendor) {
-                resolve(vendor);
+            }).then(function (product) {
+                resolve(product);
             }).catch(function(error){
                 reject(error);
             });
@@ -45,13 +45,13 @@ var Vendor = {
     },
     'update':function(id,values){
         return new Promise(function(resolve,reject) {
-            models.Vendor.update(values, {
+            models.Product.update(values, {
                 where:{id:id}
             }).then(function (affectedrows) {
                 if(affectedrows>=1){
-                    resolve(vendor);
+                    resolve(product);
                 }else{
-                    throw new Error("Vendor Not Found");
+                    throw new Error("Product Not Found");
                 }
             }).catch(function(error){
                 reject(error);
@@ -60,53 +60,32 @@ var Vendor = {
     },
     'delete':function(id){
         return new Promise(function(resolve,reject) {
-            models.Vendor.destroy({
+            models.Product.destroy({
                 where:{id:id}
-            }).then(function(vendor){
-                resolve(vendor);
+            }).then(function(product){
+                resolve(product);
             }).catch(function(error){
                 reject(error);
             });
         });
     },
-    'destory':function(vendor){
-        return vendor.destroy().then(function(vendor){
-                resolve(vendor);
+    'destory':function(product){
+        return product.destroy().then(function(product){
+                resolve(product);
             }).catch(function(error){
                 reject(error);
             });
     },
-    'getAddressBookByVendorId':function(id){
+    'getProductPartById':function(productid,id){
         return new Promise(function(resolve,reject){
-            models.Vendor.findAll({include:{
-                model:models.VendorAddressBook
-            },attributes:["id","name"],
+            models.ProductPart.findOne({
                 where:{
-                    id:[
-                        id
-                    ]
-                }
-            }).then(function(vendor){
-                if(vendor.length<=0){
-                    throw new Error("vendor address not found");
-                }else{
-                    resolve(vendor);
-                }
-            }).catch(function(error){
-                reject(error);
-            });
-        });
-    },
-    'getVendorAddressBookById':function(vendorid,id){
-        return new Promise(function(resolve,reject){
-            models.VendorAddressBook.findOne({
-                where:{
-                    VendorId: vendorid,
+                    ProductId: productid,
                     id:id
                 }
             }).then(function(address){
                 if(address.length<=0){
-                    throw new Error("no vendor address found");
+                    throw new Error("Product Part  Not Found");
                 }else{
                     resolve(address);
                 }
@@ -115,16 +94,16 @@ var Vendor = {
             });
         });
     },
-    'addAddressBook':function(vendor,options){
+    'addProductPart':function(product,options){
         return new Promise(function(resolve,reject) {
-            vendor.createVendorAddressBook(options).then(function(v){
+            product.createProductPart(options).then(function(v){
                 resolve(v);
             }).catch(function(error){
                 reject(error);
             });
         });
     },
-    'deleteVendorAddressBook':function(address){
+    'deleteProductPart':function(address){
         return new Promise(function(resolve,reject) {
             address.destroy().then(function(v){
                 resolve(v);
@@ -133,11 +112,11 @@ var Vendor = {
             });
         });
     },
-    'updateVendorAddressBook':function(vendorid,id,values){
+    'updateProductPart':function(productid,id,values){
         return new Promise(function(resolve,reject) {
-            models.VendorAddressBook.update(values,{where:{VendorId: vendorid,id:id}}).then(function(affectedrows){
+            models.ProductPart.update(values,{where:{ProductId: productid,id:id}}).then(function(affectedrows){
                 if(affectedrows<=0){
-                    throw new Error("Vendor Address Not Found");
+                    throw new Error("Product Part Not Found");
                 }else{
                     resolve(affectedrows);
                 }
@@ -146,153 +125,6 @@ var Vendor = {
             });
         });
     },
-    'getContactByVendorId':function(id){
-        return new Promise(function(resolve,reject){
-            models.Vendor.findAll({include:{
-                model:models.VendorContact
-            },attributes:["id","name"],
-                where:{
-                    id:[
-                        id
-                    ]
-                }
-            }).then(function(vendor){
-                if(!vendor || vendor.length<=0){
-                    throw new Error("no vendor found");
-                }else{
-                    resolve(vendor);
-                }
-            }).catch(function(error){
-                reject(error);
-            });
-        });
-    },
-    'getContactById':function(vendorid,contactid){
-        return new Promise(function(resolve,reject){
-            models.VendorContact.findOne({attributes:["id","name"],
-                where:{
-                    VendorId: vendorid,
-                    id:contactid
-                }
-            }).then(function(contact){
-                if(!contact || contact.length<=0){
-                    throw new Error("no contact found");
-                }else{
-                    resolve(contact);
-                }
-            }).catch(function(error){
-                reject(error);
-            });
-        });
-    },
-    'addContact':function(vendor,options){
-        return new Promise(function(resolve,reject) {
-            vendor.createVendorContact({
-                name: options['name']
-            }).then(function (vendor) {
-                resolve(vendor);
-            }).catch(function (error) {
-                reject(error);
-            });
-        });
-    },
-    'updateContact':function(vendorid,id,values){
-        return new Promise(function(resolve,reject) {
-            models.VendorContact.update(values,{where:{
-                VendorId: vendorid,
-                  id:id
-            }}).then(function(affectedrows){
-                if(affectedrows<=0){
-                    throw new Error("Vendor Contact Not Found");
-                }else{
-                    resolve(affectedrows);
-                }
-            }).catch(function(error){
-                reject(error);
-            });
-        });
-    },
-    'deleteContact':function(contact){
-        return new Promise(function(resolve,reject) {
-            contact.destroy().then(function(v){
-                resolve(v);
-            }).catch(function(error){
-                resolve(error);
-            });
-        });
-    },
-    'getAddressBookByContactId':function(vendorid,contactid){
-        return new Promise(function(resolve,reject){
-            models.VendorContact.findAll({include:{
-                model:models.VendorContactAddressBook
-            },attributes:["id","name"],
-                where:{
-                    VendorId: vendorid,
-                    id:contactid
-                }
-            }).then(function(vendor){
-                if(vendor.length<=0){
-                    throw new Error("no address found");
-                }else{
-                    resolve(vendor);
-                }
-            }).catch(function(error){
-                reject(error);
-            });
-        });
-    },
-    'getContactAddressBookById':function(vendorcontactid,id){
-        return new Promise(function(resolve,reject){
-            models.VendorContactAddressBook.findOne({
-                where:{
-                    VendorContactId: vendorcontactid,
-                    id:id
-                }
-            }).then(function(address){
-                if(address.length<=0){
-                    throw new Error("no contact address found");
-                }else{
-                    resolve(address);
-                }
-            }).catch(function(error){
-                reject(error);
-            });
-        });
-    },
-    'addContactAddressBook':function(vendorcontact,options){
-        return new Promise(function(resolve,reject) {
-            vendorcontact.createVendorContactAddressBook(options).then(function(v){
-                resolve(v);
-            }).catch(function(error){
-                vendorcontact.destroy().then(function(d){
-                    resolve(error);
-                });
-            });
-        });
-    },
-    'deleteContactAddressBook':function(address){
-        return new Promise(function(resolve,reject) {
-            address.destroy().then(function(v){
-                resolve(v);
-            }).catch(function(error){
-                    resolve(error);
-            });
-        });
-    },
-    'updateContactAddressBook':function(vendorcontactid,id,values){
-        return new Promise(function(resolve,reject) {
-            models.VendorContactAddressBook.update(values,{where:{VendorContactId: vendorcontactid,id:id}}).then(function(affectedrows){
-                if(affectedrows<=0){
-                    throw new Error("Vendor Contact Address Not Found");
-                }else{
-                    resolve(affectedrows);
-                }
-            }).catch(function(error){
-                reject(error);
-            });
-        });
-    },
-
 }
 
-module.exports = Vendor;
+module.exports = Product;

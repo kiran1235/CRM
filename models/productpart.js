@@ -8,39 +8,39 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
-      type: Sequelize.INTEGER
+      type: DataTypes.INTEGER
     },
     name:{
-      type:Sequelize.TEXT,
+      type:DataTypes.TEXT,
       allowNull:false
     },
     type:{
-      type:Sequelize.STRING,
+      type:DataTypes.STRING,
       allowNull:false
     },
     model:{
-      type:Sequelize.STRING,
+      type:DataTypes.STRING,
       allowNull:false
     },
     serialnumber:{
-      type:Sequelize.TEXT,
+      type:DataTypes.TEXT,
       allowNull:false
     },
     category:{
-      type:Sequelize.STRING,
+      type:DataTypes.STRING,
       allowNull:false
     },
     subcategory:{
-      type:Sequelize.STRING,
+      type:DataTypes.STRING,
       allowNull:true
     },
     createdAt: {
       allowNull: false,
-      type: Sequelize.DATE
+      type: DataTypes.DATE
     },
     updatedAt: {
       allowNull: false,
-      type: Sequelize.DATE
+      type: DataTypes.DATE
     }
   }, {
     classMethods: {

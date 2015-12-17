@@ -33,3 +33,11 @@
 // complete: update customer address
 // complete: update customer contact
 // complete: update customer contact address
+// todo: add product
+// todo: add product part
+// todo: get product
+// todo: get product part(s)
+// todo: remove product
+// todo: remove product part
+// todo: update product
+// todo: update product part
