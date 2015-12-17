@@ -3,7 +3,7 @@
  */
 'use strict';
 module.exports = function(sequelize, DataTypes) {
-  var Product = sequelize.define('Product', {
+  var Part = sequelize.define('Part', {
     id: {
       allowNull: false,
       autoIncrement: true,
@@ -34,10 +34,6 @@ module.exports = function(sequelize, DataTypes) {
       type:DataTypes.STRING,
       allowNull:true
     },
-    status:{
-      allowNull: false,
-      type: DataTypes.INTEGER
-    },
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE
@@ -49,9 +45,9 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: function(models) {
-        Product.belongsToMany(models.Part, {through:models.ProductPart})
+        Part.belongsToMany(models.Product, {through:models.ProductPart})
       }
     }
   });
-  return Product;
+  return Part;
 };

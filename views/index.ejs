@@ -2,8 +2,78 @@
 <html>
   <head>
     <title><%= title %></title>
+    <style>
+      #location{
+        border:1px solid #ddd; padding:5px;
+      }
+      #location input{
+        padding:2px;
+        border:1px solid #ddd;
+      }
+      #parameters{
+        display:none;
+      }
+      #parameters .param{
+        display:block;
+      }
+      #parameters input{
+        margin:2px;
+        padding:2px;
+      }
+    </style>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"  type="text/javascript"></script>
   </head>
   <body>
     <h1>CRM RestAPI Server is ready</h1>
+    <p>Rest API request form</p>
+    <div id="location">
+      <select id="method">
+        <option value="get">get</option>
+        <option value="post">post</option>
+        <option value="put">put</option>
+        <option value="delete">delete</option>
+      </select>
+      <input id="action" placeholder="enter target api address" style="width:70%"/>
+      <button onclick="javascript:buildForm()">Go</button>
+    </div>
+    <div id="parameters">
+      <button id="addbutton">Add Parameter</button>
+    </div>
+    <script type="text/javascript">
+      function removeParamter(p){
+        $("#param_"+p).remove();
+      }
+      function buildForm(){
+        var data={};
+        $.each($("#parameters .param"),function(index,object){
+          var o=$(object).find('input');
+          data[o[0].value]=o[1].value;
+        });
+//        console.log(data);
+//        console.log($.param(data));
+        $.ajax({
+          url:$("#action").val(),
+          method:$("#method").val(),
+          data:$.param(data)
+        }).done(function(data,status,xhr){
+           console.log(data);
+        });
+      }
+      var paramcounter=0;
+      $(document).ready(function(){
+        $("#method").on("change",function(e){
+          console.log($(this).val() );
+          if($(this).val()=='get' || $(this).val() =='delete'){
+            $("#parameters").hide();
+          }else{
+            $("#parameters").show();
+          }
+        });
+        $("#addbutton").on("click",function(e){
+          $("#parameters").append('<div class="param" id=param_'+paramcounter+'><input rel="name" type="text" placeholder="key"/><input rel="value" style="width:50%;" type="text" placeholder="value"/><button onclick="javascript:removeParamter('+paramcounter+')">delete</button></div>');
+          paramcounter++;
+        });
+      });
+    </script>
   </body>
 </html>

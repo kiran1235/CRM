@@ -32,7 +32,7 @@ vendorrouter.get('/vendors/',function(req,res,next){
                 res.json(_newvendor);
             })
             .catch(function(err){
-                vendor.destroy(newvendor).then(function(err){
+                vendor.destory(_newvendor).then(function(err){
                     res.json({rc:-1,message:'address details are not provided',details:err});
                 }).catch(function(err){
                     res.json({rc:-1,message:'address details are not provided',details:err});

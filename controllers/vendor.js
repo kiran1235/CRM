@@ -70,11 +70,13 @@ var Vendor = {
         });
     },
     'destory':function(vendor){
-        return vendor.destroy().then(function(vendor){
+        return new Promise(function(resolve,reject) {
+            vendor.destroy().then(function(vendor){
                 resolve(vendor);
             }).catch(function(error){
                 reject(error);
             });
+        });
     },
     'getAddressBookByVendorId':function(id){
         return new Promise(function(resolve,reject){

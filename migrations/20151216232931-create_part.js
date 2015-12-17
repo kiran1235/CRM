@@ -1,24 +1,36 @@
 'use strict';
 module.exports = {
   up: function(queryInterface, Sequelize) {
-    return queryInterface.createTable('ProductParts', {
+    return queryInterface.createTable('Parts', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      ProductId:{
-        type:Sequelize.INTEGER,
+      name:{
+        type:Sequelize.TEXT,
         allowNull:false
       },
-      PartId:{
-        type:Sequelize.INTEGER,
+      type:{
+        type:Sequelize.STRING,
         allowNull:false
       },
-      isdeleted:{
-        type:Sequelize.INTEGER,
+      model:{
+        type:Sequelize.STRING,
         allowNull:false
+      },
+      serialnumber:{
+        type:Sequelize.TEXT,
+        allowNull:false
+      },
+      category:{
+        type:Sequelize.STRING,
+        allowNull:false
+      },
+      subcategory:{
+        type:Sequelize.STRING,
+        allowNull:true
       },
       createdAt: {
         allowNull: false,
@@ -31,6 +43,6 @@ module.exports = {
     });
   },
   down: function(queryInterface, Sequelize) {
-    return queryInterface.dropTable('ProductParts');
+    return queryInterface.dropTable('Parts');
   }
 };

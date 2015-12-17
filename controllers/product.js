@@ -76,27 +76,46 @@ var Product = {
                 reject(error);
             });
     },
-    'getProductPartById':function(productid,id){
+    'getProductPartsByProductId':function(id){
         return new Promise(function(resolve,reject){
-            models.ProductPart.findOne({
+            models.Part.findAll({include:{
+              model:models.Product,
                 where:{
-                    ProductId: productid,
-                    id:id
+                    id: id
                 }
-            }).then(function(address){
-                if(address.length<=0){
-                    throw new Error("Product Part  Not Found");
+            }
+            }).then(function(parts){
+                if(parts.length<=0){
+                    throw new Error("Product Part Not Found");
                 }else{
-                    resolve(address);
+                    resolve(parts);
                 }
             }).catch(function(error){
                 reject(error);
             });
         });
     },
+    'getPartById':function(id){
+        return new Promise(function(resolve,reject){
+            models.Part.findOne({
+                where:{
+                    id:id
+                }
+            }).then(function(part){
+                if(part.length<=0){
+                    throw new Error("Part Not Found");
+                }else{
+                    resolve(part);
+                }
+            }).catch(function(error){
+                reject(error);
+            });
+        });
+    },
+    //todo: this should create part record and product part record
     'addProductPart':function(product,options){
         return new Promise(function(resolve,reject) {
-            product.createProductPart(options).then(function(v){
+            product.createPart(options).then(function(v){
                 resolve(v);
             }).catch(function(error){
                 reject(error);

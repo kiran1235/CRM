@@ -59,10 +59,10 @@ productrouter.get('/products/',function(req,res,next){
     res.json({rc:-1,message:'error occurred while updating product',details:err.message});
   });
 }).get('/product/:id/parts/',function(req,res,next){
-      product.getAddressBookByVendorId(req.params.id).then(function(products){
+      product.getProductPartsByProductId(req.params.id).then(function(products){
           res.json({rc:0,data:products});
       }).catch(function(err){
-          res.json({rc:-1,message:'no part is provided'});
+          res.json({rc:-1,message:'error ocurred while fetching product parts',details:err.message});
       });
 }).post('/product/:id/part/',function(req,res,next){
       product.getById(req.params.id).then(function(_product){
