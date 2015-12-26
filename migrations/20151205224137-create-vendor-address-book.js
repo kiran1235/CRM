@@ -14,29 +14,44 @@ module.exports = {
         },
       addressline1:{
         type:Sequelize.TEXT,
-          allowNull:false
+          allowNull:true
       },
-        addressline2:{
-            type:Sequelize.TEXT,
-            allowNull:true
-        },
-        street:{
-            type:Sequelize.TEXT,
-            allowNull:false
-        },
-        city:{
-            type:Sequelize.STRING,
-            allowNull:false
-        },
-        country:{
-            type:Sequelize.STRING,
-            allowNull:false
-        },
-        zipcode:{
-            type:Sequelize.STRING,
-            allowNull:false
-        },
-
+      addressline2:{
+          type:Sequelize.TEXT,
+          allowNull:true
+      },
+      street:{
+          type:Sequelize.TEXT,
+          allowNull:true
+      },
+      city:{
+          type:Sequelize.STRING,
+          allowNull:true
+      },
+      country:{
+          type:Sequelize.STRING,
+          allowNull:true
+      },
+      zipcode:{
+          type:Sequelize.STRING,
+          allowNull:true
+      },
+      email:{
+        type:Sequelize.TEXT,
+        allowNull:true
+      },
+      phone:{
+        type:Sequelize.STRING,
+        allowNull:true
+      },
+      isprimary:{
+        type:Sequelize.INTEGER,
+        allowNull:false
+      },
+      isdeleted:{
+        type:Sequelize.INTEGER,
+        allowNull:false
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

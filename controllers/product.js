@@ -32,11 +32,24 @@ var Product = {
             });
         });
     },
+    'getByFilters':function(options){
+        return new Promise(function(resolve,reject) {
+            models.Product.findAll({
+                where: options
+            }).then(function (product) {
+                if(product.length<=0){
+                    throw new Error("Products Not Found");
+                }else{
+                    resolve(product);
+                }
+            }).catch(function (error) {
+                reject(error);
+            });
+        });
+    },
     'create':function(options){
         return new Promise(function(resolve,reject) {
-            models.Product.create({
-                name: options['name']
-            }).then(function (product) {
+            models.Product.create(options).then(function (product) {
                 resolve(product);
             }).catch(function(error){
                 reject(error);

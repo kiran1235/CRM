@@ -1,7 +1,7 @@
 'use strict';
 
 var Application = {
-    'name':"SMB"
+    'name':"CRM"
 };
 
 module.exports = Application;

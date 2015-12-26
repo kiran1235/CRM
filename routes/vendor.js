@@ -16,34 +16,63 @@ vendorrouter.get('/vendors/',function(req,res,next){
         res.json({rc:0,data:vendors});
     });
 }).post('/vendor/',function(req,res,next){
+    var newvendorid=0;
     vendor.create({
         name:req.body['entity[name]']
     }).then(function(_newvendor){
-        vendor
-            .addAddressBook(_newvendor,{
-                addressline1:req.body['entity[addressline1]'],
-                addressline2:req.body['entity[addressline2]'],
-                street:req.body['entity[street]'],
-                city:req.body['entity[city]'],
-                country:req.body['entity[country]'],
-                zipcode:req.body['entity[zipcode]']
-            })
-            .then(function(_newvendor){
-                res.json(_newvendor);
-            })
-            .catch(function(err){
-                vendor.destory(_newvendor).then(function(err){
-                    res.json({rc:-1,message:'address details are not provided',details:err});
-                }).catch(function(err){
-                    res.json({rc:-1,message:'address details are not provided',details:err});
-                });
+        newvendorid=_newvendor.id;
+        vendor.addContact(_newvendor,{
+          name:req.body['entity[contactname]']
+        }).then(function(_newvendorcontact){
+            vendor.addContactAddressBook(_newvendorcontact,{
+              addressline1:req.body['entity[addressline1]'],
+              addressline2:req.body['entity[addressline2]'],
+              street:req.body['entity[street]'],
+              city:req.body['entity[city]'],
+              country:req.body['entity[country]'],
+              zipcode:req.body['entity[zipcode]'],
+              email:req.body['entity[email]'],
+              phone:req.body['entity[phone]'],
+            }).then(function(_newvendorcontact){
+              res.json({rc:0,message:'success vendor is addedd',VendorId:newvendorid});
+            }).catch(function(err){
+              res.json({rc:-1, message:"errored",details:err.message});
             });
+        }).catch(function(err){
+          vendor.destory(_newvendorcontact).then(function(err){
+            res.json({rc:-1,message:'Valid Contact Name is not provided',details:err.message});
+          });
+        })
+            //.addAddressBook(_newvendor,
+            //  {
+            //    addressline1:req.body['entity[addressline1]'],
+            //    addressline2:req.body['entity[addressline2]'],
+            //    street:req.body['entity[street]'],
+            //    city:req.body['entity[city]'],
+            //    country:req.body['entity[country]'],
+            //    zipcode:req.body['entity[zipcode]'],
+            //    email:req.body['entity[email]'],
+            //    phone:req.body['entity[phone]'],
+            //})
+            //.then(function(_newvendor){
+            //    res.json(_newvendor);
+            //})
+            //.catch(function(err){
+            //  console.log(err);
+            //    vendor.destory(_newvendor).then(function(err){
+            //        res.json({rc:-1,message:'valid address details are not provided',details:err});
+            //    }).catch(function(err){
+            //        res.json({rc:-1,message:'valid address details are not provided',details:err});
+            //    });
+            //});
+    }).catch(function(err){
+      res.json({rc:-1,message:'Valid Vendor Name is not provided',details:err.message});
     });
 }).get('/vendor/:id/',function(req,res,next){
   vendor.getById(req.params.id).then(function(vendors){
     res.json({rc:0,data:vendors});
   }).catch(function(err){
-    res.json({rc:-1,message:'no vendor found'});
+    res.json({rc:-1,message:'no vendor found',details:err.message});
   });
 }).delete('/vendor/:id',function(req,res,next){
   vendor.delete(req.params.id).then(function(vendor){
@@ -71,7 +100,9 @@ vendorrouter.get('/vendors/',function(req,res,next){
                 street:req.body['entity[street]'],
                 city:req.body['entity[city]'],
                 country:req.body['entity[country]'],
-                zipcode:req.body['entity[zipcode]']
+                zipcode:req.body['entity[zipcode]'],
+                email:req.body['entity[email]'],
+                phonenumber:req.body['entity[phonenumber]'],
             })
             .then(function(_vendor){
                 res.json(_vendor);

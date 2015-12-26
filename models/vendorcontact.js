@@ -14,7 +14,18 @@ module.exports = function(sequelize, DataTypes) {
               notEmpty: true,
               is: ["^[a-zA-Z0-9 \-\\\/\#\.]+$", 'i']
           }
-      }
+      },
+      isprimary:{
+        type:DataTypes.INTEGER,
+        allowNull:false,
+        defaultValue:0
+      },
+      isdeleted:{
+        type:DataTypes.INTEGER,
+        allowNull:false,
+        defaultValue:0
+      },
+
   }, {
     classMethods: {
       associate: function(models) {

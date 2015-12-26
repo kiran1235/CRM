@@ -20,6 +20,7 @@ module.exports = function(sequelize, DataTypes) {
       associate: function(models) {
           Vendor.hasMany(models.VendorContact,{onDelete: 'cascade', hooks: true });
           Vendor.hasMany(models.VendorAddressBook,{onDelete: 'cascade', hooks: true });
+          Vendor.belongsToMany(models.Product, {through:models.ProductVendor})
       }
     }
   });

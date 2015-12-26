@@ -10,6 +10,7 @@ var Vendor = {
     'get':function(options){
        return new Promise(function(resolve,reject) {
            models.Vendor.findAll({
+             attributes:["id","name"]
            }).then(function (vendors) {
                resolve(vendors);
            }).catch(function (error) {
@@ -20,7 +21,18 @@ var Vendor = {
     'getById':function(id){
         return new Promise(function(resolve,reject) {
             models.Vendor.findOne({
-                where: {id: id}
+                include:[
+                  {
+                    model: models.VendorAddressBook
+                  },
+                  {
+                    model: models.VendorContact,
+                    include:{
+                      model:models.VendorContactAddressBook
+                    }
+                  },
+                ]
+              ,where: {id: id}
             }).then(function (vendor) {
                 if(vendor.length<=0){
                     throw new Error("Vendor Not Found");
@@ -191,8 +203,8 @@ var Vendor = {
         return new Promise(function(resolve,reject) {
             vendor.createVendorContact({
                 name: options['name']
-            }).then(function (vendor) {
-                resolve(vendor);
+            }).then(function (contact) {
+                resolve(contact);
             }).catch(function (error) {
                 reject(error);
             });
@@ -262,13 +274,13 @@ var Vendor = {
         });
     },
     'addContactAddressBook':function(vendorcontact,options){
+        options['isprimary']=(options['isprimary']==undefined)?0:options['isprimary'];
+        options['isdeleted']=(options['isdeleted']==undefined)?0:options['isdeleted'];
         return new Promise(function(resolve,reject) {
             vendorcontact.createVendorContactAddressBook(options).then(function(v){
                 resolve(v);
             }).catch(function(error){
-                vendorcontact.destroy().then(function(d){
-                    resolve(error);
-                });
+                reject(error);
             });
         });
     },

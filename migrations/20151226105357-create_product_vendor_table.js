@@ -1,27 +1,31 @@
 'use strict';
+
 module.exports = {
-  up: function(queryInterface, Sequelize) {
-    return queryInterface.createTable('VendorContacts', {
+  up: function (queryInterface, Sequelize) {
+    return queryInterface.createTable('ProductVendors', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      VendorId:{
-        type: Sequelize.INTEGER,
+      ProductId:{
+        type:Sequelize.INTEGER,
         allowNull:false
       },
-      name:{
-        type:Sequelize.TEXT
+      VendorId:{
+        type:Sequelize.INTEGER,
+        allowNull:false
       },
       isprimary:{
         type:Sequelize.INTEGER,
-        allowNull:false
+        allowNull:false,
+        defaultValue:0
       },
       isdeleted:{
         type:Sequelize.INTEGER,
-        allowNull:false
+        allowNull:false,
+        defaultValue:0
       },
       createdAt: {
         allowNull: false,
@@ -33,7 +37,8 @@ module.exports = {
       }
     });
   },
-  down: function(queryInterface, Sequelize) {
-    return queryInterface.dropTable('VendorContacts');
+
+  down: function (queryInterface, Sequelize) {
+    return queryInterface.dropTable('ProductVendors');
   }
 };
