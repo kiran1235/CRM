@@ -36,21 +36,15 @@ module.exports = function(sequelize, DataTypes) {
     },
     status:{
       allowNull: false,
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+      defaultValue:1
     },
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE
-    },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE
-    }
   }, {
     classMethods: {
       associate: function(models) {
         Product.belongsToMany(models.Part, {through:models.ProductPart})
         Product.belongsToMany(models.Vendor, {through:models.ProductVendor})
+        Product.hasMany(models.Inventory)
       }
     }
   });

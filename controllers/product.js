@@ -62,7 +62,7 @@ var Product = {
                 where:{id:id}
             }).then(function (affectedrows) {
                 if(affectedrows>=1){
-                    resolve(product);
+                    resolve(affectedrows);
                 }else{
                     throw new Error("Product Not Found");
                 }

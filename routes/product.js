@@ -9,30 +9,23 @@ var path = require('path');
 
 
 /** routers & controllers **/
+var requestparameters=require('../bin/requestparameters.js');
 var product=require('../controllers/product.js');
+var inventory=require('../controllers/inventory.js');
 var productrouter = express.Router();
 productrouter.get('/products/',function(req,res,next){
-    product.get().then(function(products){
-        res.json({rc:0,data:products});
-    });
+  product.get().then(function(products){
+    res.json({rc:0,data:products});
+  });
 }).post('/product/',function(req,res,next){
-    product.create({
-      name:req.body['entity[name]'],
-      type:req.body['entity[type]'],
-      model:req.body['entity[model]'],
-      serialnumber:req.body['entity[serialnumber]'],
-      category:req.body['entity[category]'],
-      subcategory:req.body['entity[subcategory]'],
-      status:req.body['entity[status]']
-    }).then(function(_newproduct){
-                res.json(_newproduct);
-    }).catch(function(err){
-      product.destroy(newproduct).then(function(err){
-        res.json({rc:-1,message:'few product details are not provided',details:err});
-      }).catch(function(err){
-        res.json({rc:-1,message:'few product details are not provided',details:err});
-      });
-    });
+  var self= this;
+  product.create(
+    requestparameters.getPostParameters(req)
+  ).then(function(_newproduct){
+    res.json({rc:0,data:_newproduct});
+  }).catch(function(err){
+      res.json({rc:-1,message:'few product details are not provided',details:err});
+  });
 }).get('/product/:id/',function(req,res,next){
   product.getById(req.params.id).then(function(products){
     res.json({rc:0,data:products});
@@ -44,16 +37,12 @@ productrouter.get('/products/',function(req,res,next){
     res.json({rc:0,data:product});
   });
 }).put('/product/:id',function(req,res,next){
-  product.update(req.params.id,{
-    name:req.body['entity[name]'],
-    type:req.body['entity[type]'],
-    model:req.body['entity[model]'],
-    serialnumber:req.body['entity[serialnumber]'],
-    category:req.body['entity[category]'],
-    subcategory:req.body['entity[subcategory]'],
-    status:req.body['entity[status]']
-  }).then(function(result){
-    res.json({rc:0,message:'product details are updated',details:result});
+  product.update(req.params.id,requestparameters.getPostParameters(req)).then(function(result){
+    product.getById(req.params.id).then(function(products){
+      res.json({rc:0,data:products,message:'product details are updated'});
+    }).catch(function(err){
+      res.json({rc:-1,message:'no product found'});
+    });
   }).catch(function(err){
     console.log(err);
     res.json({rc:-1,message:'error occurred while updating product',details:err.message});
@@ -105,6 +94,40 @@ productrouter.get('/products/',function(req,res,next){
     }).catch(function(error){
       res.json({rc:-1,message:'error occurred while removing product part',details:error});
     });
+}).get('/inventory/',function(req,res,next){
+  inventory.get().then(function(inventory){
+    res.json({rc:0,data:inventory});
+  });
+}).post('/product/:id/inventory/',function(req,res,next){
+  var self= this;
+  product.getById(req.params.id).then(function(product){
+    inventory.create(product,
+      requestparameters.getPostParameters(req)
+    ).then(function(_new){
+      res.json({rc:0,data:_new});
+    }).catch(function(err){
+      console.log(err);
+      res.json({rc:-1,message:'few Inventory details are not provided',details:err});
+    });
+  }).catch(function(err){
+    res.json({rc:-1,message:'no product found'});
+  });
+
+}).put('/product/:id/inventory/',function(req,res,next){
+  var self= this;
+  product.getById(req.params.id).then(function(product){
+    inventory.update(product,
+      requestparameters.getPostParameters(req)
+    ).then(function(_new){
+      res.json({rc:0,data:_new});
+    }).catch(function(err){
+      console.log(err);
+      res.json({rc:-1,message:'few Inventory details are not provided',details:err});
+    });
+  }).catch(function(err){
+    res.json({rc:-1,message:'no product found'});
+  });
+
 })
 
 

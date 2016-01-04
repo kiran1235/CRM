@@ -1,553 +1,229 @@
 <!DOCTYPE html>
 <html ng-app="crm">
-<head>
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="/bower_components/angular-material/angular-material.css">
+    <head>
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="/bower_components/angular-material/angular-material.css">
 
-    <script src="/bower_components/angular/angular.js" type="text/javascript" ></script>
-    <!--<script src="/bower_components/angular-route/angular-route.js" type="text/javascript" ></script>-->
-    <script src="/bower_components/angular-ui-router/release/angular-ui-router.js" type="text/javascript" ></script>
-    <script src="/bower_components/angular-animate/angular-animate.js" type="text/javascript" ></script>
-    <script src="/bower_components/angular-aria/angular-aria.js" type="text/javascript" ></script>
-    <script src="/bower_components/angular-material/angular-material.js" type="text/javascript" ></script>
-    <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/t-114/assets-cache.js"></script>
+        <script src="/bower_components/angular/angular.js" type="text/javascript" ></script>
+        <!--<script src="/bower_components/angular-route/angular-route.js" type="text/javascript" ></script>-->
+        <script src="/bower_components/angular-ui-router/release/angular-ui-router.js" type="text/javascript" ></script>
+        <script src="/bower_components/angular-animate/angular-animate.js" type="text/javascript" ></script>
+        <script src="/bower_components/angular-aria/angular-aria.js" type="text/javascript" ></script>
+        <script src="/bower_components/angular-material/angular-material.js" type="text/javascript" ></script>
+        <link href="/bower_components/angular-material-data-table/dist/md-data-table.min.css" rel="stylesheet" type="text/css"/>
+        <script type="text/javascript" src="/bower_components/angular-material-data-table/dist/md-data-table.min.js"></script>
+        <script type="text/javascript" src="/bower_components/angular-md5/angular-md5.min.js"></script>
+        <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/t-114/assets-cache.js"></script>
+        <link rel="stylesheet" href="/www/css/app.css">
+    </head>
+    <body flex layout="column" ng-cloak>
+            <md-toolbar layout="row" ng-controller="appNavigationController">
+                <div class="md-toolbar-tools" flex-auto layout-align="start start">
+                    <md-button class="md-icon-button" hide-gt-sm aria-label="Icon" ng-click="toggleLeft()">
+                        <md-icon aria-label="Menu" class="material-icons">menu</md-icon>
+                    </md-button>
+                    <h2>
+                        CRM
+                    </h2>
+                </div>
+                <div class="md-toolbar-tools" flex-auto hide-sm hide-xs layout-align="end end">
+                    <md-button class="md-icon-button" aria-label="Lock">
+                        <md-icon aria-label="lock" class="material-icons">lock</md-icon>
+                    </md-button>
+                    <p>
+                        Kiran Kumar Talapaku
+                    </p>
+                    <md-button class="md-icon-button" aria-label="Chat" ng-click="toggleRight()">
+                        <md-icon aria-label="view_comfy" class="material-icons">view_comfy</md-icon>
+                    </md-button>
+                </div>
+            </md-toolbar>
+        <div ng-controller="appViewController" layout="row" flex layout-align="start start">
+            <section flex-gt-sm="20" ng-controller="appNavigationController">
+                <md-sidenav flex-gt-sm="100" class="md-sidenav-left" md-component-id="left" md-is-locked-open="$mdMedia('gt-sm')" >
+                    <md-toolbar class="md-theme-indigo" hide-gt-sm>
+                        <div class="md-toolbar-tools" layout="row">
+                            <md-button class="md-icon-button" aria-label="Icon" ng-controller="appLeftSideBarController" ng-click="close()">
+                                <md-icon aria-label="close" class="material-icons">close</md-icon>
+                            </md-button>
+                            <h3>CRM</h3>
+                        </div>
+                    </md-toolbar>
+                    <md-content style="height:-webkit-calc(100%)">
+                        <md-list>
+                            <md-list-item>
+                                <md-button ng-click="load('vendors')">
+                                    <md-icon aria-label="business" class="material-icons">business</md-icon>
+                                    Vendors
+                                </md-button>
+                            </md-list-item>
+                            <md-divider ></md-divider>
+                            <md-list-item>
+                                <md-button ng-click="load('customers')">
+                                    <md-icon aria-label="account_box" class="material-icons">account_box</md-icon>
+                                    Customers
+                                </md-button>
+                            </md-list-item>
+                            <md-divider ></md-divider>
+                            <md-list-item>
+                                <md-button>
+                                    <md-icon aria-label="shopping_cart" class="material-icons">shopping_cart</md-icon>
+                                    Orders
+                                </md-button>
+                            </md-list-item>
+                            <md-divider ></md-divider>
+                            <md-list-item>
+                                <md-button ng-click="load('inventory')">
+                                    <md-icon aria-label="assignment" class="material-icons">assignment</md-icon>
+                                    Inventory
+                                </md-button>
+                            </md-list-item>
+                            <md-divider ></md-divider>
+                            <md-list-item>
+                                <md-button>
+                                    <md-icon aria-label="group" class="material-icons">group</md-icon>
+                                    Employees
+                                </md-button>
+                            </md-list-item>
+                            <md-divider ></md-divider>
+                        </md-list>
+                    </md-content>
+                </md-sidenav>
+            </section>
+            <section flex-xs="100" flex-gt-xs="100" class="left-border-style-1"  style="max-height:600px;overflow:auto;" >
+                <md-progress-linear ng-show="display_view_progress_bar" class="md-warn" md-mode="indeterminate"></md-progress-linear>
+                <div ui-view class="view-animate"></div>
 
-    <link rel="stylesheet" href="/www/css/app.css">
-    <script type="text/javascript" src="/www/js/app.js"></script>
-</head>
-<body flex layout="column">
-    <div ng-controller="appNavigationController" ng-cloak>
-        <md-toolbar layout="row">
-            <div class="md-toolbar-tools" flex-auto layout-align="start start">
-                <md-button class="md-icon-button" hide-gt-sm aria-label="Icon" ng-click="toggleLeft()">
-                    <md-icon aria-label="Menu" class="material-icons">menu</md-icon>
-                </md-button>
-                <h2>
-                    CRM
-                </h2>
-            </div>
-            <div class="md-toolbar-tools" flex-auto hide-sm hide-xs layout-align="end end">
-                <md-button class="md-icon-button" aria-label="Lock">
-                    <md-icon aria-label="lock" class="material-icons">lock</md-icon>
-                </md-button>
-                <h4>
-                    Kiran Kumar Talapaku
-                </h4>
-                <md-button class="md-icon-button" aria-label="Chat" ng-click="toggleRight()">
-                    <md-icon aria-label="view_comfy" class="material-icons">view_comfy</md-icon>
-                </md-button>
-            </div>
-        </md-toolbar>
-    </div>
-    <div ng-controller="appViewController" ng-cloak layout="row" flex layout-align="start start">
-        <section flex-gt-sm="20" ng-controller="appNavigationController">
-            <md-sidenav flex-gt-sm="100" class="md-sidenav-left" md-component-id="left" md-is-locked-open="$mdMedia('gt-sm')" >
-                <md-toolbar class="md-theme-indigo" hide-gt-sm>
-                    <div class="md-toolbar-tools" layout="row">
-                        <md-button class="md-icon-button" aria-label="Icon" ng-controller="appLeftSideBarController" ng-click="close()">
-                            <md-icon aria-label="close" class="material-icons">close</md-icon>
-                        </md-button>
-                        <h3>CRM</h3>
+                <!--<md-content>-->
+                    <!--<md-list>-->
+                        <!--<md-subheader class="md-no-sticky">3 line item</md-subheader>-->
+                        <!--<md-list-item class="md-3-line" ng-repeat="item in todos">-->
+                            <!--<img ng-src="{{item.face}}?{{$index}}" class="md-avatar" alt="{{item.who}}" />-->
+                            <!--<div class="md-list-item-text" layout="column">-->
+                                <!--<h3>{{ item.who }}</h3>-->
+                                <!--<h4>{{ item.what }}</h4>-->
+                                <!--<p>{{ item.notes }}</p>-->
+                            <!--</div>-->
+                        <!--</md-list-item>-->
+                        <!--<md-divider ></md-divider>-->
+                        <!--<md-subheader class="md-no-sticky">2 line item</md-subheader>-->
+                        <!--<md-list-item class="md-2-line">-->
+                            <!--<img ng-src="{{todos[0].face}}?20" class="md-avatar" alt="{{todos[0].who}}" />-->
+                            <!--<div class="md-list-item-text">-->
+                                <!--<h3>{{ todos[0].who }}</h3>-->
+                                <!--<p>Secondary text</p>-->
+                            <!--</div>-->
+                        <!--</md-list-item>-->
+                        <!--<md-divider ></md-divider>-->
+                        <!--<md-subheader class="md-no-sticky">3 line item, long paragraph (see on mobile)</md-subheader>-->
+                        <!--<md-list-item class="md-3-line md-long-text">-->
+                            <!--<img ng-src="{{todos[0].face}}?25" class="md-avatar" alt="{{todos[0].who}}" />-->
+                            <!--<div class="md-list-item-text">-->
+                                <!--<h3>{{ todos[0].who }}</h3>-->
+                                <!--<p>-->
+                                    <!--Secondary line text Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam massa quam.-->
+                                    <!--Nulla metus metus, ullamcorper vel, tincidunt sed, euismod in, nibh. Quisque volutpat condimentum-->
+                                    <!--velit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.-->
+                                <!--</p>-->
+                            <!--</div>-->
+                        <!--</md-list-item>-->
+                        <!--<md-list-item class="md-3-line md-long-text">-->
+                            <!--<img ng-src="{{todos[1].face}}?25" class="md-avatar" alt="{{todos[1].who}}" />-->
+                            <!--<div class="md-list-item-text">-->
+                                <!--<h3>{{ todos[1].who }}</h3>-->
+                                <!--<p>-->
+                                    <!--Secondary line text Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam massa quam.-->
+                                    <!--Nulla metus metus, ullamcorper vel, tincidunt sed, euismod in, nibh. Quisque volutpat condimentum-->
+                                    <!--velit. Class aptent taciti sociosqu ad litra torquent per conubia nostra, per inceptos himenaeos.-->
+                                <!--</p>-->
+                            <!--</div>-->
+                        <!--</md-list-item>-->
+                        <!--<md-divider ></md-divider>-->
+                        <!--<md-subheader class="md-no-sticky">Classes</md-subheader>-->
+                        <!--<md-list-item class="md-2-line" ng-repeat="phone in phones">-->
+                            <!--<md-icon md-svg-icon="communication:phone" ng-if="$index !== 2" ng-class="{'md-avatar-icon': $index === 1}"></md-icon>-->
+                            <!--<div class="md-list-item-text" ng-class="{'md-offset': $index == 2 }">-->
+                                <!--<h3> {{ phone.number }} </h3>-->
+                                <!--<p> {{ phone.type }} </p>-->
+                            <!--</div>-->
+                        <!--</md-list-item>-->
+                    <!--</md-list>-->
+                <!--</md-content>-->
+            </section>
+            <md-sidenav flex class="md-sidenav-right" md-component-id="right" md-is-locked-open="false" >
+                <md-toolbar class="md-theme-blue">
+                    <div class="md-toolbar-tools" layout="row" >
+                        <div flex="90">
+                            <md-button>
+                                <md-icon aria-label="close" class="material-icons">format_list_numbered</md-icon>
+                                <md-tooltip md-direction="buttom">Todo List</md-tooltip>
+                            </md-button>
+                            <md-button>
+                                <md-icon aria-label="chat" class="material-icons">chat</md-icon>
+                                <md-tooltip md-direction="buttom">Chat</md-tooltip>
+                            </md-button>
+                        </div>
+                        <div flex="10">
+                            <md-button class="md-icon-button" aria-label="Icon" ng-controller="appRightSideBarController" ng-click="close()">
+                                <md-icon aria-label="close" class="material-icons">close</md-icon>
+                                <md-tooltip md-direction="buttom">Close</md-tooltip>
+                            </md-button>
+                        </div>
                     </div>
                 </md-toolbar>
-                <md-content style="height:-webkit-calc(100%)">
+                <md-content>
                     <md-list>
                         <md-list-item>
-                            <md-button ng-click="load('vendors')">
-                                <md-icon aria-label="business" class="material-icons">business</md-icon>
-                                Vendors
-                            </md-button>
-                        </md-list-item>
-                        <md-divider ></md-divider>
-                        <md-list-item>
-                            <md-button ng-click="load('customers')">
-                                <md-icon aria-label="account_box" class="material-icons">account_box</md-icon>
-                                Customers
-                            </md-button>
-                        </md-list-item>
-                        <md-divider ></md-divider>
-                        <md-list-item>
-                            <md-button>
-                                <md-icon aria-label="shopping_cart" class="material-icons">shopping_cart</md-icon>
-                                Orders
-                            </md-button>
-                        </md-list-item>
-                        <md-divider ></md-divider>
-                        <md-list-item>
-                            <md-button>
-                                <md-icon aria-label="assignment" class="material-icons">assignment</md-icon>
-                                Inventory
-                            </md-button>
-                        </md-list-item>
-                        <md-divider ></md-divider>
-                        <md-list-item>
-                            <md-button>
-                                <md-icon aria-label="group" class="material-icons">group</md-icon>
-                                Employees
-                            </md-button>
+                            Todo List
                         </md-list-item>
                         <md-divider ></md-divider>
                     </md-list>
                 </md-content>
             </md-sidenav>
-        </section>
-        <section flex-xs="100" flex-gt-xs="100" class="left-border-style-1">
-        <div style="min-height:600px;height:100%;" ui-view class="view-animate"></div>
+        </div>
+    <script type="text/ng-template" id="home.html">
+            <h1>Home Page</h1>
+            <md-divider ></md-divider>
+            <p>This is home page</p>
+    </script>
 
-            <!--<md-content>-->
-                <!--<md-list>-->
-                    <!--<md-subheader class="md-no-sticky">3 line item</md-subheader>-->
-                    <!--<md-list-item class="md-3-line" ng-repeat="item in todos">-->
-                        <!--<img ng-src="{{item.face}}?{{$index}}" class="md-avatar" alt="{{item.who}}" />-->
-                        <!--<div class="md-list-item-text" layout="column">-->
-                            <!--<h3>{{ item.who }}</h3>-->
-                            <!--<h4>{{ item.what }}</h4>-->
-                            <!--<p>{{ item.notes }}</p>-->
-                        <!--</div>-->
-                    <!--</md-list-item>-->
-                    <!--<md-divider ></md-divider>-->
-                    <!--<md-subheader class="md-no-sticky">2 line item</md-subheader>-->
-                    <!--<md-list-item class="md-2-line">-->
-                        <!--<img ng-src="{{todos[0].face}}?20" class="md-avatar" alt="{{todos[0].who}}" />-->
-                        <!--<div class="md-list-item-text">-->
-                            <!--<h3>{{ todos[0].who }}</h3>-->
-                            <!--<p>Secondary text</p>-->
-                        <!--</div>-->
-                    <!--</md-list-item>-->
-                    <!--<md-divider ></md-divider>-->
-                    <!--<md-subheader class="md-no-sticky">3 line item, long paragraph (see on mobile)</md-subheader>-->
-                    <!--<md-list-item class="md-3-line md-long-text">-->
-                        <!--<img ng-src="{{todos[0].face}}?25" class="md-avatar" alt="{{todos[0].who}}" />-->
-                        <!--<div class="md-list-item-text">-->
-                            <!--<h3>{{ todos[0].who }}</h3>-->
-                            <!--<p>-->
-                                <!--Secondary line text Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam massa quam.-->
-                                <!--Nulla metus metus, ullamcorper vel, tincidunt sed, euismod in, nibh. Quisque volutpat condimentum-->
-                                <!--velit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.-->
-                            <!--</p>-->
-                        <!--</div>-->
-                    <!--</md-list-item>-->
-                    <!--<md-list-item class="md-3-line md-long-text">-->
-                        <!--<img ng-src="{{todos[1].face}}?25" class="md-avatar" alt="{{todos[1].who}}" />-->
-                        <!--<div class="md-list-item-text">-->
-                            <!--<h3>{{ todos[1].who }}</h3>-->
-                            <!--<p>-->
-                                <!--Secondary line text Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam massa quam.-->
-                                <!--Nulla metus metus, ullamcorper vel, tincidunt sed, euismod in, nibh. Quisque volutpat condimentum-->
-                                <!--velit. Class aptent taciti sociosqu ad litra torquent per conubia nostra, per inceptos himenaeos.-->
-                            <!--</p>-->
-                        <!--</div>-->
-                    <!--</md-list-item>-->
-                    <!--<md-divider ></md-divider>-->
-                    <!--<md-subheader class="md-no-sticky">Classes</md-subheader>-->
-                    <!--<md-list-item class="md-2-line" ng-repeat="phone in phones">-->
-                        <!--<md-icon md-svg-icon="communication:phone" ng-if="$index !== 2" ng-class="{'md-avatar-icon': $index === 1}"></md-icon>-->
-                        <!--<div class="md-list-item-text" ng-class="{'md-offset': $index == 2 }">-->
-                            <!--<h3> {{ phone.number }} </h3>-->
-                            <!--<p> {{ phone.type }} </p>-->
-                        <!--</div>-->
-                    <!--</md-list-item>-->
-                <!--</md-list>-->
-            <!--</md-content>-->
-        </section>
-        <md-sidenav flex class="md-sidenav-right" md-component-id="right" md-is-locked-open="false" >
-            <md-toolbar class="md-theme-indigo">
-                <div class="md-toolbar-tools" layout="row" >
-                    <div flex="90">
-                        <md-button>
-                            <md-icon aria-label="close" class="material-icons">format_list_numbered</md-icon>
-                            <md-tooltip md-direction="buttom">Todo List</md-tooltip>
-                        </md-button>
-                        <md-button>
-                            <md-icon aria-label="chat" class="material-icons">chat</md-icon>
-                            <md-tooltip md-direction="buttom">Chat</md-tooltip>
-                        </md-button>
-                    </div>
-                    <div flex="10">
-                        <md-button class="md-icon-button" aria-label="Icon" ng-controller="appRightSideBarController" ng-click="close()">
-                            <md-icon aria-label="close" class="material-icons">close</md-icon>
-                            <md-tooltip md-direction="buttom">Close</md-tooltip>
-                        </md-button>
-                    </div>
-                </div>
-            </md-toolbar>
-            <md-content>
-                <md-list>
-                    <md-list-item>
-                        Todo List
-                    </md-list-item>
-                    <md-divider ></md-divider>
-                </md-list>
-            </md-content>
-        </md-sidenav>
-    </div>
-<script type="text/ng-template" id="home.html">
-        <h1>Home Page</h1>
+    <script type="text/ng-template" id="customers.html">
+        <md-button ng-click="load('customers')">
+            <md-icon aria-label="add_box" class="material-icons">add_box</md-icon>
+            New Customer
+        </md-button>
+        <md-button ng-click="load('customers')">
+            <md-icon aria-label="search" class="material-icons">search</md-icon>
+            Search Customer
+        </md-button>
         <md-divider ></md-divider>
-        <p>This is home page</p>
-</script>
-<script type="text/ng-template" id="vendors.html" >
-    <md-button ng-click="showNewForm()">
-        <md-icon aria-label="add_box" class="material-icons">add_box</md-icon>
-        New Vendors
-    </md-button>
-    <md-button ng-click="load('vendors')">
-        <md-icon aria-label="search" class="material-icons">search</md-icon>
-        Search Vendors
-    </md-button>
-    <md-divider ></md-divider>
-    <div flex layout="row" layout-wrap >
-        <md-card flex="30" flex-sm="100" flex-xs="100" ng-repeat="(index,vendorName) in vendorNames | orderBy: '-id'">
-            <md-card-title>
-                <md-card-title-text>
-                    <span class="md-headline">{{vendorName.name}}</span>
-                    <!--<div ng-repeat="(index,vendoraddressbook) in vendorName.VendorAddressBooks">-->
-                        <!--<div ng-if="vendoraddressbook.isprimary == 1">-->
-                            <!--<span class="md-subhead">-->
-                                <!--{{vendoraddressbook.addressline1}}<br>-->
-                                <!--{{vendoraddressbook.addressline2}}<br>-->
-                                <!--{{vendoraddressbook.street}}-->
-                                <!--{{vendoraddressbook.city}}-->
-                                <!--{{vendoraddressbook.country}}-->
-                                <!--{{vendoraddressbook.zipcode}}-->
-                            <!--</span>-->
+        <div flex layout="row" layout-wrap >
+            <md-card flex="30" flex-sm="100" flex-xs="100" ng-repeat="(index,customerName) in customerNames">
+                <md-card-title>
+                    <md-card-title-text>
+                        <span class="md-headline">{{customerName.name}}</span>
+                        <span class="md-subhead">Small</span>
+                    </md-card-title-text>
+                    <md-card-title-media>
+                        <div class="md-media-sm card-media">
+                            <!-- Guest icon by Icons8 -->
+                            <img class="icon icons8-Guest" src="data:image/png;base64,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" width="100" height="100">
 
-                        <!--</div>-->
-                    <!--</div>-->
-                </md-card-title-text>
-                <md-card-title-media>
-                    <div class="md-media-sm card-media">
-                        <!-- Shop icon by Icons8 -->
-                        <img class="icon icons8-Shop" src="data:image/png;base64,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" width="100" height="100">                    </div>
-                </md-card-title-media>
-            </md-card-title>
-            <md-card-actions layout="row" layout-align="end center">
-                <md-button class="md-icon-button" ng-click="load(vendorName)">
-                    <md-icon aria-label="home" class="material-icons">home</md-icon>
-                    <md-tooltip md-direction="top">Home</md-tooltip>
-                </md-button>
-                <md-button class="md-icon-button" ng-click="">
-                    <md-icon  aria-label="access_time" class="material-icons">access_time</md-icon>
-                    <md-tooltip md-direction="top">Schedule Meeting</md-tooltip>
-                </md-button>
-                <md-button class="md-icon-button" ng-click="">
-                    <md-icon  aria-label="email" class="material-icons">email</md-icon>
-                    <md-tooltip md-direction="top">Email</md-tooltip>
-                </md-button>
-                <md-button class="md-icon-button" ng-click="">
-                    <md-icon  aria-label="call" class="material-icons">call</md-icon>
-                    <md-tooltip md-direction="top">Call</md-tooltip>
-                </md-button>
-                <md-button class="md-icon-button" ng-click="">
-                    <md-icon  aria-label="contacts" class="material-icons">contacts</md-icon>
-                    <md-tooltip md-direction="top">Contacts</md-tooltip>
-                </md-button>
-            </md-card-actions>
-        </md-card>
-    </div>
-</script>
-<script type="text/ng-template" id="vendor.html">
-    <div layout="column" style="height:600px" ng-cloak>
-        <md-toolbar>
-            <div class="md-toolbar-tools">
-                <h3>
-                    <span>{{vendor.name}}</span>
-                </h3>
-                <span flex></span>
-                <md-button class="md-icon-button" aria-label="Call">
-                    <md-icon  aria-label="call" class="material-icons" style="color: greenyellow;">call</md-icon>
-                </md-button>
-                <md-button class="md-icon-button" aria-label="Meeting">
-                    <md-icon  aria-label="access_time" class="material-icons">access_time</md-icon>
-                </md-button>
-                <md-button class="md-icon-button" aria-label="Email">
-                    <md-icon  aria-label="email" class="material-icons">email</md-icon>
-                </md-button>
-            </div>
-        </md-toolbar>
-        <md-content>
-            <md-tabs md-dynamic-height  md-border-bottom>
-                <md-tab label="Contacts" >
-                    <md-toolbar class="md-warn crm-toolbar-notify" ng-if="vendor.VendorContacts.length <= 0">
-                        <div class="md-toolbar-tools">
-                            <h2 class="md-flex">Note: No Contacts are added to this vendor</h2>
                         </div>
-                    </md-toolbar>
-                    <!--VendorContacts-->
-                    <md-content flex layout="row" layout-wrap ng-if="vendor.VendorContacts.length > 0">
-                        <md-card flex="30" flex-sm="100" flex-xs="100" ng-repeat="(index,contact) in vendor.VendorContacts">
-                            <md-card-title>
-                                <md-card-title-text>
-                                    <span class="md-headline">{{contact.name}}</span>
-                                    <!--<div ng-repeat="(index,vendoraddressbook) in vendorName.VendorAddressBooks">-->
-                                    <!--<div ng-if="vendoraddressbook.isprimary == 1">-->
-                                    <!--<span class="md-subhead">-->
-                                    <!--{{vendoraddressbook.addressline1}}<br>-->
-                                    <!--{{vendoraddressbook.addressline2}}<br>-->
-                                    <!--{{vendoraddressbook.street}}-->
-                                    <!--{{vendoraddressbook.city}}-->
-                                    <!--{{vendoraddressbook.country}}-->
-                                    <!--{{vendoraddressbook.zipcode}}-->
-                                    <!--</span>-->
-
-                                    <!--</div>-->
-                                    <!--</div>-->
-                                </md-card-title-text>
-                                <md-card-title-media>
-                                    <div class="md-media-sm card-media">
-                                        <!-- Business Contact icon by Icons8 -->
-                                        <img class="icon icons8-Business-Contact" src="data:image/png;base64,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" width="100" height="100">
-                                    </div>
-                                </md-card-title-media>
-                            </md-card-title>
-                            <md-card-actions layout="row" layout-align="end center">
-                                <md-button class="md-icon-button" ng-click="load(vendorName)">
-                                    <md-icon aria-label="home" class="material-icons">home</md-icon>
-                                    <md-tooltip md-direction="top">Home</md-tooltip>
-                                </md-button>
-                                <md-button class="md-icon-button" ng-click="">
-                                    <md-icon  aria-label="access_time" class="material-icons">access_time</md-icon>
-                                    <md-tooltip md-direction="top">Schedule Meeting</md-tooltip>
-                                </md-button>
-                                <md-button class="md-icon-button" ng-click="">
-                                    <md-icon  aria-label="email" class="material-icons">email</md-icon>
-                                    <md-tooltip md-direction="top">Email</md-tooltip>
-                                </md-button>
-                                <md-button class="md-icon-button" ng-click="">
-                                    <md-icon  aria-label="call" class="material-icons">call</md-icon>
-                                    <md-tooltip md-direction="top">Call</md-tooltip>
-                                </md-button>
-                                <md-button class="md-icon-button" ng-click="">
-                                    <md-icon  aria-label="contacts" class="material-icons">contacts</md-icon>
-                                    <md-tooltip md-direction="top">Contacts</md-tooltip>
-                                </md-button>
-                            </md-card-actions>
-                        </md-card>
-                    </md-content>
-                </md-tab>
-                <md-tab label="Address Book">
-                    <md-toolbar class="md-warn crm-toolbar-notify" ng-if="isAddressExists<= 0">
-                        <div class="md-toolbar-tools">
-                            <h2 class="md-flex">Note: No Adddress are added to this vendor</h2>
-                        </div>
-                    </md-toolbar>
-                    <md-content flex layout="row" layout-wrap ng-if="vendor.VendorAddressBooks.length > 0">
-                        <md-card  flex="30" flex-sm="100" flex-xs="100" ng-repeat="(index,vendoraddressbook) in vendor.VendorAddressBooks">
-                            <md-card-title>
-                                <md-card-title-text>
-                                    <span class="md-headline">{{vendor.name}}</span>
-                        <span class="md-subhead">
-                        {{vendoraddressbook.addressline1}}<br>
-                        {{vendoraddressbook.addressline2}}<br>
-                        {{vendoraddressbook.street}}
-                        {{vendoraddressbook.city}}
-                        {{vendoraddressbook.country}}
-                        {{vendoraddressbook.zipcode}}
-                        </span>
-                                </md-card-title-text>
-                                <md-card-title-media>
-                                    <div class="md-media-sm card-media">
-                                        <!-- Address Book icon by Icons8 -->
-                                        <img class="icon icons8-Address-Book" src="data:image/png;base64,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" width="100" height="100">
-                                    </div>
-                                </md-card-title-media>
-                            </md-card-title>
-                            <md-card-actions layout="row" layout-align="end center">
-                                <md-button class="md-icon-button" ng-click="">
-                                    <md-icon aria-label="home" class="material-icons">home</md-icon>
-                                    <md-tooltip md-direction="top">Home</md-tooltip>
-                                </md-button>
-                                <md-button class="md-icon-button" ng-click="">
-                                    <md-icon  aria-label="access_time" class="material-icons">access_time</md-icon>
-                                    <md-tooltip md-direction="top">Schedule Meeting</md-tooltip>
-                                </md-button>
-                                <md-button class="md-icon-button" ng-click="">
-                                    <md-icon  aria-label="email" class="material-icons">email</md-icon>
-                                    <md-tooltip md-direction="top">Email</md-tooltip>
-                                </md-button>
-                                <md-button class="md-icon-button" ng-click="">
-                                    <md-icon  aria-label="call" class="material-icons">call</md-icon>
-                                    <md-tooltip md-direction="top">Call</md-tooltip>
-                                </md-button>
-                                <md-button class="md-icon-button" ng-click="">
-                                    <md-icon  aria-label="contacts" class="material-icons">contacts</md-icon>
-                                    <md-tooltip md-direction="top">Contacts</md-tooltip>
-                                </md-button>
-                            </md-card-actions>
-                        </md-card>
-                    </md-content>
-                    <md-content flex layout="row" layout-wrap ng-repeat="(index,contact) in vendor.VendorContacts" ng-if="contact.VendorContactAddressBooks.length > 0">
-                            <md-card flex="30" flex-sm="100" flex-xs="100" ng-repeat="(index,contactaddressbook) in contact.VendorContactAddressBooks">
-                                <md-card-title>
-                                    <md-card-title-text>
-                                        <span class="md-headline">{{contact.name}}</span>
-                                    <span class="md-subhead">
-                                    {{contactaddressbook.addressline1}}<br>
-                                    {{contactaddressbook.addressline2}}<br>
-                                    {{contactaddressbook.street}}
-                                    {{contactaddressbook.city}}
-                                    {{contactaddressbook.country}}
-                                    {{contactaddressbook.zipcode}}
-                                    </span>
-                                    </md-card-title-text>
-                                    <md-card-title-media>
-                                        <div class="md-media-sm card-media">
-                                            <!-- Contacts icon by Icons8 -->
-                                            <img class="icon icons8-Contacts" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAFg0lEQVR4Xu2dQW8bRRSA34QGRXYoFkqrKARikItCWtQFahOlSBiJUy8FiXvbf1B+AfALsv+g6Z0DXLhUsd1LVKmRcEQaAo3KBpooIlblQBrcJumi59ZRGpzszPO+7XrnWap68HtvZ7/PM7Pr2XgUyCtWBFSsWiONARESsw+BCBEhMSMQs+ZIDxEhMSMQs+ZID0mqkNK51EXV0+OA72cBVHb/eRbPfxSz0w6rOb4HAB4ov6omyz+EUbXjHlIupC+Br1xQkDmsQcWJpArZf8Z+HZS6qianr3cihiyk7EAGetOToNTloAbYIaRFwZ8CePKVciv1IC7t3qcLyaev6cjAg9olBM/Yn1Ju6UpkQsr59GVQ6pruAe0T0pRyRbmlKV1GrThSDykX0r8fnLiPOrClQjzllt5iF1LOpx1Q6ieTA9kpBAntvq/cStWElXEPMR2u7JxD9iZ442HLXEih/xsA+NrEur09xP9WuSXkpf0SIdqoKIEihEKNMUeEMMKllBYhFGqMOSKEES6ltAihUGPMESGMcCmlRQiFGmOOCGGESyktQijUGHNECCNcSmkRQqHGmCNCGOFSSosQCjXGHBHCCJdSWoRQqDHmWC6kvvkQthqPAP9/2HgEmf4UZPrTcCLzKiP0o0pbKmSr0YDbi/dgvf53Wzq9x16CiTPvvAAxFgrx1v6CuaVl2N7ZDewFp4YHYSz7OvQe6w2MDSfAMiHr9Q24Wf3FiF1ueBCc3HOPHhvlmwVbJGR7ZxtuzP4MW43HZowA4BPn3YiGL4uELHh/woK3YiwDE1J9L8OF8Q9IuWZJFgmpVO9Arf6PGZ990Rc//jCCucQiId9VbpFlYGI0w5YlQvAy98dbRk9o/k8eXm2NZd/oSGpwsiVCEESnPQTvS4YGXgtm2lGERUJuzM7Bxua/ZFwXxh1I9fWR8/USLRJye3EJltdqelzaRH1ZHCfn6idaJAS/r6pUF2BH4w79IMCzuTfh1PCQPldypEVCkNHd+6swt/SHEa6BzCtQdE4b5dCDLROCoGbmF2G1pvf3lXhDWHTGIpg7WgotFNLqKXe8lSOHL/wO63SkXyxiyywVgqeO9ybe2npzLaS+uQWPd3ab6yEnM8ebayL8l7jtBjaLhdDHec5MEcJJl1BbhBCgcaaIEE66hNqWCsGJHFcPcRl3/cBX8jix45r6i5nYLRKCV1V376/BSu2B9qohijmROQ64th7NkygWCMGlWxSB/3QebDhsnEEx+dG3mW8SEy4Eh6aZ+V+1e0TQoI895mxuBLKDJ4NCie8nWIjJ4z6m9EYGByA/mjNN04hPqJDV2gOYmf9NAwA9hEdKAoXgMHWzutDRfKGrKfyv5RMopNOVQV0ZrbjPzr3XvEQO55UwIThvzC7eC4eNZpWhgQxMnBnVjA4KS5iQTh6GC0J12PvhLmCJEKqHvTwRcgRC6SEan69yhL8oh3MILjpF+cIJPbyn4xM2ZEUpgudYIoSHK7mqCCGj40kUITxcyVVFCBkdT6II4eFKripCyOh4EkUID1dyVRFCRseTKEJ4uJKrihAyOp5EEcLDlVxVhJDR8SSKEB6u5KoihIyOJ1GE8HAlVxUhZHQ8iVEIMdzDEE/U4j2oItgUTLbNM+hMEWybh60pFdKeAjWi2zI7e4i/rNyS8U/XGe/ShhJM9zK0Uwh8odzp73U/tK04kpBnUqZAqUs6B7RQyHXlTgfuot2OHV3I0+27XR0plgkhy0BBZCEtuzh8+aBcpeDQXyu2RMgGgH+VskP0/p7SsZA9MYXU5wA9Dvh+1gf13GT26fmCzsjWhTHKA/A9AFWlzBehDlldSK8rmhxaD+mKs+2CRoqQmEkSISIkZgRi1hzpISIkZgRi1hzpITET8h/Is+yDyyHLvgAAAABJRU5ErkJggg==" width="100" height="100">
-                                        </div>
-                                    </md-card-title-media>
-                                </md-card-title>
-                                <md-card-actions layout="row" layout-align="end center">
-                                    <md-button class="md-icon-button" ng-click="load(vendorName)">
-                                        <md-icon aria-label="home" class="material-icons">home</md-icon>
-                                        <md-tooltip md-direction="top">Home</md-tooltip>
-                                    </md-button>
-                                    <md-button class="md-icon-button" ng-click="">
-                                        <md-icon  aria-label="access_time" class="material-icons">access_time</md-icon>
-                                        <md-tooltip md-direction="top">Schedule Meeting</md-tooltip>
-                                    </md-button>
-                                    <md-button class="md-icon-button" ng-click="">
-                                        <md-icon  aria-label="email" class="material-icons">email</md-icon>
-                                        <md-tooltip md-direction="top">Email</md-tooltip>
-                                    </md-button>
-                                    <md-button class="md-icon-button" ng-click="">
-                                        <md-icon  aria-label="call" class="material-icons">call</md-icon>
-                                        <md-tooltip md-direction="top">Call</md-tooltip>
-                                    </md-button>
-                                    <md-button class="md-icon-button" ng-click="">
-                                        <md-icon  aria-label="contacts" class="material-icons">contacts</md-icon>
-                                        <md-tooltip md-direction="top">Contacts</md-tooltip>
-                                    </md-button>
-                                </md-card-actions>
-                            </md-card>
-                    </md-content>
-                </md-tab>
-            </md-tabs>
-        </md-content>
-    </div>
-</script>
-<script type="text/ng-template" id="newvendor.html">
-    <md-content layout-padding>
-        <form name="newVendor" ng-submit="save()">
-            <md-input-container class="md-block" flex-gt-sm>
-                <label>Vendor name</label>
-                <input ng-model="entity.name" md-maxlength="140" required>
-                <div ng-messages="newVendor.name.$error" role="alert" multiple>
-                    <div ng-message="required" class="my-message">You must supply a Vendor Name.</div>
-                </div>
-            </md-input-container>
-            <md-input-container class="md-block" flex-gt-sm>
-                <label>Contact name</label>
-                <input ng-model="entity.contactname" md-maxlength="140" required>
-                <div ng-messages="newVendor.contactname.$error" role="alert" multiple>
-                    <div ng-message="required" class="my-message">You must supply a Vendor Contact Name.</div>
-                </div>
-            </md-input-container>
-
-            <div layout-gt-sm="row">
-                <md-input-container class="md-block" flex-gt-sm>
-                    <label>Street </label>
-                    <input ng-model="entity.addressline1">
-                </md-input-container>
-                <md-input-container class="md-block" flex-gt-sm>
-                    <input ng-model="entity.addressline2" placeholder="Apt, P.O. Box, Suite">
-                </md-input-container>
-            </div>
-            <div layout-gt-sm="row">
-                <md-input-container class="md-block" flex-gt-sm>
-                    <label>City</label>
-                    <input ng-model="entity.city" required>
-                    <div ng-messages="newVendor.city.$error" role="alert" multiple>
-                        <div ng-message="required" class="my-message">You must supply a city.</div>
-                    </div>
-                </md-input-container>
-                <md-input-container class="md-block" flex-gt-sm>
-                    <label>State</label>
-                    <md-select ng-model="entity.state" required>
-                        <md-option ng-repeat="state in states" value="{{state.abbrev}}">
-                            {{state.abbrev}}
-                        </md-option>
-                        <div ng-messages="newVendor.state.$error" role="alert" multiple>
-                            <div ng-message="required" class="my-message">You must select an state.</div>
-                        </div>
-                    </md-select>
-                </md-input-container>
-                <md-input-container class="md-block" flex-gt-sm>
-                    <label>City</label>
-                    <input ng-model="entity.country" required>
-                    <div ng-messages="newVendor.country.$error" role="alert" multiple>
-                        <div ng-message="required" class="my-message">You must supply a Country.</div>
-                    </div>
-                </md-input-container>
-            </div>
-            <div layout-gt-sm="row">
-                <md-input-container class="md-block" flex-gt-sm>
-                    <label>Postal Code</label>
-                    <input name="zipcode" ng-model="entity.zipcode"
-                           required ng-pattern="/^[0-9]{5}$/" md-maxlength="5">
-                    <div ng-messages="newVendor.zipcode.$error" role="alert" multiple>
-                        <div ng-message="required" class="my-message">You must supply a zipcode.</div>
-                        <div ng-message="pattern" class="my-message">That doesn't look like a valid zipcode.</div>
-                    </div>
-                </md-input-container>
-                <md-input-container class="md-block" flex-gt-sm>
-                    <label>Phone Number</label>
-                    <input name="phone" ng-model="entity.phone"
-                           required ng-pattern="/^[0-9]{10}$/" md-maxlength="10">
-                    <div ng-messages="newVendor.phone.$error" role="alert" multiple>
-                        <div ng-message="required" class="my-message">You must supply a Phone Number.</div>
-                        <div ng-message="pattern" class="my-message">That doesn't look like a valid Phone Number.</div>
-                    </div>
-                </md-input-container>
-                <md-input-container class="md-block" flex-gt-sm>
-                    <label>Email</label>
-                    <input type="email" name="email" ng-model="entity.email"
-                           required  md-maxlength="2000">
-                    <div ng-messages="newVendor.email.$error" role="alert" multiple>
-                        <div ng-message="required" class="my-message">You must supply a Valid Email Address. <br> Default: na@default</div>
-                    </div>
-                </md-input-container>
-            </div>
-
-            <div layout="row" layout-align="end end">
-                <md-button class="md-raised md-primary" type="submit">Save</md-button>
-                <md-button class="md-raised" ng-click="cancel()">Cancel</md-button>
-            </div>
-        </form>
-    </md-content>
-</script>
-<script type="text/ng-template" id="customers.html">
-    <md-button ng-click="load('customers')">
-        <md-icon aria-label="add_box" class="material-icons">add_box</md-icon>
-        New Customer
-    </md-button>
-    <md-button ng-click="load('customers')">
-        <md-icon aria-label="search" class="material-icons">search</md-icon>
-        Search Customer
-    </md-button>
-    <md-divider ></md-divider>
-    <div flex layout="row" layout-wrap >
-        <md-card flex="30" flex-sm="100" flex-xs="100" ng-repeat="(index,customerName) in customerNames">
-            <md-card-title>
-                <md-card-title-text>
-                    <span class="md-headline">{{customerName.name}}</span>
-                    <span class="md-subhead">Small</span>
-                </md-card-title-text>
-                <md-card-title-media>
-                    <div class="md-media-sm card-media">
-                        <!-- Guest icon by Icons8 -->
-                        <img class="icon icons8-Guest" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAKIklEQVR4Xu2dbWwUxxnH/7Nn+4xtwDbENuIlZ8cgFISKqZRQKW3tJlVjY8QdamxMWwX3Q18UqbGlqlU/1XyqWlXCrhT15UODVRWCSXOLsIGqiUKbSE0qhaRCRMi83CWAsB2wDdjG9tk71fjuzJ25883uzs4O6u7Xe+bZmf9vn3mfOQLvUUoBolRuvMzAA6LYR+AB8YAopoBi2fEixAOimAKKZceLEA+IfQXoS4EdIPgSoAUS3naA0NKMnintIX1R3f5b5Xh4bCKEtgb2gmoHAVoPQjKLn5lIlByPVMuR0/5blAdCWwIvg5AugCSjwXypDaOdnIgeMZ9QfgplgcSrJfI6CNlhXxb62ESJkkBoa+BVQOu2DyLFA0U3NKOHvBGNCvUr2JlyQGhrzesADgouZyqZKCjRVYWjFBDnYaRyoeMA6cas0UP06LhzH4A5z8oAoa01rIp61Vz2BVhTOg5KG8iJ6CcCvNl2oQQQ2hIIgmhh26Wx6kAhKK4DocFAKQpIxNzYwqryy6RjUDRa53aj7z6QluojIORlByS24JKeI8cjDRYSCkviKhC6PxAA1SLCSiPCkcuDSHeByIyOfB8Qm+dA5u4g0jUgC22HXxvjUMi6SbkfqC0DNq0ECnzA2QgwOpPbHzVCbk1IugektaYDwOHc6pi0SIVQUpCeeHaeEwo9SY5HgibfLMTcRSDVOkD2CinFchCWvoAHCqXjpC9SJiRvJp24CKSGmsxrurkZCFagGEadG4NFV4DQ/YF6UO1d00DsQDALxaXeljtAzLQfIiGYgUJxiPRd6zL90dhM4A6QlpouEPwya96dhMALhdJe0hdxcNY5c+ldAlJ9DoR8PS1LMiHwQKH0n6QvUm/zgzedXA0g39gIbFplOvNCEwxNAmdT1q7+r4G8GACqioXqa9qZBySlyvKALH4/alRZHhAPyCNVmldleVVWpnbOnSqrrfoDGOTZxQypWGVp9ENyLLLLdOfAZgLpQOjR2g4M4TA+MoC5RO5VA5IHYJcPWEM7yYErYveH5QAmFQg9VlsPJOaw7lLgPQrMGcAyQMbuzeD8p7dRvWElajZYG6tcu3EPkRv3sfPptShb5c8sSbINKfYBzwBYnZTGaCBtV87Z/PC5k8sFcnRz+gi9YD3F20MEz6zLOA5hMH73108xPRNf6fv2NwP48ra13IVjhh9dvI03/xEf8BX6ffjJd57ODIUB+c8t4IUqitmbqbqcJG2D0tZGJAPZEgXBk4uKlmykMPwEbI1i6WLSEjFZmur1JfjBS1tNAfnTiUuI3JxYTPPd5hpsqy1/1MfEbHxVUZuhmLieqst/SduggP3FfNmWDGRJhDAgeUVZ88Ai5Dd/vrBYkuefXYcXvrKer2QJq7f/fRPvfHhrMc3Pvr89e7XFrOam0oGwKZQDl6XNackFcmzzQYCwvbvxp3gjkF+0rMCs/r94dRxlK/14bmelKRhJ4/fPD2Ps/gy2PVWaux2KTQGT11PeQ9tJ22VpRxmkAmGlpMc2HwES+7A4gFgiYCdRGhDaS9ouS52Clw5kAcrRLcGFk1DFld9CQZm5RsGO2DxpZ8cuYXL47wA5Rw4MSj8K5wqQpC70TDM7GZV9oYpHQOE29BBp7Je+UpgshstA9rDq4GGbIlxcCw4pQqTplPTIUAPIu8FSTM87u1nOLJNCXxlp0F07L+JqhCy0J2f2sK9RzP4ss+I/an+SNJ6SNgjMlF33gZze3QGiid/BaAUONTpJ04DUuaul2XQfSLzaYnMbq61oKDDNXRT6Am5WV6wsrgOJV1sK9LYUiA5lgCxAOd0cBSEP57kEfvo5XVH6GWnqt34xQc4X8BsoESGJKKkHiPntpfxlXcaSNpDGfmlT7MtlWRkg8ShxpYFvJ42npM1V5fp+lAKS6AYzcWSdOewljaekzlU9dkAS7Uk3CHH2zDq7tqmpnx0aUupRLkKS6tAzjk6rKFVNpX4RygJZiJS/VP4BxU/9ECvWiPmKH9wBJq/+kXxv+EdiHIr3ojaQ3yN+bKFwDVC+I+diVlZ5Zu8CYxeB6TsAO/fxY7g2m5sL4eMBJFkK/yqgsAooqgIKcgzsGYSpIWB6CJi591AHD0iubyL77zQZIdlMGCCSD+QlloHnpgAaSwewNK0HxEEgVlx7QKyoFk+TM0KsuPaAWFHNA2JdNYdS7ur+WmuL78YrnfnXviryFYdjNe/1zW947YOOfx0X6VeUL6V6WQzC/Nzcz+emYtvnY/NsyzP2V9zDL/KvCCnvr2K1eGMkvj/Yl++byyvKv+DLy/u1SnBcBxIMB0tjlOwFoV2TdyYCo5+Npomv+YDfPnEdz/u+sAXlnfkn8NMvNsJYciFQ5dYqFBQVsIsxuwb2hXttvURAYteAMBBz8TsW2XzS4k3VE3cmkAnKmcqLqCIcN/lkEGWI+tE4vO0RGOVPlqNkTUlqCra5oas/pPcI0NaSC1eA7AkHgzS+/SfjleG3o3cwNTqZVqDiQg1vlV8wDYXB2De6HZPTRpq/ovJirA1knpKhQFQDOk+FdOnbgaQCSUQFu+wy5+bl4cFhzEykR0Ttaoq/lXxs6svbN1GHq3fTi+kv8aNyC9c+YT0PaNdD8rYFSQPSHA4yCAwG10X6xrwBBiX2IJYG4LnyGF5b8XBH/HJ0XnmwHe+P5qeZ5K/IX4Ch+TResKwaC/WHdCkrilKANIWDBzULOxRnpmYxMjgCaqRXNzw9r9QeVVJ5ommo2FIBf9GSi8040BhA++mQ7vjKouNAdoeDh0m84bb0TN+fxsjlEVM9r2w9qorNFShcWWgpH4lEHU43+I4CaQ4HhdxWbabnZaJHZQkMBToHQrpjm+kcA2K1msqmEk/Py0qPygoVJ6svR4AkGnDhW3py9bxs9qhMsTGAutMhXfh98cKBLIy8gY8JIHzj2XI9L6amgB4VNxQKfDIQ0uu4E3AaCgciqt3Ilv9sPa+l9nZ6VJzaMbOe/pBuucOS6T1CgbwYDgbyAMevDs/U81paOAE9Ki4uc0D12ZAu7F97hALZHQ4eIZI2uSV7XhSUbVxYfAghyDBHxSWuFSMK9A6EdGGb7YQBkRUdqaJl6nktN0dlRXCeNCKjRBgQp9uObMJ8fv7ztJ827dzEo6Fom0P9IV3I1iJhQHaHgxEnela5lFMBCJsdHgjpQv68UgiQpnBwhwaYm4bNpTTn7yoAYVkVNS4RAqQ5HGTh6sp5c1WAABBSbQkBsvutoE6IOydpVQFCKU4O7NNtn+AVA8Sl9oNVFcoAEdSOCAHSHGYrsu48qgBhpe8P6bb1tO3AzQZdpQhheRExHrENxKmZXd54UylCADTYXer1gPCS57NzH8hClcX+Gtul59alW2n3Ia7buk74GgVv0QyCDrtrJLYjhDeznh2fAh4QPp2kWXlApEnN9yIPCJ9O0qw8INKk5nuRB4RPJ2lWHhBpUvO9yAPCp5M0q/8BmkPskvAOynIAAAAASUVORK5CYII=" width="100" height="100">
-
-                    </div>
-                </md-card-title-media>
-            </md-card-title>
-            <md-card-actions layout="row" layout-align="end center">
-                <md-button>Action 1</md-button>
-                <md-button>Action 2</md-button>
-            </md-card-actions>
-        </md-card>
-    </div>
-</script>
-</body>
+                    </md-card-title-media>
+                </md-card-title>
+                <md-card-actions layout="row" layout-align="end center">
+                    <md-button>Action 1</md-button>
+                    <md-button>Action 2</md-button>
+                </md-card-actions>
+            </md-card>
+        </div>
+    </script>
+    <script type="text/javascript" src="/www/app.js"></script>
+    <script type="text/javascript" src="/www/services/vendor.js"></script>
+    <script type="text/javascript" src="/www/services/product.js"></script>
+    <script type="text/javascript" src="/www/controllers/vendor.js"></script>
+    <script type="text/javascript" src="/www/controllers/inventory.js"></script>
+    </body>
 </html>

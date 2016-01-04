@@ -12,9 +12,16 @@ var path = require('path');
 var vendor=require('../controllers/vendor.js');
 var vendorrouter = express.Router();
 vendorrouter.get('/vendors/',function(req,res,next){
-    vendor.get().then(function(vendors){
-        res.json({rc:0,data:vendors});
-    });
+  vendor.get().then(function(vendors){
+    res.json({rc:0,data:vendors});
+  });
+
+  //setTimeout(function() {
+  //  vendor.get().then(function(vendors){
+  //    res.json({rc:0,data:vendors});
+  //  });
+  //}, 1000);
+
 }).post('/vendor/',function(req,res,next){
     var newvendorid=0;
     vendor.create({
@@ -36,35 +43,37 @@ vendorrouter.get('/vendors/',function(req,res,next){
             }).then(function(_newvendorcontact){
               res.json({rc:0,message:'success vendor is addedd',VendorId:newvendorid});
             }).catch(function(err){
-              res.json({rc:-1, message:"errored",details:err.message});
+              vendor.destory(_newvendor).then(function(err) {
+                res.json({rc: -1, message: "Please Enter Valid Address", details: err.message});
+              });
             });
         }).catch(function(err){
           vendor.destory(_newvendorcontact).then(function(err){
             res.json({rc:-1,message:'Valid Contact Name is not provided',details:err.message});
           });
         })
-            //.addAddressBook(_newvendor,
-            //  {
-            //    addressline1:req.body['entity[addressline1]'],
-            //    addressline2:req.body['entity[addressline2]'],
-            //    street:req.body['entity[street]'],
-            //    city:req.body['entity[city]'],
-            //    country:req.body['entity[country]'],
-            //    zipcode:req.body['entity[zipcode]'],
-            //    email:req.body['entity[email]'],
-            //    phone:req.body['entity[phone]'],
-            //})
-            //.then(function(_newvendor){
-            //    res.json(_newvendor);
-            //})
-            //.catch(function(err){
-            //  console.log(err);
-            //    vendor.destory(_newvendor).then(function(err){
-            //        res.json({rc:-1,message:'valid address details are not provided',details:err});
-            //    }).catch(function(err){
-            //        res.json({rc:-1,message:'valid address details are not provided',details:err});
-            //    });
-            //});
+        //.addAddressBook(_newvendor,
+        //  {
+        //    addressline1:req.body['entity[addressline1]'],
+        //    addressline2:req.body['entity[addressline2]'],
+        //    street:req.body['entity[street]'],
+        //    city:req.body['entity[city]'],
+        //    country:req.body['entity[country]'],
+        //    zipcode:req.body['entity[zipcode]'],
+        //    email:req.body['entity[email]'],
+        //    phone:req.body['entity[phone]'],
+        //})
+        //.then(function(_newvendor){
+        //    res.json(_newvendor);
+        //})
+        //.catch(function(err){
+        //  console.log(err);
+        //    vendor.destory(_newvendor).then(function(err){
+        //        res.json({rc:-1,message:'valid address details are not provided',details:err});
+        //    }).catch(function(err){
+        //        res.json({rc:-1,message:'valid address details are not provided',details:err});
+        //    });
+        //});
     }).catch(function(err){
       res.json({rc:-1,message:'Valid Vendor Name is not provided',details:err.message});
     });
