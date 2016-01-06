@@ -3,8 +3,8 @@
  */
 app
 .service('$productservice',['$http','$rootScope',function($http,$rootScope){
-  this.get=function(){
-    return $http.get('http://localhost:3000/products');
+  this.getById=function(id){
+    return $http.get('http://localhost:3000/product/'+id+'/');
   };
   this.create=function(params){
     return $http({
@@ -25,7 +25,7 @@ app
     return $http({
       method:'PUT',
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      url:'http://localhost:3000/product/'+params.id,
+      url:'http://localhost:3000/product/'+params.id+'/',
       data:params,
       transformRequest: function(obj) {
         var str = [];
@@ -45,6 +45,9 @@ app
     'get':function(){
       return $http.get('http://localhost:3000/inventory/');
     },
+    'getByProduct':function(id){
+      return $http.get('http://localhost:3000/product/'+id+'/inventory/');
+    },
     'create':function(params){
       return $http({
         method:'POST',
@@ -63,7 +66,7 @@ app
       return $http({
         method:'PUT',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        url:'http://localhost:3000/product/'+params.id+'/inventory/',
+        url:'http://localhost:3000/product/'+params.id+'/inventory/'+params.inventoryId+'/',
         data:params,
         transformRequest: function(obj) {
           var str = [];

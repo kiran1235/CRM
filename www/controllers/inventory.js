@@ -2,24 +2,33 @@
  * Created by kiran on 12/28/15.
  */
 app
-  .config(['$stateProvider','$urlRouterProvider',function($stateProvider,$urlRouterProvider) {
-    $urlRouterProvider.otherwise("/");
-    $stateProvider
-      .state('inventory',{
-        url:'/inventory',
-        resolve: {
-          $products: ['$productservice',
-            function ($productservice) {
-              return $productservice.inventory.get();
-            }]
-        },
-        controller:'InventoryController',
-        'templateUrl':'/www/partials/inventory.html'
-      })
-  }])
   .controller('InventoryController',['$scope','$state','$mdDialog','$productservice','$products',function($scope,$state,$mdDialog,$productservice,$products){
+    _product=[];
+    _datalength=$products.data.data.length;
+    for(n=0;n<_datalength;n++){
+      _data=$products.data.data[n];
+      if(_data.Inventories.length<=0){
+        _product.push({
+          id:_data.id,
+          name:_data.name,
+          inventoryId:false
+        });
+      }else{
+        for(iv=0;iv<_data.Inventories.length;iv++){
+          _product.push({
+            id:_data.id,
+            name:_data.name,
+            inventoryId:_data.Inventories[iv].id,
+            serialnumber:_data.Inventories[iv].serialnumber,
+            unitprice:_data.Inventories[iv].unitprice,
+            instock:_data.Inventories[iv].instock,
+            restock:_data.Inventories[iv].restock,
+          });
+        }
+      }
+    }
 
-    $scope.products=$products.data;
+    $scope.products=_product;
 
     $scope.selected = {};
     $scope.query = {
@@ -35,9 +44,7 @@ app
     });
 
     $scope.getTemplate=function(product){
-      if(product.id==$scope.selected.id && product.Inventories.length<=0){
-        return 'new_product_row';
-      }else if(product.id==$scope.selected.id && product.Inventories.length>=1){
+      if(product.id==$scope.selected.id){
         return 'edit_product_row';
       }else{
         return 'display_product_row';
@@ -55,9 +62,9 @@ app
     $scope.update=function(product){
       $productservice.inventory.update(product).success(function(data){
         if(data.rc>=0){
-          angular.forEach($scope.products.data,function(product,key){
+          angular.forEach($scope.products,function(product,key){
             if(product.id==$scope.selected.id){
-              $scope.products.data[key]=angular.copy($scope.selected);
+              $scope.products[key]=angular.copy($scope.selected);
             }
           });
           $scope.cancel();
@@ -65,14 +72,12 @@ app
       });
     }
 
-
-
     $scope.addInventory=function(product){
-      $productservice.inventory.update(product).success(function(data){
+      $productservice.inventory.create(product).success(function(data){
         if(data.rc>=0){
-          angular.forEach($scope.products.data,function(product,key){
+          angular.forEach($scope.products,function(product,key){
             if(product.id==$scope.selected.id){
-              $scope.products.data[key]=angular.copy($scope.selected);
+              $scope.products[key]=angular.copy($scope.selected);
             }
           });
           $scope.cancel();

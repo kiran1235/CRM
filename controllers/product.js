@@ -20,6 +20,14 @@ var Product = {
     'getById':function(id){
         return new Promise(function(resolve,reject) {
             models.Product.findOne({
+                include:[
+                    {
+                        model: models.Inventory,
+                    },
+                    {
+                        model: models.Vendor,
+                    },
+                ],
                 where: {id: id}
             }).then(function (product) {
                 if(product.length<=0){

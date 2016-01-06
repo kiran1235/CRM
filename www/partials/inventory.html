@@ -26,64 +26,25 @@
             </tr>
             </thead>
             <tbody md-body>
-            <tr md-row md-auto-select ng-repeat="product in products.data | orderBy:'-id' " ng-include="getTemplate(product)">
-            </tr>
+                <!--<tr md-row md-auto-select  ng-repeat="product in products.data | orderBy:'-id'" ng-if="product.Inventories.length>=0"  ng-include="getTemplate(product)" >-->
+                <!--</tr>-->
+                <tr md-row md-auto-select  ng-repeat="product in products | orderBy:'-id'"  ng-include="getTemplate(product)" >
+                </tr>
             </tbody>
         </table>
     </md-table-container>
 </div>
 <script type="text/ng-template" id="display_product_row">
-    <td md-cell>{{product.name}}</td>
-    <td md-cell>{{product.serialnumber}}</td>
-    <td md-cell>{{product.unitprice | number: 0.00}}</td>
-    <td md-cell>{{product.instock | number: 0}}</td>
-    <td md-cell>{{product.restock | number: 0}}</td>
-    <td md-cell class="button-group" ">
+        <td md-cell><a ui-sref="product({productid:{{product.id}}})">{{product.name}}</a></td>
+        <td md-cell>{{product.serialnumber || "N/A"}}</td>
+        <td md-cell>{{product.unitprice|| "N/A"}}</td>
+        <td md-cell>{{product.instock || "0"}}</td>
+        <td md-cell>{{product.restock || "0"}}</td>
+        <td md-cell class="button-group" ">
         <md-button class="md-icon-button" ng-click="edit(product)">
             <md-icon aria-label="edit" class="material-icons">edit</md-icon>
         </md-button>
-    </td>
-</script>
-<script type="text/ng-template" id="new_product_row">
-    <td md-cell>
-        <md-input-container class="md-block">
-            <input aria-label="product" ng-model="selected.name" md-maxlength="140" required>
-            <div ng-messages="newProduct.name.$error" role="alert" multiple>
-                <div ng-message="required" class="my-message">You must provide Product Name.</div>
-            </div>
-        </md-input-container>
-    </td>
-    <td md-cell>
-        <md-input-container class="md-block">
-            <input aria-label="product" ng-model="selected.serialnumber" md-maxlength="10" >
-        </md-input-container>
-    </td>
-    <td md-cell>
-        <md-input-container class="md-block">
-            <input aria-label="product" ng-model="selected.unitprice" md-maxlength="10" >
-        </md-input-container>
-    </td>
-    <td md-cell>
-        <md-input-container class="md-block">
-            <input aria-label="product" ng-model="selected.instock" md-maxlength="10" >
-        </md-input-container>
-    </td>
-    <td md-cell>
-        <md-input-container class="md-block">
-            <input aria-label="product" ng-model="selected.restock" md-maxlength="10" >
-        </md-input-container>
-    </td>
-    <td md-cell class="button-group">
-        <md-button class="md-icon-button" ng-click="addInventory(selected)">
-            <md-icon aria-label="save" class="material-icons">save</md-icon>
-        </md-button>
-        <md-button class="md-icon-button" ng-click="cancel()">
-            <md-icon aria-label="cancel" class="material-icons">cancel</md-icon>
-        </md-button>
-        <md-button class="md-icon-button md-warn">
-            <md-icon aria-label="delete" class="material-icons">delete</md-icon>
-        </md-button>
-    </td>
+        </td>
 </script>
 <script type="text/ng-template" id="edit_product_row">
     <td md-cell>
@@ -96,26 +57,33 @@
     </td>
     <td md-cell>
         <md-input-container class="md-block">
-            <input aria-label="product" ng-model="selected.serialnumber" md-maxlength="10" >
+            <label>Barcode</label>
+            <input aria-label="product" ng-model="selected.serialnumber" md-maxlength="15" maxlength="15">
         </md-input-container>
     </td>
     <td md-cell>
         <md-input-container class="md-block">
-            <input aria-label="product" ng-model="selected.unitprice" md-maxlength="10" >
+            <label>UnitPrice</label>
+            <input aria-label="product" ng-model="selected.unitprice" >
         </md-input-container>
     </td>
     <td md-cell>
         <md-input-container class="md-block">
-            <input aria-label="product" ng-model="selected.instock" md-maxlength="10" >
+            <label>Instock</label>
+            <input aria-label="product" ng-model="selected.instock"  >
         </md-input-container>
     </td>
     <td md-cell>
         <md-input-container class="md-block">
-            <input aria-label="product" ng-model="selected.restock" md-maxlength="10" >
+            <label>Restock</label>
+            <input aria-label="product" ng-model="selected.restock"  >
         </md-input-container>
     </td>
     <td md-cell class="button-group">
-        <md-button class="md-icon-button" ng-click="update(selected)">
+        <md-button class="md-icon-button" ng-click="addInventory(selected)" ng-if="!selected.inventoryId">
+            <md-icon aria-label="save" class="material-icons">save</md-icon>
+        </md-button>
+        <md-button class="md-icon-button" ng-click="update(selected)" ng-if="selected.inventoryId">
             <md-icon aria-label="save" class="material-icons">save</md-icon>
         </md-button>
         <md-button class="md-icon-button" ng-click="cancel()">

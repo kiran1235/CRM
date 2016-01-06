@@ -30,7 +30,7 @@ productrouter.get('/products/',function(req,res,next){
   product.getById(req.params.id).then(function(products){
     res.json({rc:0,data:products});
   }).catch(function(err){
-    res.json({rc:-1,message:'no product found'});
+    res.json({rc:-1,message:'no product found',error:err.message});
   });
 }).delete('/product/:id',function(req,res,next){
   product.delete(req.params.id).then(function(product){
@@ -38,11 +38,9 @@ productrouter.get('/products/',function(req,res,next){
   });
 }).put('/product/:id',function(req,res,next){
   product.update(req.params.id,requestparameters.getPostParameters(req)).then(function(result){
-    product.getById(req.params.id).then(function(products){
-      res.json({rc:0,data:products,message:'product details are updated'});
-    }).catch(function(err){
-      res.json({rc:-1,message:'no product found'});
-    });
+    result=requestparameters.getPostParameters(req);
+    result['updatedAt']=new Date().toISOString();
+      res.json({rc:0,data:result,message:'product details are updated'});
   }).catch(function(err){
     console.log(err);
     res.json({rc:-1,message:'error occurred while updating product',details:err.message});
@@ -98,8 +96,18 @@ productrouter.get('/products/',function(req,res,next){
   inventory.get().then(function(inventory){
     res.json({rc:0,data:inventory});
   });
+}).get('/product/:id/inventory/',function(req,res,next){
+    var self=this;
+    inventory.get(product,
+      requestparameters.getPostParameters(req)
+    ).then(function(_new){
+      res.json({rc:0,data:_new});
+    }).catch(function(err){
+      console.log(err);
+      res.json({rc:-1,message:'few Inventory details are not provided',details:err});
+    });
 }).post('/product/:id/inventory/',function(req,res,next){
-  var self= this;
+  var self=this;
   product.getById(req.params.id).then(function(product){
     inventory.create(product,
       requestparameters.getPostParameters(req)
@@ -113,21 +121,16 @@ productrouter.get('/products/',function(req,res,next){
     res.json({rc:-1,message:'no product found'});
   });
 
-}).put('/product/:id/inventory/',function(req,res,next){
+}).put('/product/:productid/inventory/:id',function(req,res,next){
   var self= this;
-  product.getById(req.params.id).then(function(product){
-    inventory.update(product,
+    inventory.update(req.params.productid,req.params.id,
       requestparameters.getPostParameters(req)
-    ).then(function(_new){
-      res.json({rc:0,data:_new});
+    ).then(function(affectedRows){
+      res.json({rc:0,message:"Inventory updated",data:requestparameters.getPostParameters(req)});
     }).catch(function(err){
       console.log(err);
       res.json({rc:-1,message:'few Inventory details are not provided',details:err});
     });
-  }).catch(function(err){
-    res.json({rc:-1,message:'no product found'});
-  });
-
 })
 
 

@@ -9,6 +9,7 @@ var models = require('../models/index.js');
 var Inventory = {
   'create':function(product,options){
     return new Promise(function(resolve,reject) {
+      delete options['id'];
       product.createInventory(options).then(function (inventory) {
         resolve(inventory);
       }).catch(function(error){
@@ -16,16 +17,25 @@ var Inventory = {
       });
     });
   },
-  'update':function(product,options){
+  'update':function(productid,id,options){
     return new Promise(function(resolve,reject) {
-      //product.getInventories({})
-      console.log(options);
-      //product.inventories[0].updateAttributes(options).then(function (inventory) {
-      //  resolve(inventory);
-      //}).catch(function(error){
-      //  console.log(error);
-      //  reject(error);
-      //});
+      delete options['inventoryId'];
+      delete options['id'];
+      delete options['createdAt'];
+      delete options['updatedAt'];
+
+      models.Inventory
+        .update(options,{where:{id:id,ProductId:productid}})
+        .then(function(affectedrows){
+            if(affectedrows>=1){
+              resolve(affectedrows);
+            }else {
+              throw new Error("Unable to update Inventory with given details");
+            }
+          })
+        .catch(function(error){
+          reject(error);
+        });
     });
   },
   'delete':function(id){
@@ -52,10 +62,28 @@ var Inventory = {
         include:[
           {
             model: models.Inventory,
-            attributes:["id","unitprice","instock","instock"]
+            attributes:["id","unitprice","instock","instock","restock","serialnumber"]
           },
         ],
-        attributes:["id","name","serialnumber"]
+        attributes:["id","name"]
+      }).then(function (inventory) {
+        resolve(inventory);
+      }).catch(function (error) {
+        reject(error);
+      });
+    });
+  },
+  'getByProduct':function(productid,options){
+    return new Promise(function(resolve,reject) {
+      models.Product.findAll({
+        include:[
+          {
+            model: models.Inventory,
+            attributes:["id","unitprice","instock","instock","restock","serialnumber"]
+          },
+        ],
+        attributes:["id","name"],
+        where:{id:productid}
       }).then(function (inventory) {
         resolve(inventory);
       }).catch(function (error) {

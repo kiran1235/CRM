@@ -5,7 +5,7 @@
 var app=angular.module('crm',['ngMaterial','ui.router','md.data.table','angular-md5']);
 
 app
-  .run(function ($rootScope, $state, $stateParams) {
+  .run(function ($rootScope, $state, $stateParams,$http) {
     $rootScope.$state = $state;
     $rootScope.$stateParams = $stateParams;
     $rootScope.display_view_progress_bar=false;
@@ -23,41 +23,25 @@ app
   })
   //Routing, Configurations
 
-  .config(['$stateProvider','$urlRouterProvider',function($stateProvider,$urlRouterProvider){
-    $urlRouterProvider.otherwise("/");
-    $stateProvider
-      .state('customers',{
-        url:'/customers',
-        resolve:{
-          $customers:['CustomerService',
-            function(CustomerService){
-
-              return CustomerService.getCustomers();
-            }]
-        },
-        controller:'CustomersController',
-        'templateUrl':'customers.html'
-      })
-  }])
   .config(function($mdIconProvider) {
     $mdIconProvider
       .iconSet('communication', 'img/icons/sets/communication-icons.svg', 24);
   })
 
-  //Dialog
-  .factory('Dialog', ['$mdDialog', function DialogFactory ($mdDialog) {
-    return {
-      open: function (url, ctrl, locals) {
-        return $mdDialog.show({
-          templateUrl: url,
-          controller: ctrl,
-          locals: {
-            items: locals
-          }
-        });
-      },
-    }
-  }])
+  ////Dialog
+  //.factory('Dialog', ['$mdDialog', function DialogFactory ($mdDialog) {
+  //  return {
+  //    open: function (url, ctrl, locals) {
+  //      return $mdDialog.show({
+  //        templateUrl: url,
+  //        controller: ctrl,
+  //        locals: {
+  //          items: locals
+  //        }
+  //      });
+  //    },
+  //  }
+  //}])
   .controller('DialogController', ['$scope', '$mdDialog', function ($scope, $mdDialog) {
     $scope.hide = function() {
       $mdDialog.hide();
@@ -122,6 +106,67 @@ app
     $scope.load=function(path){
       $state.go(path);
     };
+  }])
+  .config(['$stateProvider','$urlRouterProvider',function($stateProvider,$urlRouterProvider){
+    $urlRouterProvider.otherwise("/");
+    $stateProvider
+      .state('customers',{
+        url:'/customers',
+        resolve:{
+          $customers:['CustomerService',
+            function(CustomerService){
+              return CustomerService.getCustomers();
+            }]
+        },
+        controller:'CustomersController',
+        'templateUrl':'customers.html'
+      })
+      .state('inventory',{
+        url:'/inventory/',
+        resolve: {
+          $products: ['$productservice',
+            function ($productservice) {
+              return $productservice.inventory.get();
+            }]
+        },
+        controller:'InventoryController',
+        'templateUrl':'/www/partials/inventory.html'
+      })
+      .state('vendors',{
+        name:'vendors',
+        url:'/vendors/',
+        resolve: {
+          $vendor: ['$vendorservice',
+            function ($vendorservice) {
+              return $vendorservice.getVendors();
+            }]
+        },
+        templateUrl:'/www/partials/vendors.html',
+        controller: 'VendorsController'
+      })
+      .state('vendor',{
+        name:'vendor',
+        url:'/vendors/@{vendorid:[0-9]+}.html',
+        resolve:{
+          $vendor:['$stateParams','$vendorservice',
+            function($stateParams,$vendorservice){
+              return $vendorservice.getVendor($stateParams.vendorid);
+            }]
+        },
+        templateUrl:'/www/partials/vendors.id.html',
+        controller:'VendorController'
+      })
+      .state('product',{
+        url:'/product/@{productid:[0-9]+}.html',
+        resolve: {
+          $product: ['$stateParams','$productservice',
+            function ($stateParams,$productservice) {
+              return $productservice.getById($stateParams.productid);
+            }]
+        },
+        controller:'ProductController',
+        'templateUrl':'/www/partials/product.id.html'
+      })
   }])
 
 ;

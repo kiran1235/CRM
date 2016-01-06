@@ -2,34 +2,6 @@
  * Created by kiran on 12/28/15.
  */
 app
-  .config(['$stateProvider','$urlRouterProvider',function($stateProvider,$urlRouterProvider){
-    $urlRouterProvider.otherwise("/");
-    $stateProvider
-      .state('vendors',{
-        name:'vendors',
-        url:'/vendors/',
-        resolve: {
-          $vendor: ['$vendorservice',
-            function ($vendorservice) {
-              return $vendorservice.getVendors();
-            }]
-        },
-        templateUrl:'/www/partials/vendors.html',
-        controller: 'VendorsController'
-      })
-      .state('vendor',{
-        name:'vendor',
-        url:'/vendors/@{vendorid:[0-9]+}.html',
-        resolve:{
-          $vendor:['$stateParams','$vendorservice',
-            function($stateParams,$vendorservice){
-              return $vendorservice.getVendor($stateParams.vendorid);
-            }]
-        },
-        templateUrl:'/www/partials/vendors.id.html',
-        controller:'VendorController'
-      })
-  }])
   .controller('VendorsController',['$scope','$state','$mdDialog','$vendor',
     function($scope,$state,$mdDialog,$vendors) {
 
