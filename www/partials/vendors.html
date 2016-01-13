@@ -1,4 +1,4 @@
-<md-button ng-click="showNewForm()">
+<md-button ng-click="showNewVendorDialog()">
     <md-icon aria-label="add_box" class="material-icons">add_box</md-icon>
     New Vendors
 </md-button>
@@ -8,153 +8,12 @@
 </md-button>
 <md-divider ></md-divider>
 <div flex layout="row" layout-wrap >
-
-    <a class="card-button md-whiteframe-1dp md-ink-ripple" flex="30" ng-repeat="(index,vendorName) in vendorNames | orderBy: '-id'" layout="row"  layout-margin ui-sref="vendor({vendorid:{{vendorName.id}}})">
+    <a class="card-button md-whiteframe-1dp md-ink-ripple" flex="30" ng-repeat="(index,vendor) in vendors | orderBy: '-id'" layout="row"  layout-margin ui-sref="vendor({vendorid:{{vendor.id}}})">
         <span flex="20">
             <img class="icon icons8-Shop" src="data:image/png;base64,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" width="64" height="64">
         </span>
         <span flex>
-            {{vendorName.name}}
+            {{vendor.name}}
         </span>
     </a>
-
-    <!--<md-card flex="30" flex-sm="100" flex-xs="100" ng-repeat="(index,vendorName) in vendorNames | orderBy: '-id'">-->
-        <!--<md-card-title>-->
-            <!--<md-card-title-text>-->
-                <!--<span class="md-headline">{{vendorName.name}}</span>-->
-                <!--&lt;!&ndash;<div ng-repeat="(index,vendoraddressbook) in vendorName.VendorAddressBooks">&ndash;&gt;-->
-                <!--&lt;!&ndash;<div ng-if="vendoraddressbook.isprimary == 1">&ndash;&gt;-->
-                <!--&lt;!&ndash;<span class="md-subhead">&ndash;&gt;-->
-                <!--&lt;!&ndash;{{vendoraddressbook.addressline1}}<br>&ndash;&gt;-->
-                <!--&lt;!&ndash;{{vendoraddressbook.addressline2}}<br>&ndash;&gt;-->
-                <!--&lt;!&ndash;{{vendoraddressbook.street}}&ndash;&gt;-->
-                <!--&lt;!&ndash;{{vendoraddressbook.city}}&ndash;&gt;-->
-                <!--&lt;!&ndash;{{vendoraddressbook.country}}&ndash;&gt;-->
-                <!--&lt;!&ndash;{{vendoraddressbook.zipcode}}&ndash;&gt;-->
-                <!--&lt;!&ndash;</span>&ndash;&gt;-->
-
-                <!--&lt;!&ndash;</div>&ndash;&gt;-->
-                <!--&lt;!&ndash;</div>&ndash;&gt;-->
-            <!--</md-card-title-text>-->
-            <!--<md-card-title-media>-->
-                <!--<div class="md-media-sm card-media">-->
-                    <!--&lt;!&ndash; Shop icon by Icons8 &ndash;&gt;-->
-                    <!--<img class="icon icons8-Shop" src="data:image/png;base64,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" width="100" height="100">                    </div>-->
-            <!--</md-card-title-media>-->
-        <!--</md-card-title>-->
-        <!--&lt;!&ndash;ui-sref="vendors.id({vendorid:{{vendorName.id}}})&ndash;&gt;-->
-        <!--&lt;!&ndash;ng-click="load(vendorName)"&ndash;&gt;-->
-        <!--<md-card-actions layout="row" layout-align="end center">-->
-            <!--<md-button class="md-icon-button" ui-sref="vendor({vendorid:{{vendorName.id}}})" >-->
-                <!--<md-icon aria-label="home" class="material-icons">home</md-icon>-->
-                <!--<md-tooltip md-direction="top">Home</md-tooltip>-->
-            <!--</md-button>-->
-            <!--<md-button class="md-icon-button" ng-click="">-->
-                <!--<md-icon  aria-label="access_time" class="material-icons">access_time</md-icon>-->
-                <!--<md-tooltip md-direction="top">Schedule Meeting</md-tooltip>-->
-            <!--</md-button>-->
-            <!--<md-button class="md-icon-button" ng-click="">-->
-                <!--<md-icon  aria-label="email" class="material-icons">email</md-icon>-->
-                <!--<md-tooltip md-direction="top">Email</md-tooltip>-->
-            <!--</md-button>-->
-            <!--<md-button class="md-icon-button" ng-click="">-->
-                <!--<md-icon  aria-label="call" class="material-icons">call</md-icon>-->
-                <!--<md-tooltip md-direction="top">Call</md-tooltip>-->
-            <!--</md-button>-->
-            <!--<md-button class="md-icon-button" ng-click="">-->
-                <!--<md-icon  aria-label="contacts" class="material-icons">contacts</md-icon>-->
-                <!--<md-tooltip md-direction="top">Contacts</md-tooltip>-->
-            <!--</md-button>-->
-        <!--</md-card-actions>-->
-    <!--</md-card>-->
 </div>
-
-<script type="text/ng-template" id="newvendor.html">
-    <md-content layout-padding>
-        <form name="newVendor" ng-submit="save()">
-            <md-input-container class="md-block" flex-gt-sm>
-                <label>Vendor name</label>
-                <input ng-model="entity.name" md-maxlength="140" required>
-                <div ng-messages="newVendor.name.$error" role="alert" multiple>
-                    <div ng-message="required" class="my-message">You must supply a Vendor Name.</div>
-                </div>
-            </md-input-container>
-            <md-input-container class="md-block" flex-gt-sm>
-                <label>Contact name</label>
-                <input ng-model="entity.contactname" md-maxlength="140" required>
-                <div ng-messages="newVendor.contactname.$error" role="alert" multiple>
-                    <div ng-message="required" class="my-message">You must supply a Vendor Contact Name.</div>
-                </div>
-            </md-input-container>
-            <div layout-gt-sm="row">
-                <md-input-container class="md-block" flex-gt-sm>
-                    <label>Street </label>
-                    <input ng-model="entity.addressline1">
-                </md-input-container>
-                <md-input-container class="md-block" flex-gt-sm>
-                    <input ng-model="entity.addressline2" placeholder="Apt, P.O. Box, Suite">
-                </md-input-container>
-            </div>
-            <div layout-gt-sm="row">
-                <md-input-container class="md-block" flex-gt-sm>
-                    <label>City</label>
-                    <input ng-model="entity.city" required>
-                    <div ng-messages="newVendor.city.$error" role="alert" multiple>
-                        <div ng-message="required" class="my-message">You must supply a city.</div>
-                    </div>
-                </md-input-container>
-                <md-input-container class="md-block" flex-gt-sm>
-                    <label>State</label>
-                    <md-select ng-model="entity.state" required>
-                        <md-option ng-repeat="state in states" value="{{state.abbrev}}">
-                            {{state.abbrev}}
-                        </md-option>
-                        <div ng-messages="newVendor.state.$error" role="alert" multiple>
-                            <div ng-message="required" class="my-message">You must select an state.</div>
-                        </div>
-                    </md-select>
-                </md-input-container>
-                <md-input-container class="md-block" flex-gt-sm>
-                    <label>City</label>
-                    <input ng-model="entity.country" required>
-                    <div ng-messages="newVendor.country.$error" role="alert" multiple>
-                        <div ng-message="required" class="my-message">You must supply a Country.</div>
-                    </div>
-                </md-input-container>
-            </div>
-            <div layout-gt-sm="row">
-                <md-input-container class="md-block" flex-gt-sm>
-                    <label>Postal Code</label>
-                    <input name="zipcode" ng-model="entity.zipcode"
-                           required ng-pattern="/^[0-9]{5}$/" md-maxlength="5">
-                    <div ng-messages="newVendor.zipcode.$error" role="alert" multiple>
-                        <div ng-message="required" class="my-message">You must supply a zipcode.</div>
-                        <div ng-message="pattern" class="my-message">That doesn't look like a valid zipcode.</div>
-                    </div>
-                </md-input-container>
-                <md-input-container class="md-block" flex-gt-sm>
-                    <label>Phone Number</label>
-                    <input name="phone" ng-model="entity.phone"
-                           required ng-pattern="/^[0-9]{10}$/" md-maxlength="10">
-                    <div ng-messages="newVendor.phone.$error" role="alert" multiple>
-                        <div ng-message="required" class="my-message">You must supply a Phone Number.</div>
-                        <div ng-message="pattern" class="my-message">That doesn't look like a valid Phone Number.</div>
-                    </div>
-                </md-input-container>
-                <md-input-container class="md-block" flex-gt-sm>
-                    <label>Email</label>
-                    <input type="email" name="email" ng-model="entity.email"
-                           required  md-maxlength="2000">
-                    <div ng-messages="newVendor.email.$error" role="alert" multiple>
-                        <div ng-message="required" class="my-message">You must supply a Valid Email Address. <br> Default: na@default</div>
-                    </div>
-                </md-input-container>
-            </div>
-
-            <div layout="row" layout-align="end end">
-                <md-button class="md-raised md-primary" type="submit">Save</md-button>
-                <md-button class="md-raised" ng-click="cancel()">Cancel</md-button>
-            </div>
-        </form>
-    </md-content>
-</script>

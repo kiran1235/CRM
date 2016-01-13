@@ -1,222 +1,117 @@
-<div flex layout="column" style="height:600px" ng-cloak>
-    <md-toolbar>
-        <div class="md-toolbar-tools">
-            <h3>
-                <span>{{vendor.name}}</span>
-            </h3>
-            <span flex></span>
-            <md-button class="md-icon-button" aria-label="Call">
-                <md-icon  aria-label="call" class="material-icons" style="color: greenyellow;">call</md-icon>
-            </md-button>
-            <md-button class="md-icon-button" aria-label="Meeting">
-                <md-icon  aria-label="access_time" class="material-icons">access_time</md-icon>
-            </md-button>
-            <md-button class="md-icon-button" aria-label="Email">
-                <md-icon  aria-label="email" class="material-icons">email</md-icon>
+<div class="md-toolbar-tools">
+    <span>
+        <div style="font-size:10pt;color:rgba(0, 0, 0, 0.57)">Vendor Name</div>
+        <h3>
+            <span>{{vendor.name}}</span>
+        </h3>
+    </span>
+    <span flex></span>
+    <md-button class="md-icon-button" aria-label="Call">
+        <md-icon  aria-label="call" class="material-icons" style="">call</md-icon>
+        <md-tooltip md-direction="bottom">
+            Call: {{vendor.primary.phone}}
+        </md-tooltip>
+    </md-button>
+    <md-button class="md-icon-button" aria-label="Email">
+        <md-icon  aria-label="email" class="material-icons">email</md-icon>
+        <md-tooltip md-direction="bottom">
+            Email: {{vendor.primary.email}}
+        </md-tooltip>
+    </md-button>
+</div>
+<md-divider ></md-divider>
+<md-content layout-padding>
+    <div ng-if="!detailineditmode">
+        <div layout-gt-sm="row">
+            <md-input-container class="md-block" flex="90">
+                <label>Primary Contact name</label>
+                <input ng-model="vendor.primary.ContactName" readonly>
+            </md-input-container>
+            <md-button ng-click="edit(vendor)">
+                <md-icon aria-label="edit" class="material-icons">edit</md-icon> Edit
             </md-button>
         </div>
-    </md-toolbar>
-    <md-content>
-        <md-tabs md-dynamic-height  md-border-bottom>
-            <md-tab label="Contacts" >
-                <md-toolbar class="md-warn crm-toolbar-notify" ng-if="vendor.VendorContacts.length <= 0">
-                    <div class="md-toolbar-tools">
-                        <h2 class="md-flex">Note: No Contacts are added to this vendor</h2>
-                    </div>
-                </md-toolbar>
-                <!--VendorContacts-->
-                <a class="card-button md-whiteframe-1dp md-ink-ripple" flex="30" ng-repeat="(index,contact) in vendor.VendorContacts | orderBy: '-id'" layout="row"  layout-margin ui-sref="vendor({vendorid:{{vendor.id}}})">
-                    <span flex="20">
-                        <!-- Business Contact icon by Icons8 -->
-                        <img class="icon icons8-Business-Contact" src="data:image/png;base64,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" width="64" height="64">
-                    </span>
-                    <span flex>
-                        {{contact.name}}
-                    </span>
-                </a>
-                <!--<md-content flex layout="row" layout-wrap ng-if="vendor.VendorContacts.length > 0">-->
-                    <!--<md-card flex="30" flex-sm="100" flex-xs="100" ng-repeat="(index,contact) in vendor.VendorContacts">-->
-                        <!--<md-card-title>-->
-                            <!--<md-card-title-text>-->
-                                <!--<span class="md-headline">{{contact.name}}</span>-->
-                                <!--&lt;!&ndash;<div ng-repeat="(index,vendoraddressbook) in vendorName.VendorAddressBooks">&ndash;&gt;-->
-                                <!--&lt;!&ndash;<div ng-if="vendoraddressbook.isprimary == 1">&ndash;&gt;-->
-                                <!--&lt;!&ndash;<span class="md-subhead">&ndash;&gt;-->
-                                <!--&lt;!&ndash;{{vendoraddressbook.addressline1}}<br>&ndash;&gt;-->
-                                <!--&lt;!&ndash;{{vendoraddressbook.addressline2}}<br>&ndash;&gt;-->
-                                <!--&lt;!&ndash;{{vendoraddressbook.street}}&ndash;&gt;-->
-                                <!--&lt;!&ndash;{{vendoraddressbook.city}}&ndash;&gt;-->
-                                <!--&lt;!&ndash;{{vendoraddressbook.country}}&ndash;&gt;-->
-                                <!--&lt;!&ndash;{{vendoraddressbook.zipcode}}&ndash;&gt;-->
-                                <!--&lt;!&ndash;</span>&ndash;&gt;-->
-
-                                <!--&lt;!&ndash;</div>&ndash;&gt;-->
-                                <!--&lt;!&ndash;</div>&ndash;&gt;-->
-                            <!--</md-card-title-text>-->
-                            <!--<md-card-title-media>-->
-                                <!--<div class="md-media-sm card-media">-->
-                                    <!--&lt;!&ndash; Business Contact icon by Icons8 &ndash;&gt;-->
-                                    <!--<img class="icon icons8-Business-Contact" src="data:image/png;base64,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" width="100" height="100">-->
-                                <!--</div>-->
-                            <!--</md-card-title-media>-->
-                        <!--</md-card-title>-->
-                        <!--<md-card-actions layout="row" layout-align="end center">-->
-                            <!--<md-button class="md-icon-button" ng-click="load(vendorName)">-->
-                                <!--<md-icon aria-label="home" class="material-icons">home</md-icon>-->
-                                <!--<md-tooltip md-direction="top">Home</md-tooltip>-->
-                            <!--</md-button>-->
-                            <!--<md-button class="md-icon-button" ng-click="">-->
-                                <!--<md-icon  aria-label="access_time" class="material-icons">access_time</md-icon>-->
-                                <!--<md-tooltip md-direction="top">Schedule Meeting</md-tooltip>-->
-                            <!--</md-button>-->
-                            <!--<md-button class="md-icon-button" ng-click="">-->
-                                <!--<md-icon  aria-label="email" class="material-icons">email</md-icon>-->
-                                <!--<md-tooltip md-direction="top">Email</md-tooltip>-->
-                            <!--</md-button>-->
-                            <!--<md-button class="md-icon-button" ng-click="">-->
-                                <!--<md-icon  aria-label="call" class="material-icons">call</md-icon>-->
-                                <!--<md-tooltip md-direction="top">Call</md-tooltip>-->
-                            <!--</md-button>-->
-                            <!--<md-button class="md-icon-button" ng-click="">-->
-                                <!--<md-icon  aria-label="contacts" class="material-icons">contacts</md-icon>-->
-                                <!--<md-tooltip md-direction="top">Contacts</md-tooltip>-->
-                            <!--</md-button>-->
-                        <!--</md-card-actions>-->
-                    <!--</md-card>-->
-                <!--</md-content>-->
-            </md-tab>
-            <md-tab label="Address Book">
-                <md-toolbar class="md-warn crm-toolbar-notify" ng-if="isAddressExists<= 0">
-                    <div class="md-toolbar-tools">
-                        <h2 class="md-flex">Note: No Adddress are added to this vendor</h2>
-                    </div>
-                </md-toolbar>
-                <md-content flex layout="row" layout-wrap ng-if="vendor.VendorAddressBooks.length > 0">
-                    <a class="card-button md-whiteframe-1dp md-ink-ripple" flex="30" ng-repeat="(index,vendoraddressbook) in vendor.VendorAddressBooks | orderBy: '-id'" layout="row"  layout-margin ui-sref="vendor({vendorid:{{vendor.id}}})">
-                        <span flex="20">
-                            <!-- Business Contact icon by Icons8 -->
-                            <img class="icon icons8-Business-Contact" src="data:image/png;base64,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" width="64" height="64">
-                        </span>
-                        <span flex>
-                            {{vendor.name}}
-                            {{vendoraddressbook.addressline1}}<br>
-                            {{vendoraddressbook.addressline2}}<br>
-                            {{vendoraddressbook.street}}
-                            {{vendoraddressbook.city}}
-                            {{vendoraddressbook.country}}
-                            {{vendoraddressbook.zipcode}}
-                        </span>
-                    </a>
-                    <!--<md-card  flex="30" flex-sm="100" flex-xs="100" ng-repeat="(index,vendoraddressbook) in vendor.VendorAddressBooks">-->
-                        <!--<md-card-title>-->
-                            <!--<md-card-title-text>-->
-                                <!--<span class="md-headline">{{vendor.name}}</span>-->
-                            <!--<span class="md-subhead">-->
-                            <!--{{vendoraddressbook.addressline1}}<br>-->
-                            <!--{{vendoraddressbook.addressline2}}<br>-->
-                            <!--{{vendoraddressbook.street}}-->
-                            <!--{{vendoraddressbook.city}}-->
-                            <!--{{vendoraddressbook.country}}-->
-                            <!--{{vendoraddressbook.zipcode}}-->
-                            <!--</span>-->
-                            <!--</md-card-title-text>-->
-                            <!--<md-card-title-media>-->
-                                <!--<div class="md-media-sm card-media">-->
-                                    <!--&lt;!&ndash; Address Book icon by Icons8 &ndash;&gt;-->
-                                    <!--<img class="icon icons8-Address-Book" src="data:image/png;base64,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" width="100" height="100">-->
-                                <!--</div>-->
-                            <!--</md-card-title-media>-->
-                        <!--</md-card-title>-->
-                        <!--<md-card-actions layout="row" layout-align="end center">-->
-                            <!--<md-button class="md-icon-button" ng-click="">-->
-                                <!--<md-icon aria-label="home" class="material-icons">home</md-icon>-->
-                                <!--<md-tooltip md-direction="top">Home</md-tooltip>-->
-                            <!--</md-button>-->
-                            <!--<md-button class="md-icon-button" ng-click="">-->
-                                <!--<md-icon  aria-label="access_time" class="material-icons">access_time</md-icon>-->
-                                <!--<md-tooltip md-direction="top">Schedule Meeting</md-tooltip>-->
-                            <!--</md-button>-->
-                            <!--<md-button class="md-icon-button" ng-click="">-->
-                                <!--<md-icon  aria-label="email" class="material-icons">email</md-icon>-->
-                                <!--<md-tooltip md-direction="top">Email</md-tooltip>-->
-                            <!--</md-button>-->
-                            <!--<md-button class="md-icon-button" ng-click="">-->
-                                <!--<md-icon  aria-label="call" class="material-icons">call</md-icon>-->
-                                <!--<md-tooltip md-direction="top">Call</md-tooltip>-->
-                            <!--</md-button>-->
-                            <!--<md-button class="md-icon-button" ng-click="">-->
-                                <!--<md-icon  aria-label="contacts" class="material-icons">contacts</md-icon>-->
-                                <!--<md-tooltip md-direction="top">Contacts</md-tooltip>-->
-                            <!--</md-button>-->
-                        <!--</md-card-actions>-->
-                    <!--</md-card>-->
-                </md-content>
-                <md-content flex layout="row" layout-wrap ng-repeat="(index,contact) in vendor.VendorContacts" ng-if="contact.VendorContactAddressBooks.length > 0">
-                    <a class="card-button md-whiteframe-1dp md-ink-ripple" flex="30" ng-repeat="(index,contactaddressbook) in contact.VendorContactAddressBooks | orderBy: '-id'" layout="row"  layout-margin ui-sref="vendor({vendorid:{{vendor.id}}})">
-                        <span flex="20">
-                            <!-- Contacts icon by Icons8 -->
-                            <img class="icon icons8-Contacts" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAFg0lEQVR4Xu2dQW8bRRSA34QGRXYoFkqrKARikItCWtQFahOlSBiJUy8FiXvbf1B+AfALsv+g6Z0DXLhUsd1LVKmRcEQaAo3KBpooIlblQBrcJumi59ZRGpzszPO+7XrnWap68HtvZ7/PM7Pr2XgUyCtWBFSsWiONARESsw+BCBEhMSMQs+ZIDxEhMSMQs+ZID0mqkNK51EXV0+OA72cBVHb/eRbPfxSz0w6rOb4HAB4ov6omyz+EUbXjHlIupC+Br1xQkDmsQcWJpArZf8Z+HZS6qianr3cihiyk7EAGetOToNTloAbYIaRFwZ8CePKVciv1IC7t3qcLyaev6cjAg9olBM/Yn1Ju6UpkQsr59GVQ6pruAe0T0pRyRbmlKV1GrThSDykX0r8fnLiPOrClQjzllt5iF1LOpx1Q6ieTA9kpBAntvq/cStWElXEPMR2u7JxD9iZ442HLXEih/xsA+NrEur09xP9WuSXkpf0SIdqoKIEihEKNMUeEMMKllBYhFGqMOSKEES6ltAihUGPMESGMcCmlRQiFGmOOCGGESyktQijUGHNECCNcSmkRQqHGmCNCGOFSSosQCjXGHBHCCJdSWoRQqDHmWC6kvvkQthqPAP9/2HgEmf4UZPrTcCLzKiP0o0pbKmSr0YDbi/dgvf53Wzq9x16CiTPvvAAxFgrx1v6CuaVl2N7ZDewFp4YHYSz7OvQe6w2MDSfAMiHr9Q24Wf3FiF1ueBCc3HOPHhvlmwVbJGR7ZxtuzP4MW43HZowA4BPn3YiGL4uELHh/woK3YiwDE1J9L8OF8Q9IuWZJFgmpVO9Arf6PGZ990Rc//jCCucQiId9VbpFlYGI0w5YlQvAy98dbRk9o/k8eXm2NZd/oSGpwsiVCEESnPQTvS4YGXgtm2lGERUJuzM7Bxua/ZFwXxh1I9fWR8/USLRJye3EJltdqelzaRH1ZHCfn6idaJAS/r6pUF2BH4w79IMCzuTfh1PCQPldypEVCkNHd+6swt/SHEa6BzCtQdE4b5dCDLROCoGbmF2G1pvf3lXhDWHTGIpg7WgotFNLqKXe8lSOHL/wO63SkXyxiyywVgqeO9ybe2npzLaS+uQWPd3ab6yEnM8ebayL8l7jtBjaLhdDHec5MEcJJl1BbhBCgcaaIEE66hNqWCsGJHFcPcRl3/cBX8jix45r6i5nYLRKCV1V376/BSu2B9qohijmROQ64th7NkygWCMGlWxSB/3QebDhsnEEx+dG3mW8SEy4Eh6aZ+V+1e0TQoI895mxuBLKDJ4NCie8nWIjJ4z6m9EYGByA/mjNN04hPqJDV2gOYmf9NAwA9hEdKAoXgMHWzutDRfKGrKfyv5RMopNOVQV0ZrbjPzr3XvEQO55UwIThvzC7eC4eNZpWhgQxMnBnVjA4KS5iQTh6GC0J12PvhLmCJEKqHvTwRcgRC6SEan69yhL8oh3MILjpF+cIJPbyn4xM2ZEUpgudYIoSHK7mqCCGj40kUITxcyVVFCBkdT6II4eFKripCyOh4EkUID1dyVRFCRseTKEJ4uJKrihAyOp5EEcLDlVxVhJDR8SSKEB6u5KoihIyOJ1GE8HAlVxUhZHQ8iVEIMdzDEE/U4j2oItgUTLbNM+hMEWybh60pFdKeAjWi2zI7e4i/rNyS8U/XGe/ShhJM9zK0Uwh8odzp73U/tK04kpBnUqZAqUs6B7RQyHXlTgfuot2OHV3I0+27XR0plgkhy0BBZCEtuzh8+aBcpeDQXyu2RMgGgH+VskP0/p7SsZA9MYXU5wA9Dvh+1gf13GT26fmCzsjWhTHKA/A9AFWlzBehDlldSK8rmhxaD+mKs+2CRoqQmEkSISIkZgRi1hzpISIkZgRi1hzpITET8h/Is+yDyyHLvgAAAABJRU5ErkJggg==" width="64" height="64">
-                        </span>
-                        <span flex>
-                            <b>{{contact.name}}</b>
-                            <ul>
-                                <li>
-                                    {{contactaddressbook.addressline1}}
-                                    {{contactaddressbook.addressline2}}
-                                </li>
-                                <li>
-                                    {{contactaddressbook.city}},
-                                    {{contactaddressbook.country}},
-                                    {{contactaddressbook.zipcode}}
-                                </li>
-                            </ul>
-                        </span>
-                    </a>
-                    <!--<md-card flex="30" flex-sm="100" flex-xs="100" ng-repeat="(index,contactaddressbook) in contact.VendorContactAddressBooks">-->
-                        <!--<md-card-title>-->
-                            <!--<md-card-title-text>-->
-                                <!--<span class="md-headline">{{contact.name}}</span>-->
-                                        <!--<span class="md-subhead">-->
-                                        <!--{{contactaddressbook.addressline1}}<br>-->
-                                        <!--{{contactaddressbook.addressline2}}<br>-->
-                                        <!--{{contactaddressbook.street}}-->
-                                        <!--{{contactaddressbook.city}}-->
-                                        <!--{{contactaddressbook.country}}-->
-                                        <!--{{contactaddressbook.zipcode}}-->
-                                        <!--</span>-->
-                            <!--</md-card-title-text>-->
-                            <!--<md-card-title-media>-->
-                                <!--<div class="md-media-sm card-media">-->
-                                    <!--&lt;!&ndash; Contacts icon by Icons8 &ndash;&gt;-->
-                                    <!--<img class="icon icons8-Contacts" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAFg0lEQVR4Xu2dQW8bRRSA34QGRXYoFkqrKARikItCWtQFahOlSBiJUy8FiXvbf1B+AfALsv+g6Z0DXLhUsd1LVKmRcEQaAo3KBpooIlblQBrcJumi59ZRGpzszPO+7XrnWap68HtvZ7/PM7Pr2XgUyCtWBFSsWiONARESsw+BCBEhMSMQs+ZIDxEhMSMQs+ZID0mqkNK51EXV0+OA72cBVHb/eRbPfxSz0w6rOb4HAB4ov6omyz+EUbXjHlIupC+Br1xQkDmsQcWJpArZf8Z+HZS6qianr3cihiyk7EAGetOToNTloAbYIaRFwZ8CePKVciv1IC7t3qcLyaev6cjAg9olBM/Yn1Ju6UpkQsr59GVQ6pruAe0T0pRyRbmlKV1GrThSDykX0r8fnLiPOrClQjzllt5iF1LOpx1Q6ieTA9kpBAntvq/cStWElXEPMR2u7JxD9iZ442HLXEih/xsA+NrEur09xP9WuSXkpf0SIdqoKIEihEKNMUeEMMKllBYhFGqMOSKEES6ltAihUGPMESGMcCmlRQiFGmOOCGGESyktQijUGHNECCNcSmkRQqHGmCNCGOFSSosQCjXGHBHCCJdSWoRQqDHmWC6kvvkQthqPAP9/2HgEmf4UZPrTcCLzKiP0o0pbKmSr0YDbi/dgvf53Wzq9x16CiTPvvAAxFgrx1v6CuaVl2N7ZDewFp4YHYSz7OvQe6w2MDSfAMiHr9Q24Wf3FiF1ueBCc3HOPHhvlmwVbJGR7ZxtuzP4MW43HZowA4BPn3YiGL4uELHh/woK3YiwDE1J9L8OF8Q9IuWZJFgmpVO9Arf6PGZ990Rc//jCCucQiId9VbpFlYGI0w5YlQvAy98dbRk9o/k8eXm2NZd/oSGpwsiVCEESnPQTvS4YGXgtm2lGERUJuzM7Bxua/ZFwXxh1I9fWR8/USLRJye3EJltdqelzaRH1ZHCfn6idaJAS/r6pUF2BH4w79IMCzuTfh1PCQPldypEVCkNHd+6swt/SHEa6BzCtQdE4b5dCDLROCoGbmF2G1pvf3lXhDWHTGIpg7WgotFNLqKXe8lSOHL/wO63SkXyxiyywVgqeO9ybe2npzLaS+uQWPd3ab6yEnM8ebayL8l7jtBjaLhdDHec5MEcJJl1BbhBCgcaaIEE66hNqWCsGJHFcPcRl3/cBX8jix45r6i5nYLRKCV1V376/BSu2B9qohijmROQ64th7NkygWCMGlWxSB/3QebDhsnEEx+dG3mW8SEy4Eh6aZ+V+1e0TQoI895mxuBLKDJ4NCie8nWIjJ4z6m9EYGByA/mjNN04hPqJDV2gOYmf9NAwA9hEdKAoXgMHWzutDRfKGrKfyv5RMopNOVQV0ZrbjPzr3XvEQO55UwIThvzC7eC4eNZpWhgQxMnBnVjA4KS5iQTh6GC0J12PvhLmCJEKqHvTwRcgRC6SEan69yhL8oh3MILjpF+cIJPbyn4xM2ZEUpgudYIoSHK7mqCCGj40kUITxcyVVFCBkdT6II4eFKripCyOh4EkUID1dyVRFCRseTKEJ4uJKrihAyOp5EEcLDlVxVhJDR8SSKEB6u5KoihIyOJ1GE8HAlVxUhZHQ8iVEIMdzDEE/U4j2oItgUTLbNM+hMEWybh60pFdKeAjWi2zI7e4i/rNyS8U/XGe/ShhJM9zK0Uwh8odzp73U/tK04kpBnUqZAqUs6B7RQyHXlTgfuot2OHV3I0+27XR0plgkhy0BBZCEtuzh8+aBcpeDQXyu2RMgGgH+VskP0/p7SsZA9MYXU5wA9Dvh+1gf13GT26fmCzsjWhTHKA/A9AFWlzBehDlldSK8rmhxaD+mKs+2CRoqQmEkSISIkZgRi1hzpISIkZgRi1hzpITET8h/Is+yDyyHLvgAAAABJRU5ErkJggg==" width="100" height="100">-->
-                                <!--</div>-->
-                            <!--</md-card-title-media>-->
-                        <!--</md-card-title>-->
-                        <!--<md-card-actions layout="row" layout-align="end center">-->
-                            <!--<md-button class="md-icon-button" ng-click="load(vendorName)">-->
-                                <!--<md-icon aria-label="home" class="material-icons">home</md-icon>-->
-                                <!--<md-tooltip md-direction="top">Home</md-tooltip>-->
-                            <!--</md-button>-->
-                            <!--<md-button class="md-icon-button" ng-click="">-->
-                                <!--<md-icon  aria-label="access_time" class="material-icons">access_time</md-icon>-->
-                                <!--<md-tooltip md-direction="top">Schedule Meeting</md-tooltip>-->
-                            <!--</md-button>-->
-                            <!--<md-button class="md-icon-button" ng-click="">-->
-                                <!--<md-icon  aria-label="email" class="material-icons">email</md-icon>-->
-                                <!--<md-tooltip md-direction="top">Email</md-tooltip>-->
-                            <!--</md-button>-->
-                            <!--<md-button class="md-icon-button" ng-click="">-->
-                                <!--<md-icon  aria-label="call" class="material-icons">call</md-icon>-->
-                                <!--<md-tooltip md-direction="top">Call</md-tooltip>-->
-                            <!--</md-button>-->
-                            <!--<md-button class="md-icon-button" ng-click="">-->
-                                <!--<md-icon  aria-label="contacts" class="material-icons">contacts</md-icon>-->
-                                <!--<md-tooltip md-direction="top">Contacts</md-tooltip>-->
-                            <!--</md-button>-->
-                        <!--</md-card-actions>-->
-                    <!--</md-card>-->
-                </md-content>
-            </md-tab>
-        </md-tabs>
-    </md-content>
-</div>
+        <div layout-gt-sm="row">
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Street Address</label>
+                <input ng-model="vendor.primary.addressline1" readonly>
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Suite/Apt/Unit</label>
+                <input ng-model="vendor.primary.addressline2" readonly>
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>City</label>
+                <input ng-model="vendor.primary.city" readonly>
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Category</label>
+                <input ng-model="vendor.primary.country" readonly>
+            </md-input-container>
+        </div>
+        <div layout-gt-sm="row">
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Zipcode</label>
+                <input ng-model="vendor.primary.zipcode" readonly>
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Email</label>
+                <input ng-model="vendor.primary.email" readonly>
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Phone</label>
+                <input ng-model="vendor.primary.phone" readonly>
+            </md-input-container>
+        </div>
+    </div>
+    <form name="editSelectedVendor" ng-if="detailineditmode">
+        <div layout-gt-sm="row">
+            <md-input-container class="md-block" flex="80">
+                <label>Primary Contact name</label>
+                <input ng-model="selectedVendor.primary.ContactName" md-maxlength="140" required>
+                <div ng-messages="editSelectedVendor.name.$error" role="alert" multiple>
+                    <div ng-message="required" class="my-message">You must provide Product Name.</div>
+                </div>
+            </md-input-container>
+            <md-button ng-click="save(selectedVendor)">
+                <md-icon aria-label="edit" class="material-icons">edit</md-icon> Save
+            </md-button>
+            <md-button ng-click="cancel()">
+                <md-icon aria-label="cancel" class="material-icons">cancel</md-icon> Cancel
+            </md-button>
+        </div>
+        <div layout-gt-sm="row">
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Street Address</label>
+                <input ng-model="selectedVendor.primary.addressline1" >
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Suite/Apt/Unit</label>
+                <input ng-model="selectedVendor.primary.addressline2" >
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>City</label>
+                <input ng-model="selectedVendor.primary.city" >
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Category</label>
+                <input ng-model="selectedVendor.primary.country" >
+            </md-input-container>
+        </div>
+        <div layout-gt-sm="row">
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Zipcode</label>
+                <input ng-model="selectedVendor.primary.zipcode" >
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Email</label>
+                <input ng-model="selectedVendor.primary.email" >
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Phone</label>
+                <input ng-model="selectedVendor.primary.phone" >
+            </md-input-container>
+        </div>
+    </form>
+    <div style="margin-top:-25px;" ng-include src="'/www/partials/inventory.html'" ng-controller="InventoryController"  ng-init="currentVendor=vendor"></div>
+</md-content>

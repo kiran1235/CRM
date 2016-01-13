@@ -23,9 +23,6 @@ var Vendor = {
             models.Vendor.findOne({
                 include:[
                   {
-                    model: models.VendorAddressBook
-                  },
-                  {
                     model: models.VendorContact,
                     include:{
                       model:models.VendorContactAddressBook
@@ -306,6 +303,80 @@ var Vendor = {
             });
         });
     },
+
+    'getProducts':function(id){
+      return new Promise(function(resolve,reject) {
+        models.Product.findAll({
+          include:[
+            {
+              model: models.Inventory,
+            },
+            {
+              model: models.Vendor,
+              where:{
+                id:id
+              }
+            },
+          ]
+        }).then(function (product) {
+          if(product.length<=0){
+            throw new Error("Products are not Found");
+          }else{
+            resolve(product);
+          }
+        }).catch(function (error) {
+          reject(error);
+        });
+      });
+    },
+    'addProduct':function(id,options){
+      return new Promise(function(resolve,reject) {
+
+        models.Vendor.findOne({
+          attributes:["id"],
+          where:{id:id}
+        }).then(function(vendor){
+          if(vendor.length<=0){
+            throw new Error("Vendor not Found");
+          }else{
+            vendor.createProduct(options).then(function(product){
+              resolve(product);
+            }).catch(function(err){
+              console.log(err);
+              reject(err);
+            });
+          }
+        }).catch(function(err){
+          reject(err);
+        });
+
+
+        //models.Product.findAll({
+        //  include:[
+        //    {
+        //      model: models.Inventory,
+        //    },
+        //    {
+        //      model: models.Vendor,
+        //      where:{
+        //        id:id
+        //      }
+        //    },
+        //  ]
+        //}).then(function (product) {
+        //  if(product.length<=0){
+        //    throw new Error("Products are not Found");
+        //  }else{
+        //    resolve(product);
+        //  }
+        //}).catch(function (error) {
+        //  reject(error);
+        //});
+      });
+    }
+
+
+
 
 }
 

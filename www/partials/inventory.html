@@ -1,12 +1,13 @@
-<md-button ng-click="showNewForm()">
+<md-button ng-click="showNewForm()" ng-show="isvendor">
     <md-icon aria-label="add_box" class="material-icons">add_box</md-icon>
-    New Product
+    New Product {{$scope.isvendor}}
 </md-button>
 <md-button ng-click="load('customers')">
     <md-icon aria-label="search" class="material-icons">search</md-icon>
     Search Product
 </md-button>
 <md-divider ></md-divider>
+
 <div flex layout-wrap>
     <!-- exact table from live demo -->
     <md-table-container>
@@ -33,6 +34,7 @@
             </tbody>
         </table>
     </md-table-container>
+    <!--<md-table-pagination md-limit="query.limit" md-page="query.page" md-total="products.length" md-on-paginate="onPaginate" md-page-select></md-table-pagination>-->
 </div>
 <script type="text/ng-template" id="display_product_row">
         <td md-cell><a ui-sref="product({productid:{{product.id}}})">{{product.name}}</a></td>
@@ -94,3 +96,4 @@
         </md-button>
     </td>
 </script>
+

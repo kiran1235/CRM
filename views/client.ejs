@@ -39,8 +39,8 @@
                     </md-button>
                 </div>
             </md-toolbar>
-        <div ng-controller="appViewController" layout="row" flex layout-align="start start">
-            <section flex-gt-sm="20" ng-controller="appNavigationController">
+        <div ng-controller="appViewController" layout="row" flex layout-align="start stretch">
+            <section flex-gt-sm="15" ng-controller="appNavigationController">
                 <md-sidenav flex-gt-sm="100" class="md-sidenav-left" md-component-id="left" md-is-locked-open="$mdMedia('gt-sm')" >
                     <md-toolbar class="md-theme-indigo" hide-gt-sm>
                         <div class="md-toolbar-tools" layout="row">
@@ -91,7 +91,7 @@
                     </md-content>
                 </md-sidenav>
             </section>
-            <section flex-xs="100" flex-gt-xs="100" class="left-border-style-1"  style="max-height:600px;overflow:auto;" >
+            <section flex-xs="100" flex-gt-xs="100" class="left-border-style-1"  style="max-height:550px;overflow:auto;" >
                 <md-progress-linear ng-show="display_view_progress_bar" class="md-warn" md-mode="indeterminate"></md-progress-linear>
                 <div ui-view class="view-animate"></div>
 

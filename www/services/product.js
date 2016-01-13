@@ -10,7 +10,7 @@ app
     return $http({
       method:'POST',
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      url:'http://localhost:3000/product/',
+      url:'http://localhost:3000/vendor/'+params.vendorid+'/products/',
       data:params,
       transformRequest: function(obj) {
         var str = [];
@@ -25,7 +25,7 @@ app
     return $http({
       method:'PUT',
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      url:'http://localhost:3000/product/'+params.id+'/',
+      url:'http://localhost:3000/product/'+params.vendor.id+'/',
       data:params,
       transformRequest: function(obj) {
         var str = [];
@@ -40,13 +40,15 @@ app
     $rootScope.$broadcast(event);
   };
 
-
   this.inventory={
     'get':function(){
       return $http.get('http://localhost:3000/inventory/');
     },
     'getByProduct':function(id){
       return $http.get('http://localhost:3000/product/'+id+'/inventory/');
+    },
+    'getByVendor':function(id){
+      return $http.get('http://localhost:3000/vendor/'+id+'/inventory/');
     },
     'create':function(params){
       return $http({
@@ -78,3 +80,13 @@ app
     }
   }
 }])
+
+app.factory('$products',function(){
+  this.isFactory=true;
+  return {data:{data:[]}};
+});
+
+app.factory('$product',function(){
+  this.isFactory=true;
+  return {data:{data:[]}};
+});

@@ -3,32 +3,56 @@
  */
 app
   .controller('InventoryController',['$scope','$state','$mdDialog','$productservice','$products',function($scope,$state,$mdDialog,$productservice,$products){
-    _product=[];
-    _datalength=$products.data.data.length;
-    for(n=0;n<_datalength;n++){
-      _data=$products.data.data[n];
-      if(_data.Inventories.length<=0){
-        _product.push({
-          id:_data.id,
-          name:_data.name,
-          inventoryId:false
-        });
-      }else{
-        for(iv=0;iv<_data.Inventories.length;iv++){
+
+    //$scope.vendor={};
+    //$scope.currentVendor={};
+    $scope.isvendor=false;
+
+    function getProducts(products){
+      _product=[];
+      _datalength=products.data.length;
+      for(n=0;n<_datalength;n++){
+        _data=products.data[n];
+        if(_data.Inventories.length<=0){
           _product.push({
             id:_data.id,
             name:_data.name,
-            inventoryId:_data.Inventories[iv].id,
-            serialnumber:_data.Inventories[iv].serialnumber,
-            unitprice:_data.Inventories[iv].unitprice,
-            instock:_data.Inventories[iv].instock,
-            restock:_data.Inventories[iv].restock,
+            inventoryId:false
           });
+        }else{
+          for(iv=0;iv<_data.Inventories.length;iv++){
+            _product.push({
+              id:_data.id,
+              name:_data.name,
+              inventoryId:_data.Inventories[iv].id,
+              serialnumber:_data.Inventories[iv].serialnumber,
+              unitprice:_data.Inventories[iv].unitprice,
+              instock:_data.Inventories[iv].instock,
+              restock:_data.Inventories[iv].restock,
+            });
+          }
         }
       }
+
+      return _product;
     }
 
-    $scope.products=_product;
+    $scope.$watch("$scope.currentVendor",function(){
+      $scope.initByVendor($scope.currentVendor);
+    });
+
+    $scope.initByVendor=function(vendor){
+      if(vendor!=undefined){
+        $scope.isvendor=true;
+        $productservice.inventory.getByVendor(vendor.id).success(function(data){
+          $scope.products=getProducts(data);
+        });
+      }
+    };
+
+
+
+    $scope.products=getProducts($products.data);
 
     $scope.selected = {};
     $scope.query = {
@@ -85,12 +109,14 @@ app
       });
     }
 
-
-    $scope.showNewForm=function(){
+    $scope.showNewForm=function(event){
       $mdDialog.show({
+        targetEvent: event,
+        scope: $scope,
+        preserveScope: true,
         templateUrl: '/www/partials/newproduct.html',
-        controller: ('NewProductController',['$scope','$state','$mdDialog','$productservice','$rootScope',
-          function($scope,$state,$mdDialog,$productservice,$rootScope) {
+        controller: function($scope,$mdDialog) {
+          console.log($scope.currentVendor);
             $scope.entity={
               name:'test product',
               type:'test type',
@@ -98,13 +124,13 @@ app
               category:'test category',
               subcategory:'test sub category',
               serialnumber:'0000000000',
-              vendorname:'test angular vendor'
+              vendorid:$scope.currentVendor.id,
+              vendorname:$scope.currentVendor.name
             }
             $scope.save=function(){
               $productservice.create($scope.entity).success(function(data){
                 if(data.rc>=0){
                   $mdDialog.cancel();
-                  $productservice.raise('onProductUpdated');
                 }
               });
             };
@@ -112,8 +138,12 @@ app
               $mdDialog.cancel();
 
             };
-          }])
+          }
       });
     };
+
+    console.log($scope.isvendor);
+
+
   }])
 ;

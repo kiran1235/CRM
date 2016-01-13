@@ -40,6 +40,32 @@ var Product = {
             });
         });
     },
+    'getByVendor':function(id){
+      return new Promise(function(resolve,reject) {
+        models.Product.findAll({
+          include:[
+            {
+              model: models.Inventory,
+            },
+            {
+              model: models.Vendor,
+              where:{
+                id:id
+              },
+              attributes:["name"]
+            },
+          ]
+        }).then(function (product) {
+          if(product.length<=0){
+            throw new Error("Product Not Found");
+          }else{
+            resolve(product);
+          }
+        }).catch(function (error) {
+          reject(error);
+        });
+      });
+    },
     'getByFilters':function(options){
         return new Promise(function(resolve,reject) {
             models.Product.findAll({

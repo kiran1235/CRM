@@ -13,20 +13,27 @@ var requestparameters=require('../bin/requestparameters.js');
 var product=require('../controllers/product.js');
 var inventory=require('../controllers/inventory.js');
 var productrouter = express.Router();
-productrouter.get('/products/',function(req,res,next){
+productrouter
+.get('/products/',function(req,res,next){
   product.get().then(function(products){
     res.json({rc:0,data:products});
   });
-}).post('/product/',function(req,res,next){
-  var self= this;
-  product.create(
-    requestparameters.getPostParameters(req)
-  ).then(function(_newproduct){
-    res.json({rc:0,data:_newproduct});
-  }).catch(function(err){
-      res.json({rc:-1,message:'few product details are not provided',details:err});
-  });
-}).get('/product/:id/',function(req,res,next){
+})
+//.get('/product/:vendorid',function(req,res,next){
+//    product.getByVendor(req.params.vendorid).then(function(products){
+//      res.json({rc:0,data:products});
+//    });
+//}).post('/product/:vendorid',function(req,res,next){
+//  var self= this;
+//  product.create(
+//    requestparameters.getPostParameters(req)
+//  ).then(function(_newproduct){
+//    res.json({rc:0,data:_newproduct});
+//  }).catch(function(err){
+//      res.json({rc:-1,message:'few product details are not provided',details:err});
+//  });
+//})
+.get('/product/:id/',function(req,res,next){
   product.getById(req.params.id).then(function(products){
     res.json({rc:0,data:products});
   }).catch(function(err){
@@ -45,60 +52,66 @@ productrouter.get('/products/',function(req,res,next){
     console.log(err);
     res.json({rc:-1,message:'error occurred while updating product',details:err.message});
   });
-}).get('/product/:id/parts/',function(req,res,next){
-      product.getProductPartsByProductId(req.params.id).then(function(products){
-          res.json({rc:0,data:products});
-      }).catch(function(err){
-          res.json({rc:-1,message:'error ocurred while fetching product parts',details:err.message});
-      });
-}).post('/product/:id/part/',function(req,res,next){
-      product.getById(req.params.id).then(function(_product){
-          product
-            .addPart(_product,{
-                name:req.body['entity[name]'],
-                type:req.body['entity[type]'],
-                model:req.body['entity[model]'],
-                serialnumber:req.body['entity[serialnumber]'],
-                category:req.body['entity[category]'],
-                subcategory:req.body['entity[subcategory]'],
-                status:req.body['entity[status]']
-            })
-            .then(function(_product){
-                res.json(_product);
-            })
-            .catch(function(err){
-                res.json({rc:-1,message:'few part details are not provided',details:err}.message);
-            });
-      }).catch(function(err){
-          res.json({rc:-1,message:'few part details are not provided',details:err.message});
-      });
-}).put('/product/:productid/part/:id',function(req,res,next){
-    product.updatePart(req.params.productid,req.params.id,{
-      name:req.body['entity[name]'],
-      type:req.body['entity[type]'],
-      model:req.body['entity[model]'],
-      serialnumber:req.body['entity[serialnumber]'],
-      category:req.body['entity[category]'],
-      subcategory:req.body['entity[subcategory]'],
-      status:req.body['entity[status]']
-    }).then(function(result){
-      res.json({rc:0,message:'given product part is updated'});
-    }).catch(function(error){
-      res.json({rc:-1,message:'error occurred while updating product part',details:error.message});
-    });
-}).delete('/product/:productid/part/:id',function(req,res,next){
-    product.deletePart(req.params.productid,req.params.id).then(function(callback){
-      res.json({rc:0,message:'given product part is deleted'});
-    }).catch(function(error){
-      res.json({rc:-1,message:'error occurred while removing product part',details:error});
-    });
-}).get('/inventory/',function(req,res,next){
+})
+
+
+//  .get('/product/:id/parts/',function(req,res,next){
+//      product.getProductPartsByProductId(req.params.id).then(function(products){
+//          res.json({rc:0,data:products});
+//      }).catch(function(err){
+//          res.json({rc:-1,message:'error ocurred while fetching product parts',details:err.message});
+//      });
+//}).post('/product/:id/part/',function(req,res,next){
+//      product.getById(req.params.id).then(function(_product){
+//          product
+//            .addPart(_product,{
+//                name:req.body['entity[name]'],
+//                type:req.body['entity[type]'],
+//                model:req.body['entity[model]'],
+//                serialnumber:req.body['entity[serialnumber]'],
+//                category:req.body['entity[category]'],
+//                subcategory:req.body['entity[subcategory]'],
+//                status:req.body['entity[status]']
+//            })
+//            .then(function(_product){
+//                res.json(_product);
+//            })
+//            .catch(function(err){
+//                res.json({rc:-1,message:'few part details are not provided',details:err}.message);
+//            });
+//      }).catch(function(err){
+//          res.json({rc:-1,message:'few part details are not provided',details:err.message});
+//      });
+//}).put('/product/:productid/part/:id',function(req,res,next){
+//    product.updatePart(req.params.productid,req.params.id,{
+//      name:req.body['entity[name]'],
+//      type:req.body['entity[type]'],
+//      model:req.body['entity[model]'],
+//      serialnumber:req.body['entity[serialnumber]'],
+//      category:req.body['entity[category]'],
+//      subcategory:req.body['entity[subcategory]'],
+//      status:req.body['entity[status]']
+//    }).then(function(result){
+//      res.json({rc:0,message:'given product part is updated'});
+//    }).catch(function(error){
+//      res.json({rc:-1,message:'error occurred while updating product part',details:error.message});
+//    });
+//}).delete('/product/:productid/part/:id',function(req,res,next){
+//    product.deletePart(req.params.productid,req.params.id).then(function(callback){
+//      res.json({rc:0,message:'given product part is deleted'});
+//    }).catch(function(error){
+//      res.json({rc:-1,message:'error occurred while removing product part',details:error});
+//    });
+//})
+//
+
+.get('/inventory/',function(req,res,next){
   inventory.get().then(function(inventory){
     res.json({rc:0,data:inventory});
   });
 }).get('/product/:id/inventory/',function(req,res,next){
     var self=this;
-    inventory.get(product,
+    inventory.getByProduct(req.params.id,
       requestparameters.getPostParameters(req)
     ).then(function(_new){
       res.json({rc:0,data:_new});
@@ -132,7 +145,11 @@ productrouter.get('/products/',function(req,res,next){
       res.json({rc:-1,message:'few Inventory details are not provided',details:err});
     });
 })
-
+.get('/vendor/:vendorid/inventory/',function(req,res,next){
+    product.getByVendor(req.params.vendorid).then(function(products){
+      res.json({rc:0,data:products});
+    });
+})
 
 ;
 module.exports = productrouter;

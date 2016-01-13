@@ -111,7 +111,7 @@ app
     $urlRouterProvider.otherwise("/");
     $stateProvider
       .state('customers',{
-        url:'/customers',
+        url:'/customers/',
         resolve:{
           $customers:['CustomerService',
             function(CustomerService){
@@ -136,22 +136,24 @@ app
         name:'vendors',
         url:'/vendors/',
         resolve: {
-          $vendor: ['$vendorservice',
+          $dataType:function(){return "vendors";},
+          $data: ['$vendorservice',
             function ($vendorservice) {
               return $vendorservice.getVendors();
             }]
         },
         templateUrl:'/www/partials/vendors.html',
-        controller: 'VendorsController'
+        controller: 'VendorController'
       })
       .state('vendor',{
         name:'vendor',
         url:'/vendors/@{vendorid:[0-9]+}.html',
         resolve:{
-          $vendor:['$stateParams','$vendorservice',
+          $dataType:function(){return "vendor";},
+          $data:['$stateParams','$vendorservice',
             function($stateParams,$vendorservice){
               return $vendorservice.getVendor($stateParams.vendorid);
-            }]
+            }],
         },
         templateUrl:'/www/partials/vendors.id.html',
         controller:'VendorController'

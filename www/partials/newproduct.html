@@ -1,5 +1,10 @@
-    <md-content layout-padding>
+    <md-content flex="100" layout-padding>
         <form name="newProduct" ng-submit="save()">
+            <input type="hidden" ng-model="entity.vendorid"  readonly>
+            <md-input-container class="md-block" flex-gt-sm>
+                <input ng-model="entity.vendorname"  placeholder="Vendor name" readonly>
+            </md-input-container>
+
             <md-input-container class="md-block" flex-gt-sm>
                 <label>Vendor name</label>
                 <input ng-model="entity.name" md-maxlength="140" required>
@@ -29,9 +34,6 @@
             </div>
             <md-input-container class="md-block" flex-gt-sm>
             <input ng-model="entity.serialnumber" md-maxlength="140" placeholder="SKU #, Barcode">
-            </md-input-container>
-            <md-input-container class="md-block" flex-gt-sm>
-            <input ng-model="entity.vendorname" md-maxlength="256" placeholder="Vendor name">
             </md-input-container>
             <div layout="row" layout-align="end end">
                 <md-button class="md-raised md-primary" type="submit">Save</md-button>
