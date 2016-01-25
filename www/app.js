@@ -2,7 +2,7 @@
  * Created by kiran talapaku on 12/26/15.
  */
 
-var app=angular.module('crm',['ngMaterial','ui.router','md.data.table','angular-md5']);
+var app=angular.module('crm',['ngMaterial','ui.router','md.data.table','angular-md5','ngFileUpload']);
 
 app
   .run(function ($rootScope, $state, $stateParams,$http) {

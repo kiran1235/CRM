@@ -10,6 +10,8 @@ app
     $scope.detailineditmode=false;
     $scope.selectedInventory = {};
     $scope.selectedProduct = {};
+    $scope.isImageEditMode=false;
+    $scope.isImageUpdated=false;
 
     _inventories=[];
     _data=$product.data.data;
@@ -30,6 +32,12 @@ app
         _product[key]=_data[key];
       }
     }
+
+    if(_product['image']==undefined){
+      _product['image']='/www/assets/images/noimage.png';
+    }
+
+
 
     $scope.product=_product;
     $scope.inventories=_inventories;
@@ -134,6 +142,39 @@ app
         }
       });
     }
+
+    $scope.editImage=function(){
+      $scope.isImageEditMode=true;
+      $scope.isImageUpdated=false;
+    }
+
+    $scope.onFileSelected=function(){
+      $scope.isImageUpdated=true;
+    }
+
+    $scope.cancelImage=function(){
+      $scope.isImageEditMode=false;
+      $scope.isImageUpdated=false;
+    }
+
+    $scope.saveImage=function(){
+
+      $productservice.uploadImage($scope.product,$scope.file).then(function (resp) { //upload function returns a promise
+        if(resp.data.rc === 0){ //validate success
+          $scope.product.image=resp.data.location;
+          $scope.cancelImage();
+        } else {
+          console.log("error");
+        }
+      }, function (resp) { //catch error
+        //console.log('Error status: ' + resp.status);
+      }, function (evt) {
+        //var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+        //console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
+      });
+    }
+
+
 
   }])
 ;

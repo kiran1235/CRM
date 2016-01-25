@@ -191,6 +191,9 @@ var Product = {
             });
         });
     },
+    'uploadImage':function(){
+
+    }
 }
 
 module.exports = Product;

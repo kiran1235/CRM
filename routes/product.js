@@ -6,13 +6,30 @@
 
 var express = require('express');
 var path = require('path');
-
+var multer = require('multer');
 
 /** routers & controllers **/
 var requestparameters=require('../bin/requestparameters.js');
 var product=require('../controllers/product.js');
 var inventory=require('../controllers/inventory.js');
 var productrouter = express.Router();
+
+var storage = multer.diskStorage({ //multers disk storage settings
+  destination: function (req, file, cb) {
+    cb(null, './tmp/uploads/');
+  },
+  filename: function (req, file, cb) {
+    var datetimestamp = Date.now();
+    cb(null, file.fieldname + '-' + datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length -1]);
+  }
+});
+
+
+
+
+
+
+
 productrouter
 .get('/products/',function(req,res,next){
   product.get().then(function(products){
@@ -149,6 +166,20 @@ productrouter
     product.getByVendor(req.params.vendorid).then(function(products){
       res.json({rc:0,data:products});
     });
+})
+.post('/product/:id/upload/',function(req,res,next){
+  var upload = multer({ //multer settings
+    storage: storage
+  }).single('file');
+
+
+  upload(req,res,function(err){
+    if(err){
+      res.json({rc:-1,message:"error occured while upoading"});
+      return;
+    }
+    res.json({rc:0,message:"Success",location:"/"+req.file.path});
+  });
 })
 
 ;

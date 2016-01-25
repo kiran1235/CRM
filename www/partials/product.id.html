@@ -1,5 +1,35 @@
 
 <md-content layout-padding>
+    <div flex="100" layout="row" layout-padding>
+    <div flex="20" style="border:1px solid rgba(0,0,0,0.25);text-align:center" layout="column" layout-align="start stretch">
+        <div flex layout="column" layout-align="center center" ng-hide="isImageUpdated">
+            <img ng-src="{{product.image}}" />
+        </div>
+        <div flex layout="column" layout-align="center center" ng-show="isImageUpdated">
+            <img ngf-thumbnail="file || '/www/assets/images/noimage.png'" ngf-size="{width: 128, height: 128, quality: 1.0}">
+        </div>
+        <div flex="1" layout="row" layout-align="end end">
+            <md-button ng-click="editImage()" class="md-icon-button" ng-hide="isImageEditMode">
+                <md-icon aria-label="edit" class="material-icons">edit</md-icon>
+            </md-button>
+            <form enctype="multipart/form-data">
+            <md-button name="file" class="md-icon-button" ngf-select ng-model="file" name="file" ngf-pattern="'image/*'"
+                       ngf-accept="'image/*'" ngf-max-size="20MB" ngf-min-height="100"
+                       ngf-resize="{width: 100, height: 100}" ngf-change="onFileSelected()" ng-show="isImageEditMode">
+                <md-icon aria-label="file_upload" class="material-icons">file_upload</md-icon>
+            </md-button>
+
+            <md-button  class="md-icon-button"  ng-click="saveImage(file)" ng-show="isImageUpdated">
+                <md-icon aria-label="save" class="material-icons">save</md-icon>
+            </md-button>
+            </form>
+            <md-button  class="md-icon-button" ng-show="isImageEditMode" ng-click="cancelImage()">
+                <md-icon aria-label="cancel" class="material-icons">cancel</md-icon>
+            </md-button>
+        </div>
+
+    </div>
+    <div flex="80">
     <div ng-if="!detailineditmode">
         <div layout-gt-sm="row">
         <md-input-container class="md-block" flex="90">
@@ -76,6 +106,8 @@
             </md-input-container>
         </div>
     </form>
+    </div>
+    </div>
     <div flex layout-wrap style="margin-top:-25px">
         <!-- exact table from live demo -->
         <md-table-container>

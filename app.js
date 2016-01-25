@@ -20,6 +20,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components',express.static(path.join(__dirname, 'bower_components')));
 app.use('/www',express.static(path.join(__dirname, 'www')));
+app.use('/tmp',express.static(path.join(__dirname, 'tmp')));
 app.use('/', routes);
 
 
@@ -60,6 +61,15 @@ app.use(function(err, req, res, next) {
 //        console.log("Unable to connect to database");
 //    }
 //});
+
+app.use(function(req, res, next) {
+  res.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS, DELETE, GET");
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+
 
 
 

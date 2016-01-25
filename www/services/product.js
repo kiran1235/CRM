@@ -2,7 +2,7 @@
  * Created by kiran on 12/29/15.
  */
 app
-.service('$productservice',['$http','$rootScope',function($http,$rootScope){
+.service('$productservice',['$http','$rootScope','Upload',function($http,$rootScope,Upload){
   this.getById=function(id){
     return $http.get('http://localhost:3000/product/'+id+'/');
   };
@@ -39,6 +39,13 @@ app
   this.raise=function(event){
     $rootScope.$broadcast(event);
   };
+
+  this.uploadImage=function(product,file){
+    return Upload.upload({
+      url: 'http://localhost:3000/product/'+product.id+'/upload/', //webAPI exposed to upload the file
+      data:{file:file} //pass file as data, should be user ng-model
+    });
+  }
 
   this.inventory={
     'get':function(){
