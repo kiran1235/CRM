@@ -42,9 +42,10 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: function(models) {
-        Product.belongsToMany(models.Part, {through:models.ProductPart})
-        Product.belongsToMany(models.Vendor, {through:models.ProductVendor})
-        Product.hasMany(models.Inventory)
+        Product.belongsToMany(models.Part, {through:models.ProductPart});
+        Product.belongsToMany(models.Vendor, {through:models.ProductVendor});
+        Product.hasMany(models.Inventory);
+        Product.hasMany(models.ProductImage);
       }
     }
   });

@@ -6,7 +6,7 @@
             <img ng-src="{{product.image}}" />
         </div>
         <div flex layout="column" layout-align="center center" ng-show="isImageUpdated">
-            <img ngf-thumbnail="file || '/www/assets/images/noimage.png'" ngf-size="{width: 128, height: 128, quality: 1.0}">
+            <img ngf-thumbnail="file || '/www/assets/images/noimage.png'" ngf-size="{width: 200, height: 200, quality: 1.0}">
         </div>
         <div flex="1" layout="row" layout-align="end end">
             <md-button ng-click="editImage()" class="md-icon-button" ng-hide="isImageEditMode">

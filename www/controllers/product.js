@@ -33,8 +33,10 @@ app
       }
     }
 
-    if(_product['image']==undefined){
+    if(_data['ProductImages']==undefined){
       _product['image']='/www/assets/images/noimage.png';
+    }else{
+      _product['image']='/tmp/uploads/'+_data['ProductImages'][0]['filename'];
     }
 
 

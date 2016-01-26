@@ -171,14 +171,16 @@ productrouter
   var upload = multer({ //multer settings
     storage: storage
   }).single('file');
-
-
   upload(req,res,function(err){
     if(err){
       res.json({rc:-1,message:"error occured while upoading"});
       return;
     }
-    res.json({rc:0,message:"Success",location:"/"+req.file.path});
+    product.uploadImage(req.params.id,req.file).then(function(image){
+      res.json({rc:0,message:"Success",location:"/tmp/uploads/"+image.filename});
+    }).catch(function(err){
+      res.json({rc:-1,message:'Unable to add image to the given product',details:err});
+    });
   });
 })
 

@@ -114,7 +114,7 @@ mdInputContainerDirective.$inject = ["$mdTheming", "$parse"];
 function labelDirective() {
   return {
     restrict: 'E',
-    require: '^?mdInputContainer',
+    require: '^^?mdInputContainer',
     link: function(scope, element, attr, containerCtrl) {
       if (!containerCtrl || attr.mdNoFloat || element.hasClass('md-container-ignore')) return;
 

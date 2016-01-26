@@ -27,6 +27,9 @@ var Product = {
                     {
                         model: models.Vendor,
                     },
+                    {
+                      model: models.ProductImage, limit:1, order:'id desc'
+                    },
                 ],
                 where: {id: id}
             }).then(function (product) {
@@ -191,8 +194,25 @@ var Product = {
             });
         });
     },
-    'uploadImage':function(){
-
+    'uploadImage':function(id,image){
+      return new Promise(function(resolve,reject) {
+        models.Product.findOne({
+          where: {id: id}
+        }).then(function (product) {
+          if (product.length <= 0) {
+            throw new Error("Product Not Found");
+          } else {
+            product.createProductImage(image).then(function (image) {
+              resolve(image)
+            }).catch(function (err) {
+              console.log(err);
+              reject(err);
+            });
+          }
+        }).catch(function (error) {
+          reject(error);
+        });
+      });
     }
 }
 
