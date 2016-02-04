@@ -6,7 +6,7 @@
             <img ng-src="{{product.image}}" />
         </div>
         <div flex layout="column" layout-align="center center" ng-show="isImageUpdated">
-            <img ngf-thumbnail="file || '/www/assets/images/noimage.png'" ngf-size="{width: 200, height: 200, quality: 1.0}">
+            <img ngf-thumbnail="file || '/www/assets/images/noimage.png'" ngf-size="{width: 600, height: 600, quality: 1.0}">
         </div>
         <div flex="1" layout="row" layout-align="end end">
             <md-button ng-click="editImage()" class="md-icon-button" ng-hide="isImageEditMode">
@@ -15,7 +15,7 @@
             <form enctype="multipart/form-data">
             <md-button name="file" class="md-icon-button" ngf-select ng-model="file" name="file" ngf-pattern="'image/*'"
                        ngf-accept="'image/*'" ngf-max-size="20MB" ngf-min-height="100"
-                       ngf-resize="{width: 100, height: 100}" ngf-change="onFileSelected()" ng-show="isImageEditMode">
+                       ngf-resize="{width: 600, height: 600, quality:1.0}" ngf-change="onFileSelected()" ng-show="isImageEditMode">
                 <md-icon aria-label="file_upload" class="material-icons">file_upload</md-icon>
             </md-button>
 
