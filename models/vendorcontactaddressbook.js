@@ -17,10 +17,7 @@ module.exports = function(sequelize, DataTypes) {
       },
       addressline2:{
           type:DataTypes.TEXT,
-          allowNull:true,
-          validate: {
-              is: ["^[a-zA-Z0-9 \-\\\/\#\.]+$", 'i']
-          }
+          allowNull:true
       },
       street:{
           type:DataTypes.TEXT,
@@ -63,6 +60,19 @@ module.exports = function(sequelize, DataTypes) {
               is: ["^[0-9]+$", 'i']
           }
       },
+      latitude:{
+        type:DataTypes.DECIMAL(10, 2),
+        allowNull:true
+      },
+      longitude:{
+        type:DataTypes.DECIMAL(10, 2),
+        allowNull:true
+      },
+      formattedaddress:{
+        type:DataTypes.TEXT,
+        allowNull:true
+      },    
+      
       isprimary:{
           type:DataTypes.INTEGER,
           allowNull:false,

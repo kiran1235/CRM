@@ -36,6 +36,14 @@ module.exports = {
         type:Sequelize.STRING,
         allowNull:true
       },
+      latitude:{
+        type:Sequelize.DECIMAL(10, 2),
+        allowNull:true
+      },
+      longitude:{
+        type:Sequelize.DECIMAL(10, 2),
+        allowNull:true
+      },
       email:{
         type:Sequelize.TEXT,
         allowNull:true
@@ -43,7 +51,11 @@ module.exports = {
       phone:{
         type:Sequelize.STRING,
         allowNull:true
-      },
+      },  
+      formattedaddress:{
+        type:Sequelize.TEXT,
+        allowNull:true
+      },    
       isprimary:{
         type:Sequelize.INTEGER,
         allowNull:false

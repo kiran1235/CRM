@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="angular-ui-router-DefinitelyTyped" type="javaScript">
+    <properties>
+      <sourceFilesUrls>
+        <item url="file://$APPLICATION_CONFIG_DIR$/javascript/extLibs/http_github.com_borisyankov_DefinitelyTyped_raw_master_angular-ui-router_angular-ui-router.d.ts" />
+      </sourceFilesUrls>
+    </properties>
+    <CLASSES>
+      <root url="file://$APPLICATION_CONFIG_DIR$/javascript/extLibs/http_github.com_borisyankov_DefinitelyTyped_raw_master_angular-ui-router_angular-ui-router.d.ts" />
+    </CLASSES>
+    <SOURCES />
+  </library>
+</component>

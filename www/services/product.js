@@ -88,12 +88,12 @@ app
   }
 }])
 
-app.factory('$products',function(){
+
+.factory('$products',function(){
   this.isFactory=true;
   return {data:{data:[]}};
-});
-
-app.factory('$product',function(){
+})
+.factory('$product',function(){
   this.isFactory=true;
   return {data:{data:[]}};
 });

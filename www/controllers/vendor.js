@@ -2,7 +2,7 @@
  * Created by kiran on 12/28/15.
  */
 app
-  .controller('VendorController',['$scope','$state','$mdDialog','$vendorservice','$dataType', '$data',function($scope,$state,$mdDialog,$vendorservice,$dataType,$data) {
+  .controller('VendorController',['$scope','$state','$mdDialog','$vendorservice','$locationservice','$dataType', '$data',function($scope,$state,$mdDialog,$vendorservice,$locationservice,$dataType,$data) {
     $scope.showNewVendorDialog=function(event) {
       $mdDialog.show({
         targetEvent: event,
@@ -26,17 +26,28 @@ app
             zipcode: '12345',
             email: 'na@default',
             phone: '0000000000',
+            latitude:0.0,
+            longitude:0.0
           }
         }
       });
     };
     $scope.save=function(){
-      $vendorservice.createVendor($scope.entity).success(function(data){
-        if(data.rc>=0){
-          $mdDialog.cancel();
-          $state.go('vendor',{vendorid:data.VendorId});
-        }
-      });
+      $locationservice
+          .find($scope.entity.addressline1+' '+$scope.entity.addressline2,$scope.entity.city,$scope.entity.state)
+          .then(function(location){
+                $scope.entity.formattedaddress=location.data.results[0].formatted_address;
+                $scope.entity.zipcode=location.data.results[0].address_components[6].long_name;
+                $scope.entity.latitude=location.data.results[0].geometry.location.lat;
+                $scope.entity.longitude=location.data.results[0].geometry.location.lng;
+              $vendorservice.createVendor($scope.entity).success(function(data){
+                if(data.rc>=0){
+                  $mdDialog.cancel();
+                  $state.go('vendor',{vendorid:data.VendorId});
+                }
+              });
+          });    
+
     };
     $scope.cancel=function(){
       $mdDialog.cancel();
