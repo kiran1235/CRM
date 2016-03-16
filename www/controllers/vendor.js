@@ -64,8 +64,6 @@ app
       $scope.selectedVendor=angular.copy(vendor);
     }
 
-
-
     function getPrimary(_vendor) {
       _foundprimary = false;
       _cnt = _vendor.VendorContacts.length;

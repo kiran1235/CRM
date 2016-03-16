@@ -37,11 +37,11 @@ module.exports = {
         allowNull:true
       },
       latitude:{
-        type:Sequelize.DECIMAL(10, 2),
+        type:Sequelize.FLOAT,
         allowNull:true
       },
       longitude:{
-        type:Sequelize.DECIMAL(10, 2),
+        type:Sequelize.FLOAT,
         allowNull:true
       },
       email:{

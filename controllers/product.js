@@ -47,9 +47,9 @@ var Product = {
       return new Promise(function(resolve,reject) {
         models.Product.findAll({
           include:[
-            {
-              model: models.Inventory,
-            },
+//            {
+//              model: models.Inventory,
+//            },
             {
               model: models.Vendor,
               where:{

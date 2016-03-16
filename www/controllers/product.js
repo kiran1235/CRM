@@ -4,7 +4,59 @@
 /**
  * Created by kiran on 12/28/15.
  */
+
 app
+  .controller('VendorProductController',['$scope','$state','$mdDialog','$productservice',function($scope,$state,$mdDialog,$productservice){
+
+      
+    $scope.showNewForm=function(event){
+      $mdDialog.show({
+        targetEvent: event,
+        scope: $scope,
+        preserveScope: true,
+        templateUrl: '/www/partials/newproduct.html',
+        controller: function($scope,$mdDialog) {
+            $scope.entity={
+              name:'test product',
+              type:'test type',
+              model:'test model',
+              category:'test category',
+              subcategory:'test sub category',
+              serialnumber:'0000000000',
+              vendorid:$scope.currentVendor.id,
+              vendorname:$scope.currentVendor.name
+            }
+            $scope.save=function(){
+              $productservice.create($scope.entity).success(function(response){
+                if(response.rc>=0){
+                    console.log(response);
+                  $scope.products.push(response.data);
+                    console.log($scope.products);
+                  $mdDialog.cancel();
+                }
+              });
+            };
+            $scope.cancel=function(){
+              $mdDialog.cancel();
+
+            };
+          }
+      });
+    };
+      
+    $scope.$watch("$scope.currentVendor",function(){
+      $scope.initByVendor($scope.currentVendor);
+    });
+      
+    $scope.initByVendor=function(vendor){
+      if(vendor!=undefined){
+        $scope.isvendor=true;
+        $productservice.inventory.getByVendor(vendor.id).success(function(products){
+          $scope.products=products.data;
+        });
+      }
+    };      
+  }])
   .controller('ProductController',['$scope','$state','$mdDialog','$productservice','$product',function($scope,$state,$mdDialog,$productservice,$product){
 
     $scope.detailineditmode=false;
@@ -33,13 +85,11 @@ app
       }
     }
 
-    if(_data['ProductImages']==undefined){
+    if(_data['ProductImages']==undefined || _data['ProductImages'].length<=0){
       _product['image']='/www/assets/images/noimage.png';
     }else{
       _product['image']='/tmp/uploads/'+_data['ProductImages'][0]['filename'];
     }
-
-
 
     $scope.product=_product;
     $scope.inventories=_inventories;
@@ -175,8 +225,5 @@ app
         //console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
       });
     }
-
-
-
   }])
 ;

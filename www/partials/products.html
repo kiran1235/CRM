@@ -1,0 +1,40 @@
+<md-button ng-click="showNewForm()" ng-show="isvendor">
+    <md-icon aria-label="add_box" class="material-icons">add_box</md-icon>
+    New Product {{$scope.isvendor}}
+</md-button>
+<md-button ng-click="load('customers')">
+    <md-icon aria-label="search" class="material-icons">search</md-icon>
+    Search Product
+</md-button>
+<md-divider ></md-divider>
+
+<div flex layout-wrap>
+    <!-- exact table from live demo -->
+    <md-table-container>
+        <table md-table ng-model="products" md-progress="promise" style="min-width:820px;">
+            <thead md-head md-order="query.order" md-on-reorder="onReorder">
+            <tr md-row>
+                <th md-column md-order-by="nameToLower" style="width:65%;">
+                    <span>
+                            Product Name
+                    </span>
+                </th>
+                <th md-column style="width:10%;"><span>Category</span></th>
+                <th md-column md-numeric style="width:5%;">Sub category</th>
+                <th md-column md-numeric style="width:5%;">Type</th>
+                <th md-column md-numeric style="width:5%;">Model</th>
+            </tr>
+            </thead>
+            <tbody md-body>
+                <tr md-row md-auto-select  ng-repeat="product in products | orderBy:'-id'">
+                <td md-cell><a ui-sref="product({productid:{{product.id}}})">{{product.name}}</a></td>
+                <td md-cell>{{product.category || "N/A"}}</td>
+                <td md-cell>{{product.subcategory|| "N/A"}}</td>
+                <td md-cell>{{product.type || "0"}}</td>
+                <td md-cell>{{product.model || "0"}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </md-table-container>
+    <!--<md-table-pagination md-limit="query.limit" md-page="query.page" md-total="products.length" md-on-paginate="onPaginate" md-page-select></md-table-pagination>-->
+</div>

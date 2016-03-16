@@ -116,7 +116,6 @@ app
         preserveScope: true,
         templateUrl: '/www/partials/newproduct.html',
         controller: function($scope,$mdDialog) {
-          console.log($scope.currentVendor);
             $scope.entity={
               name:'test product',
               type:'test type',

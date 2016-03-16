@@ -61,11 +61,11 @@ module.exports = function(sequelize, DataTypes) {
           }
       },
       latitude:{
-        type:DataTypes.DECIMAL(10, 2),
+        type:DataTypes.FLOAT,
         allowNull:true
       },
       longitude:{
-        type:DataTypes.DECIMAL(10, 2),
+        type:DataTypes.FLOAT,
         allowNull:true
       },
       formattedaddress:{
