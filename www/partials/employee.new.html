@@ -1,0 +1,108 @@
+<md-content layout-padding>
+    <form name="newEmployee" ng-submit="save()">
+        <div layout-gt-sm="row">
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Employee name</label>
+                <input ng-model="entity.name" md-maxlength="140" required>
+                <div ng-messages="newEmployee.name.$error" role="alert" multiple>
+                    <div ng-message="required" class="my-message">You must supply a Employee Name.</div>
+                </div>
+            </md-input-container>
+            <md-datepicker ng-model="entity.doj" md-placeholder="Join Date"></md-datepicker> 
+            <md-datepicker ng-model="entity.dob" md-placeholder="Birthday"></md-datepicker>            
+        </div>
+        <div layout-gt-sm="row">
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Phone Number</label>
+                <input name="phone" ng-model="entity.phone"
+                       required ng-pattern="/^[0-9]{10}$/" md-maxlength="10">
+                <div ng-messages="newEmployee.phone.$error" role="alert" multiple>
+                    <div ng-message="required" class="my-message">You must supply a Phone Number.</div>
+                    <div ng-message="pattern" class="my-message">That doesn't look like a valid Phone Number.</div>
+                </div>
+            </md-input-container>             
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Email</label>
+                <input type="email" name="email" ng-model="entity.email"
+                       required  md-maxlength="2000">
+                <div ng-messages="newEmployee.email.$error" role="alert" multiple>
+                    <div ng-message="required" class="my-message">You must supply a Valid Email Address. <br> Default: na@default</div>
+                </div>
+            </md-input-container>
+              <md-input-container class="md-block" flex-gt-sm>
+                <label>Gender</label>
+                <md-select ng-model="entity.gender" required>
+                    <md-option ng-repeat="gender in genders" value="{{gender.abbrev}}">
+                        {{gender.abbrev}}
+                    </md-option>
+                </md-select>
+            </md-input-container> 
+        </div>        
+        <div layout-gt-sm="row">
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Street </label>
+                <input ng-model="entity.addressline1">
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-sm>
+                <input ng-model="entity.addressline2" placeholder="Apt, P.O. Box, Suite">
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>City</label>
+                <input ng-model="entity.city" required>
+                <div ng-messages="newEmployee.city.$error" role="alert" multiple>
+                    <div ng-message="required" class="my-message">You must supply a city.</div>
+                </div>
+            </md-input-container>            
+        </div>
+        <div layout-gt-sm="row">
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>State</label>
+                <md-select ng-model="entity.state" required>
+                    <md-option ng-repeat="state in states" value="{{state.abbrev}}">
+                        {{state.abbrev}}
+                    </md-option>
+                    <div ng-messages="newEmployee.state.$error" role="alert" multiple>
+                        <div ng-message="required" class="my-message">You must select an state.</div>
+                    </div>
+                </md-select>
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>City</label>
+                <input ng-model="entity.country" readonly>
+                <div ng-messages="newEmployee.country.$error" role="alert" multiple>
+                    <div ng-message="required" class="my-message">You must supply a Country.</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Postal Code</label>
+                <input name="zipcode" ng-model="entity.zipcode"
+                       required ng-pattern="/^[0-9]{5}$/" md-maxlength="5">
+                <div ng-messages="newEmployee.zipcode.$error" role="alert" multiple>
+                    <div ng-message="required" class="my-message">You must supply a zipcode.</div>
+                    <div ng-message="pattern" class="my-message">That doesn't look like a valid zipcode.</div>
+                </div>
+            </md-input-container>  
+        </div>
+        <div layout-gt-sm="row">
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Password</label>
+                <input ng-model="entity.password" type="password">
+                <div ng-messages="newEmployee.password.$error" role="alert" multiple>
+                    <div ng-message="required" class="my-message">You must supply a Country.</div>
+                </div>
+            </md-input-container>
+             <md-input-container class="md-block" flex-gt-sm>
+                <label>Retype Password</label>
+                <input ng-model="entity.password2" type="password">
+                <div ng-messages="newEmployee.password.$error" role="alert" multiple>
+                    <div ng-message="required" class="my-message">You must supply a Country.</div>
+                </div>
+            </md-input-container>
+        </div>
+
+        <div layout="row" layout-align="end end">
+            <md-button class="md-raised md-primary" type="submit">Save</md-button>
+            <md-button class="md-raised" ng-click="cancel()">Cancel</md-button>
+        </div>
+    </form>
+</md-content>

@@ -106,6 +106,32 @@ app
         controller:'ProductController',
         'templateUrl':'/www/partials/product.id.html'
       })
+      .state('employees',{
+        name:'employees',
+        url:'/employees/',
+        resolve: {
+          $dataType:function(){return "employees";},
+          $data: ['$employeeservice',
+            function ($employeeservice) {
+              return $employeeservice.getEmployees();
+            }]
+        },
+        templateUrl:'/www/partials/employees.html',
+        controller: 'EmployeeController'
+      })
+      .state('employee',{
+        name:'employee',
+        url:'/employees/@{employeeid:[0-9]+}.html',
+        resolve:{
+          $dataType:function(){return "employee";},
+          $data:['$stateParams','$employeeservice',
+            function($stateParams,$employeeservice){
+              return $employeeservice.getEmployee($stateParams.employeeid);
+            }],
+        },
+        templateUrl:'/www/partials/employees.id.html',
+        controller:'EmployeeController'
+      })    
   }])
 
 

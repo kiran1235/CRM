@@ -18,6 +18,28 @@ var Vendor = {
            });
        });
     },
+    'getVendorsForAPI':function(options){
+       return new Promise(function(resolve,reject) {
+           models.Vendor.findAll({
+            include:[
+                  {
+                    model: models.VendorContact,
+                    include:{
+                      model:models.VendorContactAddressBook,
+                        attributes:["phone","formattedaddress","latitude","longitude"],order:'id desc'
+                    },attributes:["id","isprimary"],where:{
+                        isdeleted:0
+                    }
+                  },
+                ],              
+             attributes:["id","name"]
+           }).then(function (vendors) {
+               resolve(vendors);
+           }).catch(function (error) {
+               reject(error);
+           });
+       });
+    },    
     'getById':function(id){
         return new Promise(function(resolve,reject) {
             models.Vendor.findOne({
