@@ -24,7 +24,7 @@ router
     res.json({rc:0,data:vendors});
   });
 })
-.post('/api/orders/', function(req, res, next) {
+.get('/api/orders/', function(req, res, next) {
   var params=requestparameters.getPostParameters(req);   
   if(params['authkey']==undefined || params['from']==undefined || params['to']==undefined){
       res.json({rc:-1,message:'required details are not provided'});

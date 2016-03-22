@@ -2,18 +2,18 @@
  * Created by kiran on 12/29/15.
  */
 app
-  .service('$employeeservice',['$http',function($http){
+  .service('$employeeservice',['$rootScope','$http',function($rootScope,$http){
     this.getEmployees=function(){
-      return $http.get('http://localhost:3000/employees/');
+      return $http.get($rootScope.$domain+'/employees/');
     };
     this.getEmployee=function(employeeid){
-      return $http.get('http://localhost:3000/employees/'+employeeid);
+      return $http.get($rootScope.$domain+'/employees/'+employeeid);
     };
     this.createEmployee=function(formObject){
       return $http({
         method:'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        url:'http://localhost:3000/employees/',
+        url:$rootScope.$domain+'/employees/',
         data:formObject,
         transformRequest: function(obj) {
           var str = [];

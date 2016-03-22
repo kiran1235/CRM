@@ -2,18 +2,18 @@
  * Created by kiran on 12/29/15.
  */
 app
-  .service('$vendorservice',['$http',function($http){
+  .service('$vendorservice',['$rootScope','$http',function($rootScope,$http){
     this.getVendors=function(){
-      return $http.get('http://localhost:3000/vendors');
+      return $http.get($rootScope.$domain+'/vendors');
     };
     this.getVendor=function(vendorid){
-      return $http.get('http://localhost:3000/vendor/'+vendorid);
+      return $http.get($rootScope.$domain+'/vendor/'+vendorid);
     };
     this.createVendor=function(formObject){
       return $http({
         method:'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        url:'http://localhost:3000/vendor/',
+        url:$rootScope.$domain+'/vendor/',
         data:formObject,
         transformRequest: function(obj) {
           var str = [];

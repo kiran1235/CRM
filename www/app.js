@@ -7,6 +7,7 @@ var app = angular.module('crm',['ngMaterial','ui.router','md.data.table','angula
 
 app
   .run(function ($rootScope, $state, $stateParams,$http) {
+    $rootScope.$domain="http://localhost:3000/";
     $rootScope.$state = $state;
     $rootScope.$stateParams = $stateParams;
     $rootScope.display_view_progress_bar=false;

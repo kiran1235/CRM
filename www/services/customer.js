@@ -2,9 +2,8 @@
  * Created by kiran on 12/29/15.
  */
 app
-  .service('CustomerService',['$http',function($http){
+  .service('CustomerService',['$rootScope','$http',function($rootScope,$http){
     this.getCustomers=function(){
-      return $http.get('http://localhost:3000/customers');
-
+      return $http.get($rootScope.$domain+'/customers');
     }
   }])
