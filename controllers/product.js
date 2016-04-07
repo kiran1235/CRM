@@ -47,9 +47,11 @@ var Product = {
       return new Promise(function(resolve,reject) {
         models.Product.findAll({
           include:[
-//            {
-//              model: models.Inventory,
-//            },
+            {
+              model: models.Inventory, attributes:["serialnumber","unitprice","id"],
+                where:
+                    ['instock > restock']
+            },
             {
               model: models.Vendor,
               where:{
@@ -57,7 +59,34 @@ var Product = {
               },
               attributes:["name"]
             },
-          ]
+          ], attributes:["id","name","category","subcategory","type","model"],
+            where:{
+                status:1
+            }
+        }).then(function (product) {
+          if(product.length<=0){
+            throw new Error("Product Not Found");
+          }else{
+            resolve(product);
+          }
+        }).catch(function (error) {
+          reject(error);
+        });
+      });
+    },
+    'getByVendorForAPI':function(id){
+      return new Promise(function(resolve,reject) {
+        models.Product.findAll({
+          include:[
+            {
+              model: models.Inventory, attributes:["serialnumber","unitprice","id"],
+                where:
+                    ['instock > restock']
+            },
+          ], attributes:["id","name","category","subcategory","type","model"],
+            where:{
+                status:1
+            }
         }).then(function (product) {
           if(product.length<=0){
             throw new Error("Product Not Found");

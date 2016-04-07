@@ -11,6 +11,20 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+
+
+
+app.use(function(req, res, next) {
+  //res.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS, DELETE, GET");
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+
+
+
+
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
@@ -22,6 +36,17 @@ app.use('/bower_components',express.static(path.join(__dirname, 'bower_component
 app.use('/www',express.static(path.join(__dirname, 'www')));
 app.use('/tmp',express.static(path.join(__dirname, 'tmp')));
 app.use('/', routes);
+
+
+/*
+app.configure(function (){
+    app.use(express.cookieParser('keyboard cat'));
+    app.use(express.session({ cookie: { maxAge: 60000 }}));
+    app.use(passport.initialize());
+    app.use(passport.session());
+    app.use(flash());
+});
+*/
 
 
 // catch 404 and forward to error handler

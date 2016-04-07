@@ -10,6 +10,8 @@ applicationrouter.get('/',function(req,res,next){
     res.render('index',{title:application.name});
 }).get('/client',function(req,res,next){
     res.render('client',{title:application.name});
+}).get('/store',function(req,res,next){
+    res.render('onlinestore',{title:application.name});
 });
 
 

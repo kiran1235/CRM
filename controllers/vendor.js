@@ -63,6 +63,33 @@ var Vendor = {
             });
         });
     },
+    'getByIdForAPI':function(id){
+        return new Promise(function(resolve,reject) {
+            models.Vendor.findOne({
+                include:[
+                  {
+                    model: models.VendorContact,
+                    include:{
+                      model:models.VendorContactAddressBook,
+                      attributes:["phone","formattedaddress","latitude","longitude"],order:'id desc'
+
+                    },attributes:["id","isprimary"],where:{
+                        isdeleted:0
+                    }
+                  },
+                ]
+              ,where: {id: id}
+            }).then(function (vendor) {
+                if(vendor.length<=0){
+                    throw new Error("Vendor Not Found");
+                }else{
+                    resolve(vendor);
+                }
+            }).catch(function (error) {
+                reject(error);
+            });
+        });
+    },    
     'create':function(options){
         return new Promise(function(resolve,reject) {
             models.Vendor.create({

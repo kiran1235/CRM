@@ -1,16 +1,92 @@
 <!DOCTYPE html>
 <html ng-app="store">
     <head>
+        <title>Online Grocery Store</title>
         <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
         <script src="/bower_components/angular/angular.js" type="text/javascript" ></script>
         <script src="/bower_components/angular-ui-router/release/angular-ui-router.js" type="text/javascript" ></script>
     </head>
     <body>
-            
+         <div ui-view class="view-animate"></div>
     </body>
     <script type="text/javascript" src="/www/onlinestore.js"></script>
+    <script type="text/ng-template" id="templates/welcome.html">
+        <div style="width:100%;display:block">
+          <div style="float:left;display:block;width:69%;border-right:2px solid #000;">
+            <div ui-view="page" class="view-animate"></div>
+          </div>
+          <div style="float:left;display:block;width:20%;margin-left:5px;">
+            <div ui-view="cart"></div>
+          </div>
+        </div>
+    </script>
+    <script type="text/ng-template" id="templates/cart.html">
+      <div ng-show="items.length>0">
+      Cart
+      <table>
+      <tr>
+        <th>Name</th><th>quantity</th><th>Total Item Value</th>
+      </tr>
+
+        <tr ng-repeat="item in items">
+          <td>{{item.name}}</td>
+          <td>{{item.cartquantity}}</td>
+          <td>{{item.cartquantity*item.Inventories[0].unitprice}}</td>
+        </tr>
+        <tr>
+          <th colspan=2>Total Cart Value</th><th>{{getTotal()}}</th>
+        </tr>
+      </table>
+      </div>
+      <div ng-show="items.length<=0">
+          Your cart is empty
+      </div>
+    </script>
+
     <script type="text/ng-template" id="templates/store.html">
-        <h1>Home Page</h1>
-        <p>This is home page</p>
+        <p>{{message}}</p>
+        <form ng-submit="setDeliveryAddress()">
+            <input type="text" ng-model="customer.deliveryAddress.street" placeholder="Street"/>
+            <input type="text" ng-model="customer.deliveryAddress.city" placeholder="City"/>
+            <input type="text" ng-model="customer.deliveryAddress.state" placeholder="State"/>
+            <input type="text" ng-model="customer.deliveryAddress.zipcode" placeholder="Zipcode"/>
+            <button type="submit">Find Stores </button>
+        </form>
+        <div ng-if="showvendors">
+            <p>{{vendors.length}} stores near to {{customer.deliveryAddress.formattedaddress}}</p>
+            <ol>
+                <li ng-repeat="vendor in vendors | orderBy: vendor.distance">
+                    <p>
+                        <b>{{vendor.name}}</b> in <i> {{vendor.distance | number:2}} Miles </i> <button ng-click="goToVendor(vendor)"> select this store </button> <br/>
+                        <i>{{vendor.formattedAddress}}</i>
+                    </p>
+                </li>
+            </ol>
+        </div>
+    </script>
+    <script type="text/ng-template" id="templates/vendor.html">
+        <p>
+            <button> Back </button>
+            <b>{{vendor.name}}</b> in <i> {{vendor.distance | number:2}} Miles </i><br/>
+            <i>{{vendor.formattedAddress}}</i>
+        </p>
+        <p>{{products.length}} products are availiable at this store</p>
+        <table>
+            <tr ng-repeat="product in products | orderBy: product.type">
+                <td>
+                    <b>{{product.name}}</b><br />
+                    <i>{{product.Inventories[0].serialnumber}}</i>
+                </td>
+                <td>
+                    <i>{{product.Inventories[0].unitprice}}</i>
+                </td>
+                <td>
+                    <input type="text" ng-model="product.cartquantity" placeholder="quantity"/>
+                </td>
+                <td>
+                    <button ng-click="addProductToCart(product)">Add to cart </button>
+                </td>
+            </tr>
+        </table>
     </script>
 </html>

@@ -6,6 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "basic-auth": "^1.0.3",
     "bluebird": "^3.0.6",
     "body-parser": "~1.13.2",
     "bower": "^1.7.1",

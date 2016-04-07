@@ -37,6 +37,25 @@ app
           .find($scope.entity.addressline1+' '+$scope.entity.addressline2,$scope.entity.city,$scope.entity.state)
           .then(function(location){
                 $scope.entity.formattedaddress=location.data.results[0].formatted_address;
+                var ll=location.data.results[0].address_components.length-1;
+                $scope.entity.zipcode=location.data.results[0].address_components[ll].long_name;
+          
+                $scope.entity.latitude=location.data.results[0].geometry.location.lat;
+                $scope.entity.longitude=location.data.results[0].geometry.location.lng;
+              $vendorservice.createVendor($scope.entity).success(function(data){
+                if(data.rc>=0){
+                  $mdDialog.cancel();
+                  $state.go('vendor',{vendorid:data.VendorId});
+                }
+              });
+          });    
+
+    };      
+    $scope.save=function(){
+      $locationservice
+          .find($scope.entity.addressline1+' '+$scope.entity.addressline2,$scope.entity.city,$scope.entity.state)
+          .then(function(location){
+                $scope.entity.formattedaddress=location.data.results[0].formatted_address;
                 $scope.entity.zipcode=location.data.results[0].address_components[7].long_name;
                 $scope.entity.latitude=location.data.results[0].geometry.location.lat;
                 $scope.entity.longitude=location.data.results[0].geometry.location.lng;

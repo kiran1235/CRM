@@ -20,7 +20,6 @@ var User = {
                     resolve(user);
                 }
            }).catch(function (error) {
-               console.log(err);
                reject(error);
            });
        });        
@@ -36,7 +35,6 @@ var User = {
                     resolve(user);
                 }
            }).catch(function (error) {
-               console.log(err);
                reject(error);
            });
        });        
