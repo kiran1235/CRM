@@ -55,6 +55,7 @@ module.exports = function(sequelize, DataTypes) {
     classMethods: {
       associate: function(models) {
           Order.hasMany(models.OrderVendorItem);
+          Order.hasMany(models.OrderVendor);
           Order.belongsToMany(models.Vendor, {through:models.OrderVendor});
           Order.belongsToMany(models.VendorContactAddressBook, {through:models.OrderVendor});
           Order.hasOne(models.Customer, {foreignKey:'CustomerId'});

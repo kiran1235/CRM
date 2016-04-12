@@ -7,13 +7,13 @@ app
       return $http.get($rootScope.$domain+'/vendors');
     };
     this.getVendor=function(vendorid){
-      return $http.get($rootScope.$domain+'/vendor/'+vendorid);
+      return $http.get($rootScope.$domain+'/vendors/'+vendorid);
     };
     this.createVendor=function(formObject){
       return $http({
         method:'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        url:$rootScope.$domain+'/vendor/',
+        url:$rootScope.$domain+'/vendors/',
         data:formObject,
         transformRequest: function(obj) {
           var str = [];

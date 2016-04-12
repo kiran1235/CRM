@@ -22,10 +22,10 @@ var Product = {
             models.Product.findOne({
                 include:[
                     {
-                        model: models.Inventory,
+                        model: models.Inventory
                     },
                     {
-                        model: models.Vendor,
+                        model: models.Vendor,attributes:["id","name"]
                     },
                     {
                       model: models.ProductImage, limit:1, order:'id desc'
@@ -47,11 +47,6 @@ var Product = {
       return new Promise(function(resolve,reject) {
         models.Product.findAll({
           include:[
-            {
-              model: models.Inventory, attributes:["serialnumber","unitprice","id"],
-                where:
-                    ['instock > restock']
-            },
             {
               model: models.Vendor,
               where:{
@@ -83,6 +78,13 @@ var Product = {
                 where:
                     ['instock > restock']
             },
+            {
+              model: models.Vendor,
+              where:{
+                id:id
+              },
+              attributes:["name"]
+            }              
           ], attributes:["id","name","category","subcategory","type","model"],
             where:{
                 status:1

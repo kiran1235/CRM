@@ -50,17 +50,17 @@ productrouter
 //      res.json({rc:-1,message:'few product details are not provided',details:err});
 //  });
 //})
-.get('/product/:id/',function(req,res,next){
+.get('/products/:id/',function(req,res,next){
   product.getById(req.params.id).then(function(products){
     res.json({rc:0,data:products});
   }).catch(function(err){
     res.json({rc:-1,message:'no product found',error:err.message});
   });
-}).delete('/product/:id',function(req,res,next){
+}).delete('/products/:id',function(req,res,next){
   product.delete(req.params.id).then(function(product){
     res.json({rc:0,data:product});
   });
-}).put('/product/:id',function(req,res,next){
+}).put('/products/:id',function(req,res,next){
   product.update(req.params.id,requestparameters.getPostParameters(req)).then(function(result){
     result=requestparameters.getPostParameters(req);
     result['updatedAt']=new Date().toISOString();
@@ -126,7 +126,7 @@ productrouter
   inventory.get().then(function(inventory){
     res.json({rc:0,data:inventory});
   });
-}).get('/product/:id/inventory/',function(req,res,next){
+}).get('/products/:id/inventory/',function(req,res,next){
     var self=this;
     inventory.getByProduct(req.params.id,
       requestparameters.getPostParameters(req)
@@ -136,7 +136,7 @@ productrouter
       console.log(err);
       res.json({rc:-1,message:'few Inventory details are not provided',details:err});
     });
-}).post('/product/:id/inventory/',function(req,res,next){
+}).post('/products/:id/inventory/',function(req,res,next){
   var self=this;
   product.getById(req.params.id).then(function(product){
     inventory.create(product,
@@ -151,23 +151,26 @@ productrouter
     res.json({rc:-1,message:'no product found'});
   });
 
-}).put('/product/:productid/inventory/:id',function(req,res,next){
+}).put('/products/:productid/inventory/:id',function(req,res,next){
   var self= this;
+    
     inventory.update(req.params.productid,req.params.id,
       requestparameters.getPostParameters(req)
     ).then(function(affectedRows){
-      res.json({rc:0,message:"Inventory updated",data:requestparameters.getPostParameters(req)});
+      res.json({rc:0,message:"Inventory updated"});
     }).catch(function(err){
       console.log(err);
       res.json({rc:-1,message:'few Inventory details are not provided',details:err});
     });
 })
-.get('/vendor/:vendorid/inventory/',function(req,res,next){
+.get('/vendors/:vendorid/products/',function(req,res,next){
     product.getByVendor(req.params.vendorid).then(function(products){
       res.json({rc:0,data:products});
+    }).catch(function(err){
+      res.json({rc:-1,message:err.message,data:{}});
     });
 })
-.post('/product/:id/upload/',function(req,res,next){
+.post('/products/:id/upload/',function(req,res,next){
   var upload = multer({ //multer settings
     storage: storage
   }).single('file');

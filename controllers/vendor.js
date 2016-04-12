@@ -379,6 +379,7 @@ var Vendor = {
       });
     },
     'addProduct':function(id,options){
+      options["status"]=1;        
       return new Promise(function(resolve,reject) {
 
         models.Vendor.findOne({

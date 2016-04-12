@@ -22,7 +22,7 @@ vendorrouter.get('/vendors/',function(req,res,next){
   //  });
   //}, 1000);
 
-}).post('/vendor/',function(req,res,next){
+}).post('/vendors/',function(req,res,next){
     var newvendorid=0;
     var params=requestparameters.getPostParameters(req);
     params.isprimary=1;
@@ -49,30 +49,30 @@ vendorrouter.get('/vendors/',function(req,res,next){
     }).catch(function(err){
       res.json({rc:-1,message:'Valid Vendor Name is not provided',details:err.message});
     });
-}).get('/vendor/:id/',function(req,res,next){
+}).get('/vendors/:id/',function(req,res,next){
   vendor.getById(req.params.id).then(function(vendors){
     res.json({rc:0,data:vendors});
   }).catch(function(err){
     res.json({rc:-1,message:'no vendor found',details:err.message});
   });
-}).delete('/vendor/:id',function(req,res,next){
+}).delete('/vendors/:id',function(req,res,next){
   vendor.delete(req.params.id).then(function(vendor){
     res.json({rc:0,data:vendor});
   });
-}).put('/vendor/:id',function(req,res,next){
+}).put('/vendors/:id',function(req,res,next){
   vendor.update(req.params.id,{name:req.body['entity[name]']}).then(function(result){
     res.json({rc:0,message:'vendor details are updated',details:result});
   }).catch(function(err){
     console.log(err);
     res.json({rc:-1,message:'error occurred while updating vendor',details:err.message});
   });
-}).get('/vendor/:id/addresses/',function(req,res,next){
+}).get('/vendors/:id/addresses/',function(req,res,next){
       vendor.getAddressBookByVendorId(req.params.id).then(function(vendors){
           res.json({rc:0,data:vendors});
       }).catch(function(err){
           res.json({rc:-1,message:'no address is provided'});
       });
-}).post('/vendor/:id/address/',function(req,res,next){
+}).post('/vendors/:id/address/',function(req,res,next){
       vendor.getById(req.params.id).then(function(_vendor){
           vendor
             .addAddressBook(_vendor,{
@@ -94,7 +94,7 @@ vendorrouter.get('/vendors/',function(req,res,next){
       }).catch(function(err){
           res.json({rc:-1,message:'few details are not provided',details:err.message});
       });
-}).put('/vendor/:vendorid/address/:id',function(req,res,next){
+}).put('/vendors/:vendorid/address/:id',function(req,res,next){
     vendor.updateVendorAddressBook(req.params.vendorid,req.params.id,{
       addressline1:req.body['entity[addressline1]'],
       addressline2:req.body['entity[addressline2]'],
@@ -107,7 +107,7 @@ vendorrouter.get('/vendors/',function(req,res,next){
     }).catch(function(error){
       res.json({rc:-1,message:'error occurred while updating vendor address',details:error.message});
     });
-}).delete('/vendor/:vendorid/address/:id',function(req,res,next){
+}).delete('/vendors/:vendorid/address/:id',function(req,res,next){
   vendor.getVendorAddressBookById(req.params.vendorid,req.params.id).then(function(address){
     vendor.deleteVendorAddressBook(address).then(function(callback){
       res.json({rc:0,message:'given vendor address is deleted'});
@@ -117,13 +117,13 @@ vendorrouter.get('/vendors/',function(req,res,next){
   }).catch(function(error){
     res.json({rc:-1,message:'error occurred while removing vendor address',details:error.message});
   });
-}).get('/vendor/:id/contacts/',function(req,res,next){
+}).get('/vendors/:id/contacts/',function(req,res,next){
       vendor.getContactByVendorId(req.params.id).then(function(vendors){
           res.json({rc:0,data:vendors});
       }).catch(function(err){
           res.json({rc:-1,message:'no contact is provided'});
       });
-}).post('/vendor/:id/contact',function(req,res,next){
+}).post('/vendors/:id/contacts',function(req,res,next){
     vendor.getById(req.params.id).then(function(_vendor){
       vendor.addContact(_vendor,{
         id:req.params.id,
@@ -145,13 +145,13 @@ vendorrouter.get('/vendors/',function(req,res,next){
     }).catch(function(err){
       res.json({rc:-1,message:'no vendor found'});
     });
-}).get('/vendor/:vendorid/contact/:id/',function(req,res,next){
+}).get('/vendors/:vendorid/contacts/:id/',function(req,res,next){
   vendor.getContactById(req.params.vendorid,req.params.id).then(function(_contact){
     res.json({rc:0,data:_contact});
   }).catch(function(err){
     res.json({rc:-1,message:'error occurred while fetching contacts'});
   });
-}).delete('/vendor/:vendorid/contact/:id',function(req,res,next){
+}).delete('/vendors/:vendorid/contacts/:id',function(req,res,next){
   vendor.getContactById(req.params.vendorid,req.params.id).then(function(_contact){
     vendor.deleteContact(_contact).then(function(callback){
       res.json({rc:0,message:'given contact is deleted'});
@@ -161,19 +161,19 @@ vendorrouter.get('/vendors/',function(req,res,next){
   }).catch(function(error){
     res.json({rc:-1,message:'error occurred while removing contact',details:error});
   });
-}).put('/vendor/:vendorid/contact/:id',function(req,res,next){
+}).put('/vendors/:vendorid/contacts/:id',function(req,res,next){
   vendor.updateContact(req.params.vendorid,req.params.id,{name:req.body['entity[name]']}).then(function(result){
     res.json({rc:0,message:'vendor contact details are updated'});
   }).catch(function(err){
     res.json({rc:-1,message:'error occurred while updating vendor contact',details:err.message});
   });
-}).get('/vendor/:vendorid/contact/:id/addresses/',function(req,res,next){
+}).get('/vendors/:vendorid/contacts/:id/addresses/',function(req,res,next){
     vendor.getAddressBookByContactId(req.params.vendorid,req.params.id).then(function(_contact){
         res.json({rc:0,data:_contact});
     }).catch(function(err){
         res.json({rc:-1,message:'error occurred while fetching contact address book'});
     });
-}).post('/vendor/:vendorid/contact/:id/address/',function(req,res,next){
+}).post('/vendors/:vendorid/contacts/:id/address/',function(req,res,next){
     vendor.getContactById(req.params.vendorid,req.params.id).then(function(_contact){
         vendor
           .addContactAddressBook(_contact,{
@@ -193,7 +193,7 @@ vendorrouter.get('/vendors/',function(req,res,next){
     }).catch(function(err){
         res.json({rc:-1,message:'few contact details are not provided',details:err});
     });
-}).delete('/vendor/:vendorid/contact/:contactid/address/:id',function(req,res,next){
+}).delete('/vendors/:vendorid/contacts/:contactid/address/:id',function(req,res,next){
   vendor.getContactAddressBookById(req.params.contactid,req.params.id).then(function(address){
     vendor.deleteContactAddressBook(address).then(function(callback){
       res.json({rc:0,message:'given contact address is deleted'});
@@ -203,7 +203,7 @@ vendorrouter.get('/vendors/',function(req,res,next){
   }).catch(function(error){
     res.json({rc:-1,message:'error occurred while removing contact address',details:error});
   });
-}).put('/vendor/:vendorid/contact/:contactid/address/:id',function(req,res,next){
+}).put('/vendors/:vendorid/contacts/:contactid/address/:id',function(req,res,next){
   vendor.getContactById(req.params.vendorid,req.params.contactid).then(function(_contact){
     vendor.updateContactAddressBook(req.params.contactid,req.params.id,{
       addressline1:req.body['entity[addressline1]'],
@@ -226,19 +226,20 @@ vendorrouter.get('/vendors/',function(req,res,next){
 
 
 
-.get('/vendor/:id/products',function(req,res,next){
+.get('/vendors/:id/products',function(req,res,next){
     vendor.getProducts(req.params.id).then(function(products){
       res.json({rc:0,data:products});
     });
-}).post('/vendor/:id/products',function(req,res,next){
+}).post('/vendors/:id/products',function(req,res,next){
   var self= this;
+    
     vendor.addProduct(req.params.id,
-    requestparameters.getPostParameters(req)
-  ).then(function(_newproduct){
-    res.json({rc:0,data:_newproduct});
-  }).catch(function(err){
+        requestparameters.getPostParameters(req)
+    ).then(function(_newproduct){
+        res.json({rc:0,data:_newproduct});
+    }).catch(function(err){
       res.json({rc:-1,message:'few product details are not provided',details:err});
-  });
+    });
 })
 
 

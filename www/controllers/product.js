@@ -19,7 +19,7 @@ app
             $scope.entity={
               name:'test product',
               type:'test type',
-              model:'test model',
+              model:'lb',
               category:'test category',
               subcategory:'test sub category',
               serialnumber:'0000000000',
@@ -51,7 +51,7 @@ app
     $scope.initByVendor=function(vendor){
       if(vendor!=undefined){
         $scope.isvendor=true;
-        $productservice.inventory.getByVendor(vendor.id).success(function(products){
+        $productservice.getByVendor(vendor.id).success(function(products){
           $scope.products=products.data;
         });
       }
@@ -90,8 +90,20 @@ app
     }else{
       _product['image']='/tmp/uploads/'+_data['ProductImages'][0]['filename'];
     }
-
+    
+    _vendor={id:0,name:'unknown'};
+      
+    if(_data.Vendors && _data.Vendors.length>0){
+        _vendor={
+            id:_data.Vendors[0].id,
+            name:_data.Vendors[0].name
+       }   
+    }  
+       
+    $scope.vendor=_vendor;   
+      
     $scope.product=_product;
+      
     $scope.inventories=_inventories;
 
     $scope.edit=function(product){
@@ -105,6 +117,7 @@ app
     }
 
     $scope.save=function(product){
+        console.log(product);
       $productservice.update(product).success(function(data){
         if(data.rc>=0){
           $scope.product=$scope.selectedProduct;
@@ -181,16 +194,15 @@ app
     }
 
     $scope.updateInventory=function(inventory){
-      inventory['inventoryId']=inventory.id;
-      inventory['id']=inventory.ProductId;
       $productservice.inventory.update(inventory).success(function(data){
         if(data.rc>=0){
           angular.forEach($scope.inventories,function(inventory,key){
             if(inventory.id==$scope.selectedInventory.id){
               $scope.inventories[key]=angular.copy($scope.selectedInventory);
+              $scope.cancelEditInventory();    
             }
           });
-          $scope.cancelEditInventory();
+          
         }
       });
     }

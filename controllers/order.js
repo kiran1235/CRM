@@ -51,8 +51,52 @@ var Order = {
            });
        });        
     },
+    'generate':function(len){
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for( var i=0; i < len; i++ )
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        return text;
+    },
     'create':function(options){
-        
+        return new Promise(function(resolve,reject) {
+            
+            models.Order.create(options).then(function(neworder){
+                var _nitems=options.items.length;
+                for(var _i=0;_i<_nitems;_i++){
+                    var item = options.items[_i];
+                    neworder.createOrderVendor({
+                        name:neworder.name,
+                        VendorId:item.Vendors[0].ProductVendor.VendorId,
+                        VendorContactAddressBookId:0
+                    }).then(function(newordervendor){
+                        newordervendor.createOrderVendorItem({
+                            OrderId:neworder.id,
+                            InventoryId:item.Inventories[0].id,
+                            ProductId:item.id,
+                            productName:item.name,
+                            unitprice:item.Inventories[0].unitprice,
+                            vat:0,
+                            discountamount:0,
+                            quantity:item.cartquantity,
+                            measureunit:item.model,
+                            status:'new',
+                            isdeleted:0
+                        }).then(function(newordervendoritem){
+                        }).catch(function(err){
+                            reject(err);
+                        });
+                    }).catch(function(err){
+                        console.log(err);
+                        reject(err);
+                    });
+                }
+                resolve(neworder);
+
+            }).catch(function (error) {
+                   reject(error);
+            });
+        });
     }
 }
 

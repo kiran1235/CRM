@@ -64,6 +64,10 @@ var Inventory = {
             model: models.Inventory,
             attributes:["id","unitprice","instock","instock","restock","serialnumber"]
           },
+          {
+            model: models.Vendor,
+            attributes:["id","name"]
+          },
         ],
         attributes:["id","name"]
       }).then(function (inventory) {

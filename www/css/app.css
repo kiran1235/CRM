@@ -44,6 +44,10 @@ md-input-container{
   min-height:32px;
 }
 
+.link-no-decoration{
+    text-decoration: none;
+}
+
 .card-button{
   text-decoration: none;
   color:currentColor !important;

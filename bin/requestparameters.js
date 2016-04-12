@@ -8,19 +8,23 @@ module.exports={
   'getPostParameters':function(req){
     var postparams={};
     var keys=Object.keys(req.body);
+    console.log(req.body);  
     console.log(keys);
     var keylen=keys.length;
+    var chkjson=false;
     for(var k=0;k<keylen;k++){
       var pattern=/^(entity\[)(\w+)+(\])/g
       var match=pattern.exec(keys[k]);
-      postparams[match[2]]=req.body[keys[k]];
+      if(match[2]!=undefined){
+          postparams[match[2]]=req.body[keys[k]];
+      }    
     }
     return postparams;
   },
   'getBasicAuthDetais':function(req){
   		var basicauth = require('basic-auth');
 	  	var auth=basicauth(req);
-	  	return {'email': auth.name, 'password':auth.pass};
+	  	return {'email': auth.name, 'hashkey':auth.pass};
   },
   'getHeaders':function(req,param){
   		return req.headers[param];

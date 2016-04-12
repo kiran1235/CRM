@@ -1,6 +1,8 @@
 
 <md-content layout-padding>
+    <a class="link-no-decoration md-button md-ink-ripple" ui-sref='vendor({vendorid: vendor.id})'>{{vendor.name}}</a>
     <div flex="100" layout="row" layout-padding>
+        
     <div flex="20" style="border:1px solid rgba(0,0,0,0.25);text-align:center" layout="column" layout-align="start stretch">
         <div flex layout="column" layout-align="center center" ng-hide="isImageUpdated">
             <img ng-src="{{product.image}}" />
@@ -27,14 +29,15 @@
                 <md-icon aria-label="cancel" class="material-icons">cancel</md-icon>
             </md-button>
         </div>
-
     </div>
     <div flex="80">
     <div ng-if="!detailineditmode">
+        
         <div layout-gt-sm="row">
+           
         <md-input-container class="md-block" flex="90">
             <label>Product name</label>
-            <input ng-model="product.name" readonly>
+            <input ng-model="product.name">
         </md-input-container>
             <md-button ng-click="edit(product)">
                 <md-icon aria-label="edit" class="material-icons">edit</md-icon> Edit
@@ -46,7 +49,7 @@
                 <input ng-model="product.type" readonly>
             </md-input-container>
             <md-input-container class="md-block" flex-gt-sm>
-                <label>Model</label>
+                <label>Units</label>
                 <input ng-model="product.model" readonly>
             </md-input-container>
             <md-input-container class="md-block" flex-gt-sm>
@@ -91,7 +94,7 @@
                 <input ng-model="selectedProduct.type">
             </md-input-container>
             <md-input-container class="md-block" flex-gt-sm>
-                <label>Model</label>
+                <label>Units</label>
                 <input ng-model="selectedProduct.model">
             </md-input-container>
         </div>
@@ -140,11 +143,11 @@
     <script type="text/ng-template" id="display_product_row">
         <td md-cell>{{inventory.serialnumber || "N/A"}}</td>
         <td md-cell>{{inventory.unitprice|| "N/A"}}</td>
-        <td md-cell>{{inventory.instock || "0"}}</td>
-        <td md-cell>{{inventory.restock || "0"}}</td>
+        <td md-cell>{{inventory.instock || "0"}} {{product.model}}s</td>
+        <td md-cell>{{inventory.restock || "0"}} {{product.model}}s</td>
         <td md-cell>{{inventory.createdAt}}</td>
         <td md-cell>{{inventory.updatedAt}}</td>
-        <td md-cell class="button-group" ">
+        <td md-cell class="button-group">
         <md-button class="md-icon-button" ng-click="editInventory(inventory)">
             <md-icon aria-label="edit" class="material-icons">edit</md-icon>
         </md-button>

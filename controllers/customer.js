@@ -69,7 +69,7 @@ var Customer = {
             });
         });
     },
-    'destory':function(customer){
+    'destroy':function(customer){
         return customer.destroy().then(function(customer){
                 resolve(customer);
             }).catch(function(error){
@@ -264,8 +264,11 @@ var Customer = {
             customercontact.createCustomerContactAddressBook(options).then(function(v){
                 resolve(v);
             }).catch(function(error){
+               
                 customercontact.destroy().then(function(d){
+                    
                     resolve(error);
+                    
                 });
             });
         });

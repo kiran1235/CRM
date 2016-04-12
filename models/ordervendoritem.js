@@ -58,6 +58,7 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: function(models) {
+        OrderVendorItem.belongsTo(models.OrderVendor);
       }
     }
   });

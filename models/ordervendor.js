@@ -17,43 +17,54 @@ module.exports = function(sequelize, DataTypes) {
       },
       EmployeeId:{
           type: DataTypes.INTEGER,
-          allowNull: false          
+          allowNull: false,
+          defaultValue:0,
       },        
       VendorId:{
           type: DataTypes.INTEGER,
-          allowNull: false
+          allowNull: false,
+          defaultValue:0,
       },
       VendorContactAddressBookId:{
           type: DataTypes.INTEGER,
-          allowNull: false          
+          allowNull: false,
+          defaultValue:0,
       }, 
       processedAt: {
         allowNull: false,
-        type: DataTypes.DATE
+        type: DataTypes.DATE,
+        defaultValue:'9999-12-31',  
       },
       pickedAt: {
         allowNull: false,
-        type: DataTypes.DATE
+        type: DataTypes.DATE,
+        defaultValue:'9999-12-31', 
       },
       status: {
         allowNull: false,
-        type: DataTypes.TEXT
+        type: DataTypes.TEXT,
+        defaultValue:'new', 
       },          
       isdeleted:{
         type:DataTypes.INTEGER,
-        allowNull:false
+        allowNull:false,
+        defaultValue:0, 
       },
       EmployeeSignatureImageId:{
           type: DataTypes.INTEGER,
-          allowNull: false            
+          allowNull: false,
+          defaultValue:0,             
       },    
       VendorSignatureImageId:{
           type: DataTypes.INTEGER,
-          allowNull: false            
+          allowNull: false,
+          defaultValue:0,             
       }  
   }, {
     classMethods: {
       associate: function(models) {
+          OrderVendor.belongsTo(models.Order);
+          OrderVendor.hasMany(models.OrderVendorItem,{onDelete: 'cascade', hooks: true });          
       }
     }
   });

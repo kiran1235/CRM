@@ -17,7 +17,11 @@ app
           _product.push({
             id:_data.id,
             name:_data.name,
-            inventoryId:false
+            inventoryId:false,
+              vendor:{
+                  id:_data.Vendors[0].id,
+                  name:_data.Vendors[0].name 
+              }
           });
         }else{
           for(iv=0;iv<_data.Inventories.length;iv++){
@@ -29,6 +33,10 @@ app
               unitprice:_data.Inventories[iv].unitprice,
               instock:_data.Inventories[iv].instock,
               restock:_data.Inventories[iv].restock,
+              vendor:{
+                  id:_data.Vendors[0].id,
+                  name:_data.Vendors[0].name 
+              }
             });
           }
         }
