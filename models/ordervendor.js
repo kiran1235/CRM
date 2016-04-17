@@ -64,7 +64,9 @@ module.exports = function(sequelize, DataTypes) {
     classMethods: {
       associate: function(models) {
           OrderVendor.belongsTo(models.Order);
-          OrderVendor.hasMany(models.OrderVendorItem,{onDelete: 'cascade', hooks: true });          
+          OrderVendor.hasMany(models.OrderVendorItem,{onDelete: 'cascade', hooks: true });
+          OrderVendor.hasMany(models.OrderSignature,{onDelete: 'cascade', hooks: true });
+          OrderVendor.belongsTo(models.VendorContactAddressBook);
       }
     }
   });

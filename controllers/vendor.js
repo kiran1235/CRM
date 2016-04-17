@@ -26,7 +26,7 @@ var Vendor = {
                     model: models.VendorContact,
                     include:{
                       model:models.VendorContactAddressBook,
-                        attributes:["phone","formattedaddress","latitude","longitude"],order:'id desc'
+                        attributes:["id","phone","formattedaddress","latitude","longitude"],order:'id desc'
                     },attributes:["id","isprimary"],where:{
                         isdeleted:0
                     }

@@ -62,6 +62,17 @@ router
 })
 .get('/customer/api/orders/',function(req,res,next){
 })
+.get('/store/api/customer/:customerid/orders/:id',function(req,res,next){
+  order.getById({id:req.params.id}).then(function(orders){
+        //var buff = new Buffer(JSON.stringify({rc:0,data:orders})).toString("base64");  
+        //res.send(req.query.callback+'("'+buff+'")');
+        res.json({rc:0,orders:orders});
+    }).catch(function(err){
+        //var buff = new Buffer(JSON.stringify({rc:-1,message:'invalid details requested'})).toString("base64");  
+        //res.send(req.query.callback+'("'+buff+'")');
+      res.json({rc:0,orders:[],error:err});
+    });
+})
 .post('/store/api/orders/',function(req,res,next){
     
     var _reqp=requestparameters.getPostParameters(req);
@@ -89,7 +100,7 @@ router
                         EmployeeId:0,
                         CustomerDeliveryAddressBookId:_newcustomeraddress.id,
                         CustomerBillingAddressBookId:_newcustomeraddress.id,
-                        scheduleAt:_params.scheduleAt,
+                        scheduleAt:_params.customer.scheduledate+" "+_params.customer.scheduletime,
                         deliveryAt:'9999-12-31',
                         status:'new',
                         isdeleted:0,
@@ -98,12 +109,12 @@ router
                         VendorContactAddressBookId:0,
                         items:_params.items
                     };
-                
                     order.create(_orderparams).then(function(_neworder){
                         res.json({rc:0,message:'order placed succesfully',customer:_newcustomer.id,order:_neworder.id});
                     });
                 })
                 .catch(function(err){
+                
                     customer.destroy(_newcustomer).then(function(err){
                         res.json({rc:-1,message:'address details are not provided',order:[]});
                     }).catch(function(err){
@@ -112,6 +123,7 @@ router
                 });
             
             }).catch(function(err){
+            
                     customer.destroy(_newcustomer).then(function(err){
                         res.json({rc:-1,message:'address details are not provided',order:[]});
                     }).catch(function(err){

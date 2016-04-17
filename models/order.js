@@ -58,9 +58,10 @@ module.exports = function(sequelize, DataTypes) {
           Order.hasMany(models.OrderVendor);
           Order.belongsToMany(models.Vendor, {through:models.OrderVendor});
           Order.belongsToMany(models.VendorContactAddressBook, {through:models.OrderVendor});
-          Order.hasOne(models.Customer, {foreignKey:'CustomerId'});
-          Order.belongsTo(models.CustomerAddressBook, {foreignKey:'CustomerDeliveryAddressBookId'});
+          Order.belongsTo(models.Customer, {foreignKey:'CustomerId'});
+          Order.belongsTo(models.CustomerContactAddressBook, {foreignKey:'CustomerDeliveryAddressBookId'});
           Order.hasMany(models.OrderPaymetDetails);
+          Order.hasMany(models.OrderSignature);
       }
     }
   });

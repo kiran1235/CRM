@@ -8,10 +8,18 @@ module.exports={
   'getPostParameters':function(req){
     var postparams={};
     var keys=Object.keys(req.body);
-    console.log(req.body);  
-    console.log(keys);
+    //console.log(req.body);  
+    //console.log(keys);
     var keylen=keys.length;
     var chkjson=false;
+      
+    var _params=req.body;
+      
+    if(_params.entity !=undefined){
+        return _params.entity;
+    }  
+      
+      
     for(var k=0;k<keylen;k++){
       var pattern=/^(entity\[)(\w+)+(\])/g
       var match=pattern.exec(keys[k]);

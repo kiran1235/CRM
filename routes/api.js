@@ -100,7 +100,7 @@ router
         res.set('Expires', '0');          
         user.auth({'authkey':req.query.token}).then(function(currentuser){
           order.get({from:req.query.from,to:req.query.to}).then(function(orders){
-                var buff = new Buffer(JSON.stringify({rc:0,data:orders})).toString("base64");  
+                var buff = new Buffer(JSON.stringify({rc:0,orders:orders})).toString("base64");  
                 res.send(req.query.callback+'("'+buff+'")');
             }).catch(function(err){
                 var buff = new Buffer(JSON.stringify({rc:-1,message:'invalid details requested'})).toString("base64");  
@@ -120,7 +120,7 @@ router
         res.set('Content-Type', 'application/x-javascript');
         res.set('Expires', '0');          
         user.auth({'authkey':req.query.token}).then(function(currentuser){
-          order.get({id:req.params.id}).then(function(orders){
+          order.getById({id:req.params.id}).then(function(orders){
                 var buff = new Buffer(JSON.stringify({rc:0,data:orders})).toString("base64");  
                 res.send(req.query.callback+'("'+buff+'")');
             }).catch(function(err){
@@ -134,30 +134,51 @@ router
 
     }    
 })
-.post('/api/orders/:orderid/vendor/:id/pickup/', function(req, res, next) {
-  params=requestparameters.getPostParameters(req);
-  if(params['token']==undefined || params['vendorsign']==undefined || params['empsign']==undefined){
+.post('/api/orders/:orderid/sign/:id/pickup/', function(req, res, next) {
+  var params=requestparameters.getPostParameters(req);
+  
+    
+  if(req.query.token == undefined || params['vendorsign']==undefined || params['empsign']==undefined){
       res.json({rc:-1,message:'invalid details posted'});
   }else{
     user.auth({'authkey':req.query.token}).then(function(currentuser){
-        res.json({rc:0,message:'received succesfully'});
+        order.addPickupsignature(req.params.orderid,req.params.id,currentuser.id,
+                params['vendorsign'],
+                params['empsign']
+        ).then(function(a){
+            res.json({rc:0,message:'received succesfully'});
+        });
+        
+        
     }).catch(function(err){
+        console.log(err);
         res.json({rc:-1,message:'invalid user details'});
     });
   }      
 })
-.post('/api/orders/:orderid/delivery/', function(req, res, next) {
-  params=requestparameters.getPostParameters(req);
-  if(params['token']==undefined || params['customersign']==undefined || params['empsign']==undefined){
+.post('/api/orders/:orderid/sign/:id/delivery/', function(req, res, next) {
+  var params=requestparameters.getPostParameters(req);
+  
+    
+  if(req.query.token == undefined || params['customersign']==undefined || params['empsign']==undefined){
       res.json({rc:-1,message:'invalid details posted'});
   }else{
     user.auth({'authkey':req.query.token}).then(function(currentuser){
-        res.json({rc:0,message:'received succesfully'});
+        order.addDeliverysignature(req.params.orderid,req.params.id,currentuser.id,
+                params['customersign'],
+                params['empsign']
+        ).then(function(a){
+            res.json({rc:0,message:'received succesfully'});
+        });
+        
+        
     }).catch(function(err){
+        console.log(err);
         res.json({rc:-1,message:'invalid user details'});
     });
   }      
 })
+
 ;
 
 
