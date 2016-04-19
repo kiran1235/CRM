@@ -48,6 +48,28 @@ router
     res.json({rc:-1,message:'invalid user details'});
   });
 })
+.post('/api/login/',function(req, res, next) {
+  var params=requestparameters.getPostParameters(req);
+
+  if(params['email']==undefined && params['username'] == undefined){
+  	 res.json({rc:-1,message:'invalid user details'});
+      return;
+  }else if(params['username']){
+  	 params['email']=params['username']
+  }    
+    
+  if(params['hashkey']==undefined && params['password'] == undefined){
+  	 res.json({rc:-1,message:'invalid user details'});
+      return;
+  }else if(params['password']){
+  	 params['hashkey']=params['password']
+  }
+  user.login(params).then(function(result){
+    res.json({rc:0,message:'welcome',data:{authkey:result.authkey}});
+  }).catch(function(err){
+    res.json({rc:-1,message:'invalid user details'});
+  });
+})
 .get('/api/vendors/',function(req,res,next){
     if(req.query.callback == undefined || req.query.token == undefined){
         res.status(404).send('Not found');    
