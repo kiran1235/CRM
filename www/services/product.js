@@ -1,6 +1,10 @@
 /**
  * Created by kiran on 12/29/15.
  */
+
+/**
+ * Created by kiran on 12/29/15.
+ */
 app
 .service('$productservice',['$http','$rootScope','Upload',function($http,$rootScope,Upload){
   this.getById=function(id){

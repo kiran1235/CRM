@@ -49,15 +49,30 @@ app
     $urlRouterProvider.otherwise("/");
     $stateProvider
       .state('customers',{
+        name:'customers',
         url:'/customers/',
-        resolve:{
-          $customers:['CustomerService',
-            function(CustomerService){
-              return CustomerService.getCustomers();
+        resolve: {
+          $dataType:function(){return "customers";},
+          $data: ['$customerservice',
+            function ($customerservice) {
+              return $customerservice.get();
             }]
         },
-        controller:'CustomersController',
-        'templateUrl':'customers.html'
+        templateUrl:'/www/partials/customers.html',
+        controller: 'CustomerController'
+      })
+      .state('customer',{
+        name:'customer',
+        url:'/customers/@{customerid:[0-9]+}.html',
+        resolve:{
+          $dataType:function(){return "customer";},
+          $data:['$stateParams','$customerservice',
+            function($stateParams,$customerservice){
+              return $customerservice.getById($stateParams.customerid);
+            }],
+        },
+        templateUrl:'/www/partials/vendors.id.html',
+        controller:'VendorController'
       })
       .state('inventory',{
         url:'/inventory/',
@@ -132,6 +147,32 @@ app
         },
         templateUrl:'/www/partials/employees.id.html',
         controller:'EmployeeController'
+      }) 
+      .state('orders',{
+        name:'orders',
+        url:'/orders/',
+        resolve:{
+          $dataType:function(){return "orders";},
+          $data:['$stateParams','$orderservice',
+            function($stateParams,$orderservice){
+              return $orderservice.get();
+            }],
+        },
+        templateUrl:'/www/partials/orders.html',
+        controller:'OrderController'
+      })  
+      .state('order',{
+        name:'order',
+        url:'/orders/@{orderid:[0-9]+}.html',
+        resolve:{
+          $dataType:function(){return "order";},
+          $data:['$stateParams','$orderservice',
+            function($stateParams,$orderservice){
+              return $orderservice.getById($stateParams.orderid);
+            }],
+        },
+        templateUrl:'/www/partials/orders.id.html',
+        controller:'OrderController'
       })    
   }])
 

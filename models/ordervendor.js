@@ -67,6 +67,7 @@ module.exports = function(sequelize, DataTypes) {
           OrderVendor.hasMany(models.OrderVendorItem,{onDelete: 'cascade', hooks: true });
           OrderVendor.hasMany(models.OrderSignature,{onDelete: 'cascade', hooks: true });
           OrderVendor.belongsTo(models.VendorContactAddressBook);
+          OrderVendor.belongsTo(models.Vendor);
       }
     }
   });

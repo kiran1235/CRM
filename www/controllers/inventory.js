@@ -148,9 +148,5 @@ app
           }
       });
     };
-
-    console.log($scope.isvendor);
-
-
   }])
 ;

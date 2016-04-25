@@ -5,20 +5,26 @@ var Promise = require("bluebird");
 /** load models **/
 var models = require('../models/index.js');
 var crypto = require('crypto');
+
+
+
 var Order = {
     'get':function(options){
        return new Promise(function(resolve,reject) {
            models.Order.findAll({
                 include:[
                 {
-                    model:models.OrderVendor,attributes:["VendorId","processedAt","status"],
+                    model:models.OrderVendor,attributes:["id","VendorId","processedAt","status"],
                     include:[{
                        model:models.VendorContactAddressBook,attributes:["formattedaddress","city","country","phone","latitude","longitude"]
                     }]
                 },
                 {
                     model:models.CustomerContactAddressBook,attributes:["formattedaddress","phone","city","latitude","longitude"],
-                }
+                },
+                {
+                    model:models.Employee,attributes:["name"],
+                },                    
                ],               
                where:{
                    isdeleted:0,
@@ -39,21 +45,27 @@ var Order = {
            models.Order.findOne({
                 include:[
                 {
-                    model:models.OrderVendor,attributes:["VendorId","processedAt","status"],
+                    model:models.OrderVendor,attributes:["id","VendorId","processedAt","status"],
                     include:[{
                          model:models.OrderVendorItem, attributes:["productName","quantity","measureunit"]
                     },{
                        model:models.VendorContactAddressBook,attributes:["formattedaddress","city","country","phone","latitude","longitude"]
                     },{
                        model:models.OrderSignature,attributes:["id","status"] 
+                    },
+                     {
+                       model:models.Vendor,attributes:["name"]
                     }]
                 },
                 {
                     model:models.Customer,attributes:["id","name"],
                 },
-                    {
-                        model:models.CustomerContactAddressBook,attributes:["formattedaddress","phone","city","latitude","longitude"],
-                    }
+                {
+                    model:models.CustomerContactAddressBook,attributes:["formattedaddress","phone","city","latitude","longitude"],
+                },
+                {
+                    model:models.Employee,attributes:["name"],
+                },                    
                     
                ],
                
@@ -61,7 +73,7 @@ var Order = {
                    isdeleted:0,
                    id:options['id']
                }
-               ,attributes:["name","EmployeeId","CustomerId","status","scheduleAt","deliveryAt"]
+               ,attributes:["id","name","EmployeeId","CustomerId","status","scheduleAt","deliveryAt"]
            }).then(function (orders) {
                resolve(orders);
            }).catch(function (error) {
@@ -149,7 +161,7 @@ var Order = {
                 EmployeePickupSignature:empsign,
                 status:'pickup complete'
             },{
-                where:{id:signid}
+                where:{OrderId:orderid,id:signid}
             }).then(function (affectedrows) {
                     models.Order.update({status:'pickup complete'},{where:{id:orderid}}).then(function(a){
                         resolve(a);
@@ -169,7 +181,7 @@ var Order = {
                 EmployeeDeliverySignature:empsign,
                 status:'delivery complete'
             },{
-                where:{id:signid}
+                where:{OrderId:orderid,id:signid}
             }).then(function (affectedrows) {
                     models.Order.update({status:'delivery complete'},{where:{id:orderid}}).then(function(a){
                         resolve(a);

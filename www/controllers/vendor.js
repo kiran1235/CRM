@@ -152,7 +152,34 @@ app
 
 
     if($dataType=='vendors'){
-      $scope.vendors=$data.data.data;
+        $scope.vendors=[];
+      //$scope.vendors=$data.data.data;
+      _count=$data.data.data.length;
+      for(_c=0;_c<_count;_c++){
+        _data=$data.data.data[_c];  
+        _cnt=_data.length;  
+        _i=0; _j=0; 
+        _abcnt = _data.VendorContacts[_i].VendorContactAddressBooks.length;
+        if (_abcnt > 0) {
+            _primary = {
+              id: _data.id,
+              name: _data.name,      
+              city: _data.VendorContacts[_i].VendorContactAddressBooks[_j].city,
+              phone: _data.VendorContacts[_i].VendorContactAddressBooks[_j].phone,
+              zipcode: _data.VendorContacts[_i].VendorContactAddressBooks[_j].zipcode,
+            };
+        }else{
+            _primary = {
+              id: _data.id,
+              name: _data.name,    
+              city: 'n/a',
+              phone: 'n/a',
+              zipcode: 'n/a',
+            };
+        }
+        $scope.vendors.push(_primary);
+      }    
+        
     }
 
     if($dataType=='vendor') {

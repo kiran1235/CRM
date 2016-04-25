@@ -10,28 +10,97 @@ var Customer = {
     'get':function(options){
        return new Promise(function(resolve,reject) {
            models.Customer.findAll({
-           }).then(function (customers) {
-               resolve(customers);
+            include:[
+                  {
+                    model: models.CustomerContact,
+                    include:{
+                      model:models.CustomerContactAddressBook,
+                        attributes:["phone","formattedaddress","city","zipcode"],order:'id desc'
+                    },attributes:["id","isprimary"],where:{
+                        isdeleted:0
+                    }
+                  },
+                ],              
+             attributes:["id","name"]
+           }).then(function (Customers) {
+               resolve(Customers);
            }).catch(function (error) {
                reject(error);
            });
        });
     },
+    'getCustomersForAPI':function(options){
+       return new Promise(function(resolve,reject) {
+           models.Customer.findAll({
+            include:[
+                  {
+                    model: models.CustomerContact,
+                    include:{
+                      model:models.CustomerContactAddressBook,
+                        attributes:["id","phone","formattedaddress","latitude","longitude"],order:'id desc'
+                    },attributes:["id","isprimary"],where:{
+                        isdeleted:0
+                    }
+                  },
+                ],              
+             attributes:["id","name"]
+           }).then(function (Customers) {
+               resolve(Customers);
+           }).catch(function (error) {
+               reject(error);
+           });
+       });
+    },    
     'getById':function(id){
         return new Promise(function(resolve,reject) {
             models.Customer.findOne({
-                where: {id: id}
-            }).then(function (customer) {
-                if(customer.length<=0){
+                include:[
+                  {
+                    model: models.CustomerContact,
+                    include:{
+                      model:models.CustomerContactAddressBook
+                    }
+                  },
+                ]
+              ,where: {id: id}
+            }).then(function (Customer) {
+                if(Customer.length<=0){
                     throw new Error("Customer Not Found");
                 }else{
-                    resolve(customer);
+                    resolve(Customer);
                 }
             }).catch(function (error) {
                 reject(error);
             });
         });
     },
+    'getByIdForAPI':function(id){
+        return new Promise(function(resolve,reject) {
+            models.Customer.findOne({
+                include:[
+                  {
+                    model: models.CustomerContact,
+                    include:{
+                      model:models.CustomerContactAddressBook,
+                      attributes:["phone","formattedaddress","latitude","longitude"],order:'id desc'
+
+                    },attributes:["id","isprimary"],where:{
+                        isdeleted:0
+                    }
+                  },
+                ]
+              ,where: {id: id}
+            }).then(function (Customer) {
+                if(Customer.length<=0){
+                    throw new Error("Customer Not Found");
+                }else{
+                    resolve(Customer);
+                }
+            }).catch(function (error) {
+                reject(error);
+            });
+        });
+    }, 
     'create':function(options){
         return new Promise(function(resolve,reject) {
             models.Customer.create({

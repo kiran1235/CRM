@@ -1,0 +1,145 @@
+
+<div class="md-toolbar-tools">
+    <span>
+        <div style="font-size:10pt;color:rgba(0, 0, 0, 0.57)">Order</div>
+        <h3>
+            <span>{{order.id}}</span>
+        </h3>
+    </span>
+    <span flex></span>
+    <span>
+        <div style="font-size:10pt;color:rgba(0, 0, 0, 0.57)">Order Status</div>
+        <h3>
+            <span>{{order.status}}</span>
+        </h3>
+    </span>
+    <span flex></span>
+    <span>
+        <div style="font-size:10pt;color:rgba(0, 0, 0, 0.57)">Assigned To</div>
+        <h3>
+            <span><a ui-sref="employee({employeeid:{{order.EmployeeId||0}}})">{{order.Employee.name || "Not Assigned"}}</a></span>
+        </h3>
+    </span>    
+    <span flex></span>    
+    <span>
+        <div style="font-size:10pt;color:rgba(0, 0, 0, 0.57)">Schedule At</div>
+        <h3>
+            <span>{{order.scheduleAt}}</span>
+        </h3>
+    </span>
+    <span flex></span>  
+    <span>
+        <div style="font-size:10pt;color:rgba(0, 0, 0, 0.57)">Delivery At</div>
+        <h3>
+            <span>{{order.deliveryAt}}</span>
+        </h3>
+    </span>    
+</div> 
+<md-divider ></md-divider>
+<div class="md-toolbar-tools">    
+    <span>
+        <div style="font-size:10pt;color:rgba(0, 0, 0, 0.57)">Customer Name</div>
+        <h3>
+            <span>{{order.Customer.name}}</span>
+        </h3>
+    </span>
+    <span flex></span>
+    <span>
+        <div style="font-size:10pt;color:rgba(0, 0, 0, 0.57)">Delivery Address</div>
+        <h3>
+            <span>{{order.CustomerContactAddressBook.formattedaddress}}</span>
+        </h3>
+    </span>
+    <span flex></span>
+    <span>
+        <div style="font-size:10pt;color:rgba(0, 0, 0, 0.57)">Delivery Address</div>
+        <h3>
+            <span>{{order.CustomerContactAddressBook.phone}}</span>
+        </h3>
+    </span>
+    <md-button class="md-icon-button" aria-label="Call">
+        <md-icon  aria-label="call" class="material-icons" style="">call</md-icon>
+        <md-tooltip md-direction="bottom">
+            Call: {{order.CustomerContactAddressBook.phone}}
+        </md-tooltip>
+    </md-button>    
+</div>
+<md-divider ></md-divider> 
+<!--<div ng-repeat="(index,ordervendor) in order.OrderVendors | orderBy: '-VendorId'">-->
+   
+<!--
+<div class="md-toolbar-tools">    
+    <span>
+        <div style="font-size:10pt;color:rgba(0, 0, 0, 0.57)">Vendor Name</div>
+        <h3>
+            <span>{{ordervendor.Vendor.name}}</span>
+        </h3>
+    </span>
+    <span flex></span>
+    <span>
+        <div style="font-size:10pt;color:rgba(0, 0, 0, 0.57)">Order Status</div>
+        <h3>
+            <span>{{ordervendor.status}}</span>
+        </h3>
+    </span>    
+    <span flex></span>
+    <span>
+        <div style="font-size:10pt;color:rgba(0, 0, 0, 0.57)">Delivery Address</div>
+        <h3>
+            <span>{{ordervendor.VendorContactAddressBook.formattedaddress}}</span>
+        </h3>
+    </span>
+    <span flex></span>
+    <span>
+        <div style="font-size:10pt;color:rgba(0, 0, 0, 0.57)">Delivery Address</div>
+        <h3>
+            <span>{{ordervendor.VendorContactAddressBook.phone}}</span>
+        </h3>
+    </span>
+    <md-button class="md-icon-button" aria-label="Call">
+        <md-icon  aria-label="call" class="material-icons" style="">call</md-icon>
+        <md-tooltip md-direction="bottom">
+            Call: {{ordervendor.VendorContactAddressBook.phone}}
+        </md-tooltip>
+    </md-button>    
+</div>
+<md-divider ></md-divider>
+-->
+<div flex layout-wrap>
+    <md-table-container>
+        <table md-table style="min-width:820px;">
+            <thead md-head md-order="query.order" md-on-reorder="onReorder">
+            <tr md-row>
+                <th md-column md-order-by="nameToLower" style="width:2%;">
+                    <span>Vendor Name</span>
+                </th> 
+                <th md-column md-order-by="nameToLower" style="width:2%;">
+                    <span>Pickup Address</span>
+                </th>                
+                <th md-column md-order-by="nameToLower" style="width:2%;">
+                    <span>Product Name</span>
+                </th>
+                <th md-column style="width:2%;"><span>Quantity</span></th>
+                <th md-column style="width:2%;"><span>Status</span></th>
+            </tr>
+            </thead>
+            <tbody md-body ng-repeat="(index,ordervendor) in order.OrderVendors | orderBy: '-VendorId'">
+                <tr md-row md-auto-select  ng-repeat="(index,item) in ordervendor.OrderVendorItems | orderBy: '-productName'">
+                <td md-cell>
+                    <a ui-sref="vendor({vendorid:{{ordervendor.VendorId}}})">{{ordervendor.Vendor.name || "N/A"}}</a>
+                    
+                </td>                    
+                <td md-cell style="font-size:8pt;color:rgba(0, 0, 0, 0.57)">
+                        {{ordervendor.VendorContactAddressBook.formattedaddress}}
+                        Phone: {{ordervendor.VendorContactAddressBook.phone}}
+                </td>    
+                    
+                <td md-cell>{{item.productName || "N/A"}}</td>
+                <td md-cell>{{item.quantity || "0"}} {{item.measureunit || ""}}</td>
+                <td md-cell>{{ordervendor.status || "N/A"}}</td>    
+                </tr>
+            </tbody>
+        </table>
+    </md-table-container>
+</div>
+<!--</div>    -->

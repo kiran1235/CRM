@@ -180,8 +180,6 @@ router
 })
 .post('/api/orders/:orderid/sign/:id/delivery/', function(req, res, next) {
   var params=requestparameters.getPostParameters(req);
-  
-    
   if(req.query.token == undefined || params['customersign']==undefined || params['empsign']==undefined){
       res.json({rc:-1,message:'invalid details posted'});
   }else{

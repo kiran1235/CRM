@@ -10,6 +10,17 @@ var Vendor = {
     'get':function(options){
        return new Promise(function(resolve,reject) {
            models.Vendor.findAll({
+            include:[
+                  {
+                    model: models.VendorContact,
+                    include:{
+                      model:models.VendorContactAddressBook,
+                        attributes:["phone","formattedaddress","city","zipcode"],order:'id desc'
+                    },attributes:["id","isprimary"],where:{
+                        isdeleted:0
+                    }
+                  },
+                ],              
              attributes:["id","name"]
            }).then(function (vendors) {
                resolve(vendors);

@@ -69,7 +69,7 @@
                             </md-list-item>
                             <md-divider ></md-divider>
                             <md-list-item>
-                                <md-button>
+                                <md-button ng-click="load('orders')">
                                     <md-icon aria-label="shopping_cart" class="material-icons">shopping_cart</md-icon>
                                     Orders
                                 </md-button>
@@ -223,13 +223,17 @@
         </div>
     </script>
     <script type="text/javascript" src="/www/app.js"></script>    
+    <script type="text/javascript" src="/www/services/customer.js"></script>        
     <script type="text/javascript" src="/www/services/vendor.js"></script>
     <script type="text/javascript" src="/www/services/product.js"></script>
     <script type="text/javascript" src="/www/services/employee.js"></script>    
     <script type="text/javascript" src="/www/services/location.js"></script>
+    <script type="text/javascript" src="/www/services/order.js"></script>        
     <script type="text/javascript" src="/www/controllers/product.js"></script>
     <script type="text/javascript" src="/www/controllers/vendor.js"></script>
+    <script type="text/javascript" src="/www/controllers/customer.js"></script>        
     <script type="text/javascript" src="/www/controllers/inventory.js"></script>
     <script type="text/javascript" src="/www/controllers/employee.js"></script>    
+    <script type="text/javascript" src="/www/controllers/order.js"></script>            
     </body>
 </html>

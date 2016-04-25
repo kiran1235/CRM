@@ -62,6 +62,7 @@ module.exports = function(sequelize, DataTypes) {
           Order.belongsTo(models.CustomerContactAddressBook, {foreignKey:'CustomerDeliveryAddressBookId'});
           Order.hasMany(models.OrderPaymetDetails);
           Order.hasMany(models.OrderSignature);
+          Order.belongsTo(models.Employee, {foreignKey:'EmployeeId'});
       }
     }
   });
