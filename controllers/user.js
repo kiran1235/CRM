@@ -27,6 +27,7 @@ var User = {
     'auth':function(options){
        return new Promise(function(resolve,reject) {
            models.User.findOne({
+               attributes:["id","email","parentId","parentType"],
                where:{authkey:options['authkey']}
            }).then(function (user) {
                 if(!user){
@@ -38,7 +39,24 @@ var User = {
                reject(error);
            });
        });        
-    },    
-}
+    },
+    'get':function(options){
+       return new Promise(function(resolve,reject) {
+           models.User.findOne({
+               include:[{model:models.Employee,attributes:["id","name"]},{model:models.Vendor,attributes:["id","name"]}],
+               attributes:["id","email"],
+               where:{authkey:options['authkey']}
+           }).then(function (user) {
+                if(!user){
+                    throw new Error("User Not Found");
+                }else{
+                    resolve(user);
+                }
+           }).catch(function (error) {
+               reject(error);
+           });
+       });        
+    }
+};
 
 module.exports = User;

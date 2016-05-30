@@ -7,7 +7,7 @@ app
     return $http.get($rootScope.$domain+'/orders/'+id+'/');
   };
   this.getByVendor=function(id){
-    return $http.get($rootScope.$domain+'/vendors/'+id+'/products');
+    return $http.get($rootScope.$domain+'/orders/vendors/'+id+'/');
   };
 
   this.update=function(params){

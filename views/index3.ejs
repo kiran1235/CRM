@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html ng-app="crm">
+    <head>
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="/bower_components/angular-material/angular-material.css">
+
+        <script src="/bower_components/angular/angular.js" type="text/javascript" ></script>
+        <!--<script src="/bower_components/angular-route/angular-route.js" type="text/javascript" ></script>-->
+        <script src="/bower_components/angular-ui-router/release/angular-ui-router.js" type="text/javascript" ></script>
+        <script src="/bower_components/angular-animate/angular-animate.js" type="text/javascript" ></script>
+        <script src="/bower_components/angular-aria/angular-aria.js" type="text/javascript" ></script>
+        <script src="/bower_components/angular-material/angular-material.js" type="text/javascript" ></script>
+        <link href="/bower_components/angular-material-data-table/dist/md-data-table.min.css" rel="stylesheet" type="text/css"/>
+        <script type="text/javascript" src="/bower_components/angular-material-data-table/dist/md-data-table.min.js"></script>
+        <script type="text/javascript" src="/bower_components/angular-md5/angular-md5.min.js"></script>
+        <script type="text/javascript" src="/bower_components/ng-file-upload/ng-file-upload.min.js"></script>
+        <script type="text/javascript" src="/bower_components/ng-file-upload/ng-file-upload-shim.min.js"></script>
+        <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/t-114/assets-cache.js"></script>
+        <link rel="stylesheet" href="/www/css/app.css">
+    </head>
+	<body layout="row"  layout-align="center center" ng-controller="appLoginController">
+        <md-whiteframe class="md-whiteframe-3dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="55" layout="row" layout-align="center center">
+            <md-content layout-padding>
+            <h2 layout="row" layout-align="center center" ng-if="!errormessage">Welcome</h2>
+            <h2 layout="row" layout-align="center center" class="md-title  md-warn" ng-if="errormessage">{{errormessage}}</h2>    
+            <form name="loginform" ng-submit="login()">
+                 
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>Email Address</label>
+                        <md-icon><i class="material-icons">account_box</i></md-icon>
+                        <input ng-model="entity.username" md-maxlength="140" required>
+                        <div ng-messages="entity.username.$error" role="alert" multiple>
+                            <div ng-message="required" class="my-message">Required</div>
+                        </div>
+                </md-input-container>
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>Password</label>
+                        <md-icon><i class="material-icons">vpn_key</i></md-icon>
+                        <input ng-model="entity.password" md-maxlength="140" required>
+                        <div ng-messages="entity.password.$error" role="alert" multiple>
+                            <div ng-message="required" class="my-message">Required</div>
+                        </div>
+                </md-input-container> 
+            <div layout="row" layout-align="center center" ng-hide="processing">
+                <md-button class="md-raised md-primary" type="submit">Login</md-button>
+            </div> 
+            <div layout="row" layout-sm="column" layout-align="space-around" ng-show="processing">
+                <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            </div>                
+            </form>
+                
+            </md-content> 
+          </md-whiteframe>        
+	</body>
+    <script>
+        var app = angular.module('crm',['ngMaterial','ui.router']);
+        app
+          .controller('appLoginController', ['$scope','$http','$window', function ($scope,$http,$window) {
+            $scope.processing=false;  
+            $scope.errormessage=false;  
+              
+            $scope.login = function(){
+              $scope.processing=true;    
+              $http({
+                method:'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                url:'http://127.0.0.1/api/login/',
+                data:$scope.entity,
+                transformRequest: function(obj) {
+                  var str = [];
+                  for(var p in obj)
+                    str.push("entity["+encodeURIComponent(p) + "]=" + encodeURIComponent(obj[p]));
+                  return str.join('&');
+                },
+              }).then(function(response){
+                  if(response.data.rc==-1){
+                    $scope.processing=false;    
+                    $scope.errormessage="Invalid Details";
+                    $scope.entity.password.$dirty=true;  
+                  }else{
+                      $window.location.href= '/?token='+response.data.data.authkey;
+//                    $location.html5Mode=false;
+//                    $location.hashPrefix='!';  
+//                    $location.path('/').search('token='+response.data.data.authkey);
+//                    $location.url() == '/?token='+response.data.data.authkey
+//                    $location.absUrl() == 'http://localhost/?token='+response.data.data.authkey;                     
+//                     //$location.path('http://127.0.0.1/?token=d32998c568618c10c0408920d1647c76');
+                  }
+              });
+            };
+          }]);        
+    </script>
+</html>

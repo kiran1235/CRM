@@ -3,7 +3,6 @@
  */
 app
    .controller('CustomerController',['$scope','$state','$mdDialog','$customerservice','$locationservice','$dataType', '$data',function($scope,$state,$mdDialog,$customerservice,$locationservice,$dataType,$data) {
-       
     function getPrimary(_customer) {
        
       _foundprimary = false;

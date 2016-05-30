@@ -68,12 +68,12 @@
         <div layout-gt-sm="row">
             <md-input-container class="md-block" flex="80">
                 <label>Primary Contact name</label>
-                <input ng-model="selectedVendor.primary.ContactName" md-maxlength="140" required>
-                <div ng-messages="editSelectedVendor.name.$error" role="alert" multiple>
+                <input ng-model="entity.primary.ContactName" md-maxlength="140" required>
+                <div ng-messages="entity.primary.ContactName.$error" role="alert" multiple>
                     <div ng-message="required" class="my-message">You must provide Product Name.</div>
                 </div>
             </md-input-container>
-            <md-button ng-click="save(selectedVendor)">
+            <md-button ng-click="save()">
                 <md-icon aria-label="edit" class="material-icons">edit</md-icon> Save
             </md-button>
             <md-button ng-click="cancel()">
@@ -83,33 +83,33 @@
         <div layout-gt-sm="row">
             <md-input-container class="md-block" flex-gt-sm>
                 <label>Street Address</label>
-                <input ng-model="selectedVendor.primary.addressline1" >
+                <input ng-model="entity.primary.addressline1" >
             </md-input-container>
             <md-input-container class="md-block" flex-gt-sm>
                 <label>Suite/Apt/Unit</label>
-                <input ng-model="selectedVendor.primary.addressline2" >
+                <input ng-model="entity.primary.addressline2" >
             </md-input-container>
             <md-input-container class="md-block" flex-gt-sm>
                 <label>City</label>
-                <input ng-model="selectedVendor.primary.city" >
+                <input ng-model="entity.primary.city" >
             </md-input-container>
             <md-input-container class="md-block" flex-gt-sm>
                 <label>Category</label>
-                <input ng-model="selectedVendor.primary.country" >
+                <input ng-model="entity.primary.country" >
             </md-input-container>
         </div>
         <div layout-gt-sm="row">
             <md-input-container class="md-block" flex-gt-sm>
                 <label>Zipcode</label>
-                <input ng-model="selectedVendor.primary.zipcode" >
+                <input ng-model="entity.primary.zipcode" >
             </md-input-container>
             <md-input-container class="md-block" flex-gt-sm>
                 <label>Email</label>
-                <input ng-model="selectedVendor.primary.email" >
+                <input ng-model="entity.primary.email" >
             </md-input-container>
             <md-input-container class="md-block" flex-gt-sm>
                 <label>Phone</label>
-                <input ng-model="selectedVendor.primary.phone" >
+                <input ng-model="entity.primary.phone" >
             </md-input-container>
         </div>
     </form>

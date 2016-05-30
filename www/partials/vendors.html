@@ -34,9 +34,11 @@
                 <td md-cell><a ui-sref="vendor({vendorid:{{vendor.id}}})">{{vendor.name}}</a></td>
                 <td md-cell>{{vendor.city || "N/A"}}</td>
                 <td md-cell>{{vendor.phone|| "N/A"}}</td>
-                <td md-cell><a href="#">Orders</a> <a href="#">Inventory</a></td>
+                <td md-cell><a href="#" ui-sref="ordervendor({vendorid:vendor.id})">Orders</a>
+                <a href="#" ui-sref="vendorinventory({vendorid:vendor.id})">Inventory</a></td>
                 </tr>
             </tbody>
         </table>
     </md-table-container>
 </div>
+<!-- <a ui-sref="vendor({vendorid:{{ordervendor.VendorId}}})">{{ordervendor.Vendor.name || "N/A"}}</a> -->

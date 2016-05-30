@@ -1,183 +1,1165 @@
-/**
- * Created by kiran talapaku on 12/26/15.
- */
+angular.module('store.services', [])
+ .service('$utilityservice',['$rootScope','$http',function($rootScope,$http){
+      var self=this;
+      this.parseDate=function(inputstring){
+            var regexp = "([0-9]{4})(-([0-9]{2})(-([0-9]{2})" +
+                "(T([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?" +
+                "(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?";
+            var d = inputstring.match(new RegExp(regexp));
+            
+            var offset = 0;
+            var date = new Date(d[1], 0, 1);
 
+            if (d[3]) { date.setMonth(d[3] - 1); }
+            if (d[5]) { date.setDate(d[5]); }
+            if (d[7]) { date.setHours(d[7]); }
+            if (d[8]) { date.setMinutes(d[8]); }
+            if (d[10]) { date.setSeconds(d[10]); }
+            if (d[12]) { date.setMilliseconds(Number("0." + d[12]) * 1000); }
+            if (d[14]) {
+                offset = (Number(d[16]) * 60) + Number(d[17]);
+                offset *= ((d[15] == '-') ? 1 : -1);
+            }
+            var time = (Number(date) + (0 * 60 * 1000));
+            date.setTime(Number(time));          
+            return date;
+      };
+      
+      this.parseTime=function(inputstring){
+        var _date=this.parseDate(inputstring);  
+        var hours = _date.getHours();
+        var minutes = _date.getMinutes();
+        var ampm = hours >= 12 ? 'pm' : 'am';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        minutes = minutes < 10 ? '0'+minutes : minutes;
+        var strTime = hours + ':' + minutes + ' ' + ampm;
+        return strTime;
+      };
+      
+      this.formatDate=function(inputstring){
+          var _date=this.parseDate(inputstring);
+          return {
+              'date': (_date.getMonth() + 1) + '/' + _date.getDate() + '/' +  _date.getFullYear(),
+              'time': this.parseTime(inputstring)
 
-var app = angular.module('crm',['ngMaterial','ui.router','md.data.table','angular-md5','ngFileUpload']);
+          }
+      };
+      
+      
+ }])
+ .service('$restservice',['$rootScope','$http',function($rootScope,$http){
+     var self=this;   
+     self.get = function (_endpoint,params){
+         return $http({
+            method:'GET',
+            url:$rootScope.$domain+'/webapp/'+_endpoint,
+            params:params
+         });
+     };
+     self.post = function(_endpoint,_formObject){
+         return $http({
+            method:'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            url:$rootScope.$domain+'/webapp/'+_endpoint,
+            data:_formObject,
+            transformRequest: function(obj) {
+            var str = [];
+            for(var p in obj)
+                str.push("entity["+encodeURIComponent(p) + "]=" + encodeURIComponent(obj[p]));
+            return str.join('&');
+        }
+      });
+     }; 
+     self.put = function(_endpoint,_formObject){
+         return $http({
+            method:'PUT',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            url:$rootScope.$domain+'/webapp/'+_endpoint,
+            data:_formObject,
+            transformRequest: function(obj) {
+            var str = [];
+            for(var p in obj)
+                str.push("entity["+encodeURIComponent(p) + "]=" + encodeURIComponent(obj[p]));
+            return str.join('&');
+        }
+      });      
+     };
+ }])
+ .factory('$userservice',function($rootScope,$restservice,CacheFactory){
+    var self=this;
+ 
+    self.get=function(){
+        return self.cache.get('/user');
+    };
+    self.put=function(id,token,type){
+        self.cache.put('/user',{id:id,token:token,usertype:type});
+    };
+    
+    self.remove=function(){
+        self.cache.put('/user',{id:undefined,token:undefined,usertype:undefined});
+    };
+    
+    self.login=function(entity){
+        return $restservice.post('login',entity);        
+    }
+    
+    self.getDetails=function(){
+        return $restservice.get('user/'+self.get().id,{token:self.get().token});
+    }
 
-app
-  .run(function ($rootScope, $state, $stateParams,$http) {
-    $rootScope.$domain="http://127.0.0.1";
-    $rootScope.$state = $state;
-    $rootScope.$stateParams = $stateParams;
-    $rootScope.display_view_progress_bar=false;
-    $rootScope
-      .$on('$stateChangeStart',
-        function(event, toState, toParams, fromState, fromParams){
-          $rootScope.display_view_progress_bar=true;
-        });
-
-    $rootScope
-      .$on('$stateChangeSuccess',
-        function(event, toState, toParams, fromState, fromParams){
-          $rootScope.display_view_progress_bar=false;
-        });
-  })
-  //Routing, Configurations
-
-  .config(function($mdIconProvider) {
-    $mdIconProvider
-      .iconSet('communication', 'img/icons/sets/communication-icons.svg', 24);
-  })
-
-  ////Dialog
-  //.factory('Dialog', ['$mdDialog', function DialogFactory ($mdDialog) {
-  //  return {
-  //    open: function (url, ctrl, locals) {
-  //      return $mdDialog.show({
-  //        templateUrl: url,
-  //        controller: ctrl,
-  //        locals: {
-  //          items: locals
-  //        }
-  //      });
-  //    },
-  //  }
-  //}])
-
-  .config(['$stateProvider','$urlRouterProvider',function($stateProvider,$urlRouterProvider){
-    $urlRouterProvider.otherwise("/");
-    $stateProvider
-      .state('customers',{
-        name:'customers',
-        url:'/customers/',
-        resolve: {
-          $dataType:function(){return "customers";},
-          $data: ['$customerservice',
-            function ($customerservice) {
-              return $customerservice.get();
-            }]
-        },
-        templateUrl:'/www/partials/customers.html',
-        controller: 'CustomerController'
-      })
-      .state('customer',{
-        name:'customer',
-        url:'/customers/@{customerid:[0-9]+}.html',
-        resolve:{
-          $dataType:function(){return "customer";},
-          $data:['$stateParams','$customerservice',
-            function($stateParams,$customerservice){
-              return $customerservice.getById($stateParams.customerid);
-            }],
-        },
-        templateUrl:'/www/partials/vendors.id.html',
-        controller:'VendorController'
-      })
-      .state('inventory',{
-        url:'/inventory/',
-        resolve: {
-          $products: ['$productservice',
-            function ($productservice) {
-              return $productservice.inventory.get();
-            }]
-        },
-        controller:'InventoryController',
-        'templateUrl':'/www/partials/inventory.html'
-      })
-      .state('vendors',{
-        name:'vendors',
-        url:'/vendors/',
-        resolve: {
-          $dataType:function(){return "vendors";},
-          $data: ['$vendorservice',
-            function ($vendorservice) {
-              return $vendorservice.getVendors();
-            }]
-        },
-        templateUrl:'/www/partials/vendors.html',
-        controller: 'VendorController'
-      })
-      .state('vendor',{
-        name:'vendor',
-        url:'/vendors/@{vendorid:[0-9]+}.html',
-        resolve:{
-          $dataType:function(){return "vendor";},
-          $data:['$stateParams','$vendorservice',
-            function($stateParams,$vendorservice){
-              return $vendorservice.getVendor($stateParams.vendorid);
-            }],
-        },
-        templateUrl:'/www/partials/vendors.id.html',
-        controller:'VendorController'
-      })
-      .state('product',{
-        url:'/product/@{productid:[0-9]+}.html',
-        resolve: {
-          $product: ['$stateParams','$productservice',
-            function ($stateParams,$productservice) {
-              return $productservice.getById($stateParams.productid);
-            }]
-        },
-        controller:'ProductController',
-        'templateUrl':'/www/partials/product.id.html'
-      })
-      .state('employees',{
-        name:'employees',
-        url:'/employees/',
-        resolve: {
-          $dataType:function(){return "employees";},
-          $data: ['$employeeservice',
-            function ($employeeservice) {
-              return $employeeservice.getEmployees();
-            }]
-        },
-        templateUrl:'/www/partials/employees.html',
-        controller: 'EmployeeController'
-      })
-      .state('employee',{
-        name:'employee',
-        url:'/employees/@{employeeid:[0-9]+}.html',
-        resolve:{
-          $dataType:function(){return "employee";},
-          $data:['$stateParams','$employeeservice',
-            function($stateParams,$employeeservice){
-              return $employeeservice.getEmployee($stateParams.employeeid);
-            }],
-        },
-        templateUrl:'/www/partials/employees.id.html',
-        controller:'EmployeeController'
-      }) 
-      .state('orders',{
-        name:'orders',
-        url:'/orders/',
-        resolve:{
-          $dataType:function(){return "orders";},
-          $data:['$stateParams','$orderservice',
-            function($stateParams,$orderservice){
-              return $orderservice.get();
-            }],
-        },
-        templateUrl:'/www/partials/orders.html',
-        controller:'OrderController'
-      })  
-      .state('order',{
-        name:'order',
-        url:'/orders/@{orderid:[0-9]+}.html',
-        resolve:{
-          $dataType:function(){return "order";},
-          $data:['$stateParams','$orderservice',
-            function($stateParams,$orderservice){
-              return $orderservice.getById($stateParams.orderid);
-            }],
-        },
-        templateUrl:'/www/partials/orders.id.html',
-        controller:'OrderController'
-      })    
+     if (!CacheFactory.get('userCache')) {
+      CacheFactory.createCache('userCache', {
+        maxAge: 60 * 60 * 1000,  
+        deleteOnExpire: 'aggressive',
+        recycleFreq: 100,
+        storageMode: 'localStorage',
+        onExpire:function(key,value){
+            $rootScope.$broadcast("$UserExpired");
+        }
+      });
+      self.cache = CacheFactory.get('userCache');
+      var _usr=self.cache.get('/user');
+      if(!_usr){
+         self.cache.put('/user',{id:undefined,token:undefined,usertype:undefined}); 
+      }
+    }     
+    
+    return self;
+ })
+.factory('sessionInjector', ['$rootScope', function($rootScope) {  
+    var sessionInjector = {
+        request: function(config) {
+            if ($rootScope.token) {
+                config.headers['x-session-token'] = $rootScope.token;
+            }
+            return config;
+        }
+    };
+    return sessionInjector;
+}]) 
+ .service('$locationservice',['$http',function($http){
+    this.find=function(street,city,state){
+      street = street.split(' ').join('+');    
+      return $http.get('https://maps.googleapis.com/maps/api/geocode/json?address='+street+',+'+city+',+'+state);
+    };
+ }])
+ .service('$vendorservice',['$restservice',function($restservice){
+    this.getVendors=function(){
+      return $restservice.get('vendors');
+    };
+    this.getVendor=function(vendorid){
+      return $restservice.get('vendors/'+vendorid);
+    };
+    this.createVendor=function(formObject){
+      return $restservice.post('vendors');  
+    };
   }])
+ .service('$employeeservice',['$rootScope','$http',function($rootScope,$http){
+    this.getEmployees=function(){
+      return $http.get($rootScope.$domain+'/employees/');
+    };
+    this.getEmployee=function(employeeid){
+      return $http.get($rootScope.$domain+'/employees/'+employeeid);
+    };
+    this.createEmployee=function(formObject){
+      return $http({
+        method:'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        url:$rootScope.$domain+'/employees/',
+        data:formObject,
+        transformRequest: function(obj) {
+          var str = [];
+          for(var p in obj)
+            str.push("entity["+encodeURIComponent(p) + "]=" + encodeURIComponent(obj[p]));
+          return str.join('&');
+        }
+      });
+    };
+  }])
+  .service('$orderservice',['$restservice',function($restservice){
+  this.get=function(){
+    return $restservice.get('orders/');
+  };    
+  this.getById=function(id){
+    return $restservice.get('orders/'+id+'/');
+  };
+  this.getByVendor=function(id){
+    return $restservice.get('orders/vendors/'+id+'/');
+  };
+
+  this.update=function(params){
+      return $restservice.put('orders/'+params.id+'/',params);
+  };
+
+  this.confirm=function(params){
+      return $restservice.put('orders/'+params.id+'/confirm',{});
+  };
+
+//  this.raise=function(event){
+//    $rootScope.$broadcast(event);
+//  };
+
+  this.items={
+    'get':function(order){
+      return $restservice.get('orders/'+order.id);
+    },
+    'update':function(params){
+      return $restservice.put('orders/'+params.orderid+'/');  
+    }
+  };
+}])
+.service('$productservice',['$restservice','$rootScope','Upload',function($restservice,$rootScope,Upload){
+  this.get=function(id){
+    return $restservice.get('products/');
+  };
+        
+  this.getById=function(id){
+    return $restservice.get('products/'+id+'/');
+  };
+  this.getByVendor=function(id){
+    return $restservice.get('vendors/'+id+'/products');
+  };
+  this.create=function(params){
+    return $restservice.post('vendors/'+params.vendorid+'/products/',params); 
+  };
+
+  this.update=function(params){
+    return $restservice.put('products/'+params.id,params); 
+  };
+  
+  this.raise=function(event){
+    $rootScope.$broadcast(event);
+  };
+
+  this.uploadImage=function(product,file){
+    return Upload.upload({
+      url: $rootScope.$domain+'/products/'+product.id+'/upload/', //webAPI exposed to upload the file
+      data:{file:file} //pass file as data, should be user ng-model
+    });
+  }
+
+  this.inventory={
+    'get':function(){
+      return $restservice.get('inventory/');
+    },
+    'getByProduct':function(id){
+      return $restservice.get('products/'+id+'/inventory/');
+    },
+    'getByVendor':function(id){
+      return $restservice.get('vendors/'+id+'/inventory/');
+    },
+    'create':function(params){
+      return $restservice.post('products/'+params.id+'/inventory/',params);  
+    },
+    'update':function(params){
+      return $restservice.put('products/'+params.ProductId+'/inventory/'+params.id+'/',params);  
+    }
+  };
+}])
+;
+
+angular.module('store.controllers', [])
+.controller('CustomerController',['$scope','$state','$mdDialog','$customerservice','$locationservice','$dataType', '$data',function($scope,$state,$mdDialog,$customerservice,$locationservice,$dataType,$data) {
+    function getPrimary(_customer) {
+      _foundprimary = false;
+      _cnt = _customer.customerContacts.length;
+      for (_i = 0; _i < _cnt && !_foundprimary; _i++) {
+        if (_customer.customerContacts[_i].isprimary == 1) {
+          _abcnt = _customer.customerContacts[_i].customerContactAddressBooks.length;
+          for (_j = 0; _j < _abcnt && !_foundprimary; _j++) {
+            if (_customer.customerContacts[_i].customerContactAddressBooks[_j].isprimary == 1) {
+              _primary = {
+                customerId: _customer.id,
+                ContactName:_customer.customerContacts[_i].name,
+                ContactAddressBookId: _customer.customerContacts[_i].customerContactAddressBooks[_j].id,
+                addressline1: _customer.customerContacts[_i].customerContactAddressBooks[_j].addressline1,
+                addressline2: _customer.customerContacts[_i].customerContactAddressBooks[_j].addressline2,
+                city: _customer.customerContacts[_i].customerContactAddressBooks[_j].city,
+                country: _customer.customerContacts[_i].customerContactAddressBooks[_j].country,
+                email: _customer.customerContacts[_i].customerContactAddressBooks[_j].email,
+                phone: _customer.customerContacts[_i].customerContactAddressBooks[_j].phone,
+                zipcode: _customer.customerContacts[_i].customerContactAddressBooks[_j].zipcode,
+              };
+              _foundprimary = true;
+            }
+          }
+          if (!_foundprimary) {
+            _j--;
+            _primary = {
+              customerId: _customer.id,
+              ContactName:_customer.customerContacts[_i].name,
+              ContactAddressBookId: _customer.customerContacts[_i].customerContactAddressBooks[_j].id,
+              addressline1: _customer.customerContacts[_i].customerContactAddressBooks[_j].addressline1,
+              addressline2: _customer.customerContacts[_i].customerContactAddressBooks[_j].addressline2,
+              city: _customer.customerContacts[_i].customerContactAddressBooks[_j].city,
+              country: _customer.customerContacts[_i].customerContactAddressBooks[_j].country,
+              email: _customer.customerContacts[_i].customerContactAddressBooks[_j].email,
+              phone: _customer.customerContacts[_i].customerContactAddressBooks[_j].phone,
+              zipcode: _customer.customerContacts[_i].customerContactAddressBooks[_j].zipcode
+            };
+            _foundprimary = true;
+          }
+        }
+      }
+      if (!_foundprimary) {
+        _j = 0;
+        for (_i = 0; _i < _cnt && !_foundprimary; _i++) {
+          _abcnt = _customer.customerContacts[_i].customerContactAddressBooks.length;
+          if (_abcnt > 0) {
+            _j = 0;
+            _primary = {
+              customerId: _customer.id,
+              ContactName:_customer.customerContacts[_i].name,
+              ContactAddressBookId: _customer.customerContacts[_i].customerContactAddressBooks[_j].id,
+              addressline1: _customer.customerContacts[_i].customerContactAddressBooks[_j].addressline1,
+              addressline2: _customer.customerContacts[_i].customerContactAddressBooks[_j].addressline2,
+              city: _customer.customerContacts[_i].customerContactAddressBooks[_j].city,
+              country: _customer.customerContacts[_i].customerContactAddressBooks[_j].country,
+              email: _customer.customerContacts[_i].customerContactAddressBooks[_j].email,
+              phone: _customer.customerContacts[_i].customerContactAddressBooks[_j].phone,
+              zipcode: _customer.customerContacts[_i].customerContactAddressBooks[_j].zipcode
+            };
+            _foundprimary = true;
+          }
+        }
+      }
+      return _primary;
+    }
 
 
-  .controller('DialogController', ['$scope', '$mdDialog', function ($scope, $mdDialog) {
+    if($dataType=='customers'){
+        $scope.customers=[];
+      //$scope.customers=$data.data.data;
+      _count=$data.data.data.length;
+      for(_c=0;_c<_count;_c++){
+        _data=$data.data.data[_c];  
+        _cnt=_data.length;  
+        _i=0; _j=0; 
+        _abcnt = _data.customerContacts[_i].customerContactAddressBooks.length;
+        if (_abcnt > 0) {
+            _primary = {
+              id: _data.id,
+              name: _data.name,      
+              city: _data.customerContacts[_i].customerContactAddressBooks[_j].city,
+              phone: _data.customerContacts[_i].customerContactAddressBooks[_j].phone,
+              zipcode: _data.customerContacts[_i].customerContactAddressBooks[_j].zipcode,
+            };
+        }else{
+            _primary = {
+              id: _data.id,
+              name: _data.name,    
+              city: 'n/a',
+              phone: 'n/a',
+              zipcode: 'n/a',
+            };
+        }
+        $scope.customers.push(_primary);
+      }    
+    }
+
+    if($dataType=='customer') {
+      _data = $data.data.data;
+      _primary = getPrimary(_data);
+      $scope.customer = {
+        id: _data.id,
+        name: _data.name,
+        createdAt: _data.createdAt,
+        updatedAt: _data.updatedAt,
+      };
+      $scope.customer.primary = angular.copy(_primary);
+    }
+      
+}])
+.controller('EmployeeController',['$scope','$state','$mdDialog','$employeeservice','$locationservice','$dataType', '$data',function($scope,$state,$mdDialog,$employeeservice,$locationservice,$dataType,$data) {
+  $scope.showNewEmployeeDialog=function(event) {
+    $mdDialog.show({
+      targetEvent: event,
+      scope: $scope,
+      preserveScope: true,
+      templateUrl: '/www/partials/employee.new.html',
+      controller: function ($scope, $mdDialog) {
+        $scope.states = ('AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS ' +
+        'MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI ' +
+        'WY').split(' ').map(function (state) {
+          return {abbrev: state};
+        });
+        $scope.genders = ('Male,Female').split(',').map(function (gender) {
+          return {abbrev: gender};
+        });            
+        $scope.entity = {
+          name: '',
+          contactname: '',
+          addressline1: '',
+          addressline2: '',
+          city: '',
+          state: '',
+          country: 'USA',
+          zipcode: '',
+          email: '',
+          phone: '',
+          latitude:0.0,
+          longitude:0.0,
+          password:'',
+          password2:''  
+        }
+      }
+    });
+  };
+  $scope.save=function(){
+    $locationservice
+        .find($scope.entity.addressline1+' '+$scope.entity.addressline2,$scope.entity.city,$scope.entity.state)
+        .then(function(location){
+              $scope.entity.formattedaddress=location.data.results[0].formatted_address;
+              var ll=location.data.results[0].address_components.length-1;
+              $scope.entity.zipcode=location.data.results[0].address_components[ll].long_name;
+
+              $scope.entity.latitude=location.data.results[0].geometry.location.lat;
+              $scope.entity.longitude=location.data.results[0].geometry.location.lng;
+            $employeeservice.createEmployee($scope.entity).success(function(data){
+              if(data.rc>=0){
+                $mdDialog.cancel();
+                $state.go('employee',{employeeid:data.id});
+              }
+            });
+        });    
+
+  };
+  $scope.cancel=function(){
+    $mdDialog.cancel();
+    if($scope.detailineditmode){
+      $scope.detailineditmode=false;
+      $scope.selectedEmployee={};
+    }
+  };
+
+  $scope.selectedEmployee={};
+  $scope.detailineditmode=false;
+  $scope.edit=function(employee){
+    $scope.detailineditmode=true;
+    $scope.selectedEmployee=angular.copy(employee);
+  }
+
+  function getPrimary(_employee) {
+    _foundprimary = false;
+    _cnt = _employee.EmployeeAddressBooks.length;
+
+    for (_i = 0; _i < _cnt && !_foundprimary; _i++) {
+      if (_employee.EmployeeAddressBooks[_i].isprimary == 1) {
+          _primary = {
+            EmployeeId: _employee.id,
+            EmployeeAddressBookId: _employee.EmployeeAddressBooks[_i].id,
+            addressline1: _employee.EmployeeAddressBooks[_i].addressline1,
+            addressline2: _employee.EmployeeAddressBooks[_i].addressline2,
+            city: _employee.EmployeeAddressBooks[_i].city,
+            country: _employee.EmployeeAddressBooks[_i].country,
+            email: _employee.EmployeeAddressBooks[_i].email,
+            phone: _employee.EmployeeAddressBooks[_i].phone,
+            zipcode: _employee.EmployeeAddressBooks[_i].zipcode,
+          };
+          _foundprimary = true;
+        }
+      }
+    return _primary;
+  };
+
+
+  if($dataType=='employees'){
+    $scope.employees=$data.data.data;
+  }
+
+  if($dataType=='employee') {
+    _data = $data.data.data;
+    _primary = getPrimary(_data);
+    $scope.employee = {
+      id: _data.id,
+      name: _data.name,
+      createdAt: _data.createdAt,
+      updatedAt: _data.updatedAt,
+    };
+    $scope.employee.primary = angular.copy(_primary);
+  }
+}])
+.controller('InventoryController',['$scope','$state','$mdDialog','$productservice','$products',function($scope,$state,$mdDialog,$productservice,$products){
+
+  $scope.isvendor=false;
+
+  function getProducts(products){
+    _product=[];
+    _datalength=products.data.length;
+    for(n=0;n<_datalength;n++){
+      _data=products.data[n];
+      if(_data.Inventories.length<=0){
+        _product.push({
+          id:_data.id,
+          name:_data.name,
+          inventoryId:false,
+            vendor:{
+                id:_data.Vendors[0].id,
+                name:_data.Vendors[0].name 
+            }
+        });
+      }else{
+        for(iv=0;iv<_data.Inventories.length;iv++){
+          _product.push({
+            id:_data.id,
+            name:_data.name,
+            inventoryId:_data.Inventories[iv].id,
+            serialnumber:_data.Inventories[iv].serialnumber,
+            unitprice:_data.Inventories[iv].unitprice,
+            instock:_data.Inventories[iv].instock,
+            restock:_data.Inventories[iv].restock,
+            vendor:{
+                id:_data.Vendors[0].id,
+                name:_data.Vendors[0].name 
+            }
+          });
+        }
+      }
+    }
+
+    return _product;
+  }
+
+  $scope.$watch("$scope.currentVendor",function(){
+    $scope.initByVendor($scope.currentVendor);
+  });
+
+  $scope.initByVendor=function(vendor){
+    if(vendor!=undefined){
+      $scope.isvendor=true;
+      $productservice.inventory.getByVendor(vendor.id).success(function(data){
+        $scope.products=getProducts(data);
+      });
+    }
+  };
+
+  $scope.products=getProducts($products.data);
+
+  $scope.selected = {};
+  $scope.query = {
+    order: 'id',
+    limit: 5,
+    page: 1
+  };
+
+  $scope.$on('onProductUpdated',function(){
+    $productservice.getProducts().success(function(data){
+      $scope.products=data;
+    });
+  });
+
+  $scope.getTemplate=function(product){
+    if(product.id==$scope.selected.id){
+      return 'edit_product_row';
+    }else{
+      return 'display_product_row';
+    }
+  }
+
+  $scope.edit=function(product){
+    $scope.selected = angular.copy(product);
+  }
+
+  $scope.cancel=function(){
+    $scope.selected = {};
+  }
+
+  $scope.update=function(product){
+    $productservice.inventory.update(product).success(function(data){
+      if(data.rc>=0){
+        angular.forEach($scope.products,function(product,key){
+          if(product.id==$scope.selected.id){
+            $scope.products[key]=angular.copy($scope.selected);
+          }
+        });
+        $scope.cancel();
+      }
+    });
+  }
+
+  $scope.addInventory=function(product){
+    $productservice.inventory.create(product).success(function(data){
+      if(data.rc>=0){
+        angular.forEach($scope.products,function(product,key){
+          if(product.id==$scope.selected.id){
+            $scope.products[key]=angular.copy($scope.selected);
+          }
+        });
+        $scope.cancel();
+      }
+    });
+  }
+
+  $scope.showNewForm=function(event){
+    $mdDialog.show({
+      targetEvent: event,
+      scope: $scope,
+      preserveScope: true,
+      templateUrl: '/www/partials/newproduct.html',
+      controller: function($scope,$mdDialog) {
+          $scope.entity={
+            name:'test product',
+            type:'test type',
+            model:'test model',
+            category:'test category',
+            subcategory:'test sub category',
+            serialnumber:'0000000000',
+            vendorid:$scope.currentVendor.id,
+            vendorname:$scope.currentVendor.name
+          }
+          $scope.save=function(){
+            $productservice.create($scope.entity).success(function(data){
+              if(data.rc>=0){
+                $mdDialog.cancel();
+              }
+            });
+          };
+          $scope.cancel=function(){
+            $mdDialog.cancel();
+
+          };
+        }
+    });
+  };
+}])
+.controller('OrderController',['$scope','$state','$orderservice','$userservice','$utilityservice','$orderType', '$orderdata',function($scope,$state,$orderservice,$userservice,$utilityservice,$orderType,$orderdata) {
+  $scope.user=$userservice.get();
+
+  $scope.save=function(){
+  };   
+
+  $scope.cancel=function(){
+  };
+  
+  $scope.go=function(order){
+      $state.go('app.user.order',{usertype:($scope.user.usertype),userid:$scope.user.id,orderid:order.id});
+  };
+  
+  $scope.selectedorder=undefined;
+  
+  $scope.confirm=function(order){
+      $scope.selectedorder=order;
+      $orderservice.confirm(order).then(function(response){
+          if(response.data.rc==0){
+              $scope.selectedorder.status=response.data.data;
+              $scope.selectedorder.isstatusupdate=false;
+          }
+      }).catch(function(error){
+         console.log(error); 
+      });
+  }
+
+  
+  if($orderType=='orders'){
+    $scope.orders=[];
+    _count=$orderdata.data.data.length;
+    for(_c=0;_c<_count;_c++){
+      _data=$orderdata.data.data[_c];  
+      _cnt=_data.length;  
+      _i=0; _j=0; 
+      
+        _da=$utilityservice.formatDate(_data.deliveryAt);
+        _sa=$utilityservice.formatDate(_data.scheduleAt);
+      
+        _primary = {
+          id: _data.id,
+          createdAt: _data.createdAt,   
+          scheduleAt:_sa.date+' '+_sa.time,
+          updatedAt:_data.updatedAt,
+          pickupAt:[],
+          deliveryAt:{
+            'formattedaddress':'Not Assigned',
+            'phone':'Not Assigned',
+            'city':'Not Assigned',
+            },
+          deliveryDate:_da.date+' '+_da.time, 
+          status:_data.status,
+          isstatusupdate:false,
+          employee:{name:'Not Assigned',id:0}  
+        };
+        
+        if(_data.CustomerContactAddressBook){
+            _primary.deliveryAddress={
+                'formattedaddress':_data.CustomerContactAddressBook.formattedaddress,
+                'phone':_data.CustomerContactAddressBook.phone,
+                'city':_data.CustomerContactAddressBook.city,
+            };
+        };
+        
+
+
+      _abcnt=0;
+
+      if(_data.OrderVendors.length>=0){
+          _abcnt = _data.OrderVendors.length;
+      }
+
+      if (_abcnt > 0 && $scope.user.usertype=="vendor") {
+          for(_i=0;_i<_abcnt;_i++){
+              if(_data.OrderVendors[_i].status=="new"){
+                _primary.isstatusupdate=true;
+              }              
+           _primary.status=_data.OrderVendors[_i].status;
+          }
+
+      }else{
+              _primary.pickupAt.push({
+                  'VendorId': '0',
+                  'city':'n/a',
+                  'phone':'n/a'
+              });
+      }
+
+      if(_data.Employee != undefined){
+          _primary.employee.name = _data.Employee.name;
+          _primary.employee.id = _data.EmployeeId;
+      }          
+      $scope.orders.push(_primary);
+    }    
+
+  }
+
+  if($orderType=='order') {
+    _data = $orderdata.data.data;
+    $scope.order = _data;
+  }
+
+  if($orderType=='vendor'){
+    $scope.orders=[];
+    _count=$orderdata.data.data.length;
+    for(_c=0;_c<_count;_c++){
+      _data=$orderdata.data.data[_c];  
+      _cnt=_data.length;  
+      _i=0; _j=0; 
+      _primary = {
+        id: _data.id,
+        createdAt: _data.createdAt,   
+        scheduleAt:_data.scheduleAt,
+        updatedAt:_data.updatedAt,
+        pickupAt:[],
+        deliveryAt:{
+          'formattedaddress':_data.CustomerContactAddressBook.formattedaddress,
+          'phone':_data.CustomerContactAddressBook.phone,
+          'city':_data.CustomerContactAddressBook.city,
+          },    
+        status:_data.status    
+      }
+
+      _abcnt = _data.OrderVendors[_i].length;
+      if (_abcnt > 0) {
+          for(_i=0;_i<_abcnt;_i++){
+              _primary.pickupAt.push({
+                  'VendorId': _data.OrderVendors[_i].VendorId,
+                  'city':_data.OrderVendors[_i].VendorContactAddressBook.city,
+                  'phone':_data.OrderVendors[_i].VendorContactAddressBook.phone
+              });
+          }
+
+      }else{
+              _primary.pickupAt.push({
+                  'VendorId': '0',
+                  'city':'n/a',
+                  'phone':'n/a'
+              });
+      }
+      $scope.orders.push(_primary);
+    }        
+  }  
+}])
+.controller('VendorProductController',['$scope','$state','$mdDialog','$productservice',function($scope,$state,$mdDialog,$productservice){
+  $scope.showNewForm=function(event){
+    $mdDialog.show({
+      targetEvent: event,
+      scope: $scope,
+      preserveScope: true,
+      templateUrl: '/www/partials/newproduct.html',
+      controller: function($scope,$mdDialog) {
+          $scope.entity={
+            name:'test product',
+            type:'test type',
+            model:'lb',
+            category:'test category',
+            subcategory:'test sub category',
+            serialnumber:'0000000000',
+            vendorid:$scope.currentVendor.id,
+            vendorname:$scope.currentVendor.name
+          }
+          $scope.save=function(){
+            $productservice.create($scope.entity).success(function(response){
+              if(response.rc>=0){
+                  console.log(response);
+                $scope.products.push(response.data);
+                  console.log($scope.products);
+                $mdDialog.cancel();
+              }
+            });
+          };
+          $scope.cancel=function(){
+            $mdDialog.cancel();
+          };
+        }
+    });
+  };
+}])
+.controller('ProductController',['$scope','$state','$mdDialog','$userservice','$productservice','$productType','$productdata',function($scope,$state,$mdDialog,$userservice,$productservice,$productType,$productdata){
+  $scope.user=$userservice.get();
+  $scope.detailineditmode=false;
+  $scope.selectedInventory = {};
+  $scope.selectedProduct = {};
+  $scope.isImageEditMode=false;
+  $scope.isImageUpdated=false;
+  var _inventories=[];
+  var _data=$productdata.data.data;
+  var _datalength=$productdata.data.data.length;
+  var _product=_data;
+  console.log(_data);
+  console.log($productType);
+  if($productType=="product"){
+    for(var key in _data){
+      if(!Array.isArray(_data[key])){
+        _product[key]=_data[key];
+      }
+    }
+  }
+  if(_data.Inventories){
+    for(var iv=0;iv<_data.Inventories.length;iv++){
+      var _upd=_data.Inventories[iv].updatedAt.slice(0,10);
+      _data.Inventories[iv].updatedAt=_upd;
+      _data.Inventories[iv].ProductId=_product.id;
+      _inventories.push(_data.Inventories[iv]);
+    }
+    
+  }
+  
+  if(_data['ProductImages']==undefined || _data['ProductImages'].length<=0){
+    _product['image']='/www/assets/images/noimage.png';
+  }else{
+    _product['image']='/tmp/uploads/'+_data['ProductImages'][0]['filename'];
+  }
+  var _vendor={id:0,name:'unknown'};
+
+  if(_data.Vendors && _data.Vendors.length>0){
+      _vendor={
+          id:_data.Vendors[0].id,
+          name:_data.Vendors[0].name
+     }   
+  }  
+
+  $scope.vendor=_vendor;   
+
+  $scope.products=_product;
+  if($productType=="product"){
+      $scope.product=_product;
+  }  
+
+  $scope.inventories=_inventories;
+  $scope.edit=function(product){
+    $scope.detailineditmode=true;
+    $scope.selectedProduct = angular.copy(product);
+  }
+
+  $scope.cancel=function(){
+    $scope.detailineditmode=false;
+    $scope.selectedProduct = {};
+  }
+
+  $scope.save=function(product){
+    $productservice.update(product).success(function(data){
+      if(data.rc>=0){
+        $scope.product=$scope.selectedProduct;
+        $scope.cancel();
+      }
+    });
+  }
+
+  $scope.update=function(product){
+    $productservice.inventory.create(inventory).success(function(data){
+      if(data.rc>=0){
+        angular.forEach($scope.inventories,function(inventory,key){
+          if(inventory.id==$scope.selectedInventory.id){
+            $scope.inventories[key]=angular.copy($scope.selectedInventory);
+          }
+        });
+        $scope.detailineditmode=false;
+      }
+    });
+  }
+
+  /**** Inventory Control ****/
+
+
+  $scope.getTemplate=function(inventory){
+    if(inventory.id==$scope.selectedInventory.id){
+      return 'edit_product_row';
+    }else{
+      return 'display_product_row';
+    }
+  }
+
+  $scope.newInventory=function($event){
+      $scope.newinventory={
+        id:$scope.product.id,
+        ProductId:$scope.product.id,
+        instock:0,
+        restock:0,
+        unitprice:0.00,
+        serialnumber:'',
+      };
+    $mdDialog.show({
+      targetEvent:$event,
+      scope:$scope,
+      preserveScope: true,
+      templateUrl: 'new_inventory_dialog',
+    });
+  };
+
+  $scope.cancelNewInventory=function(){
+    $mdDialog.cancel();
+  };
+
+  $scope.addInventory=function(){
+      $productservice.inventory.create($scope.newinventory).success(function(data){
+        if(data.rc>=0){
+          _data=data.data;
+          _cr=_data.createdAt.slice(0,10);
+          _upd=_data.updatedAt.slice(0,10);
+          _data.createdAt=_cr;
+          _data.updatedAt=_upd;
+          $scope.inventories.push(_data);
+          $scope.cancelNewInventory();
+        }
+      });
+  };
+
+  $scope.editInventory=function(inventory){
+    $scope.selectedInventory = angular.copy(inventory);
+  }
+
+  $scope.cancelEditInventory=function(){
+    $scope.selectedInventory = {};
+  }
+
+  $scope.updateInventory=function(inventory){
+    $productservice.inventory.update(inventory).success(function(data){
+      if(data.rc>=0){
+        angular.forEach($scope.inventories,function(inventory,key){
+          if(inventory.id==$scope.selectedInventory.id){
+            $scope.inventories[key]=angular.copy($scope.selectedInventory);
+            $scope.cancelEditInventory();    
+          }
+        });
+
+      }
+    });
+  }
+
+  $scope.editImage=function(){
+    $scope.isImageEditMode=true;
+    $scope.isImageUpdated=false;
+  }
+
+  $scope.onFileSelected=function(){
+    $scope.isImageUpdated=true;
+  }
+
+  $scope.cancelImage=function(){
+    $scope.isImageEditMode=false;
+    $scope.isImageUpdated=false;
+  }
+
+  $scope.saveImage=function(){
+
+    $productservice.uploadImage($scope.product,$scope.file).then(function (resp) { //upload function returns a promise
+      if(resp.data.rc === 0){ //validate success
+        $scope.product.image=resp.data.location;
+        $scope.cancelImage();
+      } else {
+        console.log("error");
+      }
+    }, function (resp) { //catch error
+      //console.log('Error status: ' + resp.status);
+    }, function (evt) {
+      //var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+      //console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
+    });
+  }
+}])
+.controller('VendorController',['$scope','$state','$mdDialog','$vendorservice','$locationservice','$dataType', '$data',function($scope,$state,$mdDialog,$vendorservice,$locationservice,$dataType,$data) {
+  $scope.showNewVendorDialog=function(event) {
+    $mdDialog.show({
+      targetEvent: event,
+      scope: $scope,
+      preserveScope: true,
+      templateUrl: '/www/partials/vendor.new.html',
+      controller: function ($scope, $mdDialog) {
+        $scope.states = ('AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS ' +
+        'MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI ' +
+        'WY').split(' ').map(function (state) {
+          return {abbrev: state};
+        });
+        $scope.entity = {
+          name: 'test angular',
+          contactname: 'test angular contact name',
+          addressline1: 'sample',
+          addressline2: 'suite #1',
+          city: 'sample',
+          state: 'AL',
+          country: 'USA',
+          zipcode: '12345',
+          email: 'na@default',
+          phone: '0000000000',
+          latitude:0.0,
+          longitude:0.0
+        }
+      }
+    });
+  };
+ $scope.save=function(){
+    $locationservice
+        .find($scope.entity.primary.addressline1+' '+$scope.entity.primary.addressline2,$scope.entity.primary.city,$scope.entity.primary.state)
+        .then(function(location){
+              $scope.entity.primary.formattedaddress=location.data.results[0].formatted_address;
+              var ll=location.data.results[0].address_components.length-1;
+              $scope.entity.primary.zipcode=location.data.results[0].address_components[ll].long_name;
+              $scope.entity.primary.latitude=location.data.results[0].geometry.location.lat;
+              $scope.entity.primary.longitude=location.data.results[0].geometry.location.lng;
+            $vendorservice.createVendor($scope.entity).success(function(data){
+              if(data.rc>=0){
+                $mdDialog.cancel();
+                $state.go('vendor',{vendorid:data.VendorId});
+              }
+            });
+        });    
+
+  };   
+  
+  $scope.cancel=function(){
+    $mdDialog.cancel();
+    if($scope.detailineditmode){
+      $scope.detailineditmode=false;
+      $scope.selectedVendor={};
+    }
+  };
+
+  $scope.selectedVendor={};
+  $scope.detailineditmode=false;
+  $scope.edit=function(vendor){
+    $scope.detailineditmode=true;
+    $scope.entity=angular.copy(vendor);
+  }
+
+  function getPrimary(_vendor) {
+    var _foundprimary = false;
+    var _cnt = _vendor.VendorContacts.length;
+    for (_i = 0; _i < _cnt && !_foundprimary; _i++) {
+      if (_vendor.VendorContacts[_i].isprimary == 1) {
+        _abcnt = _vendor.VendorContacts[_i].VendorContactAddressBooks.length;
+        for (_j = 0; _j < _abcnt && !_foundprimary; _j++) {
+          if (_vendor.VendorContacts[_i].VendorContactAddressBooks[_j].isprimary == 1) {
+            _primary = {
+              VendorId: _vendor.id,
+              ContactName:_vendor.VendorContacts[_i].name,
+              ContactAddressBookId: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].id,
+              addressline1: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].addressline1,
+              addressline2: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].addressline2,
+              city: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].city,
+              country: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].country,
+              email: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].email,
+              phone: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].phone,
+              zipcode: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].zipcode,
+            };
+            _foundprimary = true;
+          }
+        }
+        if (!_foundprimary) {
+          _j--;
+          _primary = {
+            VendorId: _vendor.id,
+            ContactName:_vendor.VendorContacts[_i].name,
+            ContactAddressBookId: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].id,
+            addressline1: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].addressline1,
+            addressline2: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].addressline2,
+            city: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].city,
+            country: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].country,
+            email: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].email,
+            phone: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].phone,
+            zipcode: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].zipcode,
+          };
+          _foundprimary = true;
+        }
+      }
+    }
+    if (!_foundprimary) {
+      _j = 0;
+      for (_i = 0; _i < _cnt && !_foundprimary; _i++) {
+        _abcnt = _data.VendorContacts[_i].VendorContactAddressBooks.length;
+        if (_abcnt > 0) {
+          _j = 0;
+          _primary = {
+            VendorId: _vendor.id,
+            ContactName:_vendor.VendorContacts[_i].name,
+            ContactAddressBookId: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].id,
+            addressline1: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].addressline1,
+            addressline2: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].addressline2,
+            city: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].city,
+            country: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].country,
+            email: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].email,
+            phone: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].phone,
+            zipcode: _vendor.VendorContacts[_i].VendorContactAddressBooks[_j].zipcode,
+          };
+          _foundprimary = true;
+        }
+      }
+    }
+    return _primary;
+  };
+
+
+  if($dataType=='vendors'){
+      $scope.vendors=[];
+    //$scope.vendors=$data.data.data;
+    _count=$data.data.data.length;
+    for(_c=0;_c<_count;_c++){
+      _data=$data.data.data[_c];  
+      _cnt=_data.length;  
+      _i=0; _j=0; 
+      _abcnt = _data.VendorContacts[_i].VendorContactAddressBooks.length;
+      if (_abcnt > 0) {
+          _primary = {
+            id: _data.id,
+            name: _data.name,      
+            city: _data.VendorContacts[_i].VendorContactAddressBooks[_j].city,
+            phone: _data.VendorContacts[_i].VendorContactAddressBooks[_j].phone,
+            zipcode: _data.VendorContacts[_i].VendorContactAddressBooks[_j].zipcode,
+          };
+      }else{
+          _primary = {
+            id: _data.id,
+            name: _data.name,    
+            city: 'n/a',
+            phone: 'n/a',
+            zipcode: 'n/a',
+          };
+      }
+      $scope.vendors.push(_primary);
+    }    
+
+  }
+
+  if($dataType=='vendor') {
+    _data = $data.data.data;
+    _primary = getPrimary(_data);
+    $scope.vendor = {
+      id: _data.id,
+      name: _data.name,
+      createdAt: _data.createdAt,
+      updatedAt: _data.updatedAt,
+    };
+    $scope.vendor.primary = angular.copy(_primary);
+  }
+}])
+.controller('appDialogController', ['$scope', '$mdDialog', function ($scope, $mdDialog) {
     $scope.hide = function() {
       $mdDialog.hide();
     };
@@ -186,18 +1168,33 @@ app
     };
     $scope.answer = function(answer) {
       $mdDialog.hide();
-    }
+    };
+    $scope.status = '  ';
+    $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+    $scope.showAlert = function(message) {
+      // Appending dialog to document.body to cover sidenav in docs app
+      // Modal dialogs should fully cover application
+      // to prevent interaction outside of dialog
+      $mdDialog.show(
+        $mdDialog.alert()
+          .parent(angular.element(document.querySelector('#appcontainer')))
+          .clickOutsideToClose(true)
+          .title('This is an alert title')
+          .textContent('You can specify some description text in here.')
+          .ariaLabel('Alert Dialog Demo')
+          .ok('Got it!')
+      );
+    }; 
+    
+    
+    
   }])
-
-  //Controllers
-  .controller('appNavigationController', function ($scope, $timeout, $mdSidenav, $log) {
-    $scope.showMobileMainHeader = true;
+.controller('appNavigationController', function ($rootScope,$scope, $timeout, $mdSidenav) {
+    $scope.title="Online Store";  
+    $scope.isLogged=$rootScope.isLogged;
+    $scope.showMobileMainHeader = true;    
     $scope.toggleLeft = buildDelayedToggler('left');
     $scope.toggleRight = buildDelayedToggler('right');
-    /**
-     * Supplies a function that will continue to operate until the
-     * time is up.
-     */
     function debounce(func, wait, context) {
       var timer;
       return function debounced() {
@@ -210,10 +1207,6 @@ app
         }, wait || 10);
       };
     }
-    /**
-     * Build handler to open/close a SideNav; when animation finishes
-     * report completion in console
-     */
     function buildDelayedToggler(navID) {
       return debounce(function() {
         $mdSidenav(navID)
@@ -226,20 +1219,326 @@ app
           .toggle()
       }
     }
+    $scope.$on('EventUserLogged', function(event,args){ 
+        $scope.isLogged=args.success;
+    }); 
+   
   })
-  .controller('appLeftSideBarController', function ($scope, $timeout, $mdSidenav, $log) {
+.controller('MenuController', function ($scope,$state,$mdSidenav,$userservice,$menudata) {
+    $scope.items=[];
+    $scope.user=$userservice.get();
     $scope.close = function () {
       $mdSidenav('left').close();
     };
+    $scope.$on('$UserLogged', function(event,args){ 
+       $scope.init();
+    });    
+    
+    $scope.init=function(){
+        if($userservice.get().id==undefined){
+            $state.go('app.login');
+        }
+        $scope.items=$menudata.data.menuoptions;
+//        console.log($data);
+//        var _items=[];
+//        var _n=$data.data.menuoptions.length;
+//        for(var _i=0;_i<_n;_i++){
+//            if($data.data.menuoptions[_i]=="orders"){
+//               _items.push({
+//                   title:$data.data.menuoptions[_i],
+//                   icon:shopping_cart,
+//               });
+//            }
+//        }
+        $scope.menuready=true;
+    };
+    
+    $scope.load=function(path){
+        if(path=="logout"){
+            $scope.$emit('$UserExpired');
+            return false;
+        }
+        $state.go('app.user.'+path,{userid:$userservice.get().id,usertype:($userservice.get().usertype)});
+    }
+    
   })
-  .controller('appRightSideBarController', function ($scope, $timeout, $mdSidenav, $log) {
+.controller('appRightSideBarController', function ($scope, $timeout, $mdSidenav, $log) {
     $scope.close = function () {
       $mdSidenav('right').close();
     };
+    $scope.open = function () {
+      $mdSidenav('right').open();
+    };
+    
+    
   })
-  .controller('appViewController',['$scope','$state',function($scope,$state) {
+.controller('appViewController',function($rootScope,$scope,$state,$restservice,$userservice,$mdDialog) {
     $scope.load=function(path){
       $state.go(path);
     };
-  }])
+    $scope.entity={
+        'username':'',
+        'password':''
+    };
+    $scope.isLogged=$rootScope.isLogged;
+    if($userservice.get().id!=undefined){
+        $scope.isLogged=true;
+        $state.go('app.user.orders',{userid:$userservice.get().id,usertype:($userservice.get().usertype)}); 
+    }
+    $scope.login=function(){
+        $userservice.login($scope.entity).then(function(response){
+            if(response.data.rc==-1){
+              $scope.processing=false;    
+              $scope.errormessage="Invalid Details";
+              $scope.entity.password.$dirty=true;  
+            }else{
+                $scope.isLogged=true;
+                $rootScope.isLogged=true;
+                $rootScope.token=response.data.data.authkey;
+                $scope.entity.password="";
+                $userservice.put(response.data.data.id,response.data.data.authkey,(response.data.data.type).toLowerCase());
+                $scope.$broadcast('$UserLogged', { success: true,authkey:response.data.data.authkey });
+                $state.go('app.user.orders',{usertype:(response.data.data.type).toLowerCase(),userid:response.data.data.id});
+            }            
+        }).catch(function(error){
+            
+        });
+    };
+    $scope.$on('$UserExpired', 
+        function(event){ 
+            $scope.isLogged=false;
+    });  
+    $scope.$on('$stateNotFound', function(event,args){ 
+      $mdDialog.show(
+        $mdDialog.alert()
+          .parent(angular.element(document.querySelector('#appcontainer')))
+          .clickOutsideToClose(true)
+          .title("error")
+          .textContent("Invalid Request")
+          .ariaLabel('Alert Dialog')
+          .ok('Ok')
+      );
+    });    
+  })
+  
+;
+
+angular
+.module('store', ['ui.router', 'store.controllers','store.services','ngMaterial','ui.router','md.data.table','angular-md5','ngFileUpload','angular-cache'])
+.run(function ($rootScope, $state, $stateParams,$http,$userservice) {
+    $rootScope.$state = $state;
+    $rootScope.$stateParams = $stateParams;
+    $rootScope.$domain="http://localhost";
+    $rootScope.isLogged=false;
+    var _usr=$userservice.get();
+    if(_usr==undefined){
+        $state.go('app.login');
+    }else{
+        $rootScope.isLogged=(_usr.id)?_usr.id:false;
+        $rootScope.token=(_usr.token)?_usr.token:'undefined';
+    }
+    
+    $rootScope.display_view_progress_bar=true;
+    $rootScope.$on('$UserLogged', function(event,args){ 
+        $rootScope.isLogged=args.success;
+        $rootScope.token=args.token;
+    });
+    $rootScope.$on('$stateChangeStart',
+        function(event, toState, toParams, fromState, fromParams){
+          $rootScope.display_view_progress_bar=true;
+    });
+    $rootScope.$on('$stateChangeSuccess',
+        function(event, toState, toParams, fromState, fromParams){
+          $rootScope.display_view_progress_bar=false;
+    }); 
+    $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error) {
+        $userservice.remove();
+        $rootScope.isLogged=false;
+        $rootScope.token=undefined;        
+        $state.go('app.login');
+    });    
+    $rootScope.$on('$stateNotFound', 
+    function(event, unfoundState, fromState, fromParams){ 
+        $rootScope.display_view_progress_bar=true;
+        console.log('$stateNotFound');
+    });
+    $rootScope.$on('$UserExpired', 
+    function(event){ 
+        $userservice.remove();
+        $rootScope.isLogged=false;
+        $state.go("app.login");
+    });    
+    
+})
+.config(function (CacheFactoryProvider) {
+  angular.extend(CacheFactoryProvider.defaults, { maxAge: 15 * 60 * 1000 });
+})
+.config(['$httpProvider', function($httpProvider) {
+        
+    //initialize get if not there
+    if (!$httpProvider.defaults.headers.get) {
+        $httpProvider.defaults.headers.get = {};    
+    }    
+    // Answer edited to include suggestions from comments
+    // because previous version of code introduced browser-related errors
+
+    //disable IE ajax request caching
+    $httpProvider.defaults.headers.get['If-Modified-Since'] = 'Mon, 26 Jul 1997 05:00:00 GMT';
+    // extra
+    $httpProvider.defaults.headers.get['Cache-Control'] = 'no-cache';
+    $httpProvider.defaults.headers.get['Pragma'] = 'no-cache';
+    $httpProvider.interceptors.push('sessionInjector');
+}])
+.config(['$stateProvider','$urlRouterProvider',function($stateProvider,$urlRouterProvider){
+  $stateProvider
+    .state('app', {
+      abstract: true,         
+      url: '/app',
+      templateUrl: '/www/views/app.html',
+      controller: 'appViewController'
+    })
+    .state('app.login', {
+    url: '/login',
+      views:{
+        "top":{
+          templateUrl: '/www/views/top.html',
+          controller: 'appNavigationController',
+        }
+      }
+    })    
+    .state('app.user', {
+     url: '/user',
+     abstract: true, 
+      views:{
+        "top":{
+          templateUrl: '/www/views/top.html',
+          controller: 'appNavigationController',
+        },          
+        "content":{
+          templateUrl:'/www/views/main.html',
+        }
+      }
+    }) 
+    .state('app.user.orders', {
+      url: '/{usertype:[a-zA-Z0-9]+}@{userid:[a-zA-Z0-9]+}/orders/',
+      views:{
+        "menu":{
+          templateUrl: '/www/views/menu.html', 
+          controller: 'MenuController',
+        },  
+        "content":{
+          templateUrl: function($stateParams){return '/www/views/'+$stateParams['usertype']+'/orders.html'},
+          controller: 'OrderController',
+        }
+      },
+      resolve:{
+          $menudata:['$stateParams','$userservice',
+            function($stateParams,$userservice){
+              return $userservice.getDetails();
+            }],
+          $orderType:function(){return "orders";},  
+          $orderdata:['$stateParams','$orderservice',
+            function($stateParams,$orderservice){
+              return $orderservice.get();
+            }] 
+      }
+    })  
+    .state('app.user.order', {
+      url: '/{usertype:[a-zA-Z0-9]+}@{userid:[a-zA-Z0-9]+}/orders/{orderid:[a-zA-Z0-9]+}/',
+      views:{
+        "menu":{
+          templateUrl: '/www/views/menu.html', 
+          controller: 'MenuController',
+        },  
+        "content":{
+          templateUrl: function($stateParams){
+              console.log($stateParams['usertype']);
+              return '/www/views/'+$stateParams['usertype']+'/orders.id.html'
+          },
+          controller: 'OrderController',
+        }
+      },
+      resolve:{
+          $menudata:['$stateParams','$userservice',
+            function($stateParams,$userservice){
+              return $userservice.getDetails();
+            }],
+          $orderType:function(){return "order";},  
+          $orderdata:['$stateParams','$orderservice',
+            function($stateParams,$orderservice){
+              return $orderservice.getById($stateParams['orderid']);
+            }] 
+      },
+      
+    })    
+    .state('app.vendor', {
+        url: '/vendor',
+        params:{vendor: null},
+        views:{
+          "page":{
+            templateUrl: 'templates/vendor.html',
+            controller: 'VendorCtrl'
+          },
+          "cart":{
+            templateUrl: 'templates/cart.html',
+            controller: 'CartCtrl'
+          }
+        }
+    })
+    .state('app.user.products', {
+      url: '/{usertype:[a-zA-Z0-9]+}@{userid:[a-zA-Z0-9]+}/products/',
+      views:{
+        "menu":{
+          templateUrl: '/www/views/menu.html', 
+          controller: 'MenuController',
+        },  
+        "content":{
+          templateUrl: function($stateParams){return '/www/views/'+$stateParams['usertype']+'/products.html'},
+          controller: 'ProductController',
+        }
+      },
+      resolve:{
+          $menudata:['$stateParams','$userservice',
+            function($stateParams,$userservice){
+              return $userservice.getDetails();
+            }],
+          $productType:function(){return "products";},  
+          $productdata:['$stateParams','$productservice',
+            function($stateParams,$productservice){
+              return $productservice.get();
+            }] 
+      }
+    })
+    .state('app.user.product', {
+      url: '/{usertype:[a-zA-Z0-9]+}@{userid:[a-zA-Z0-9]+}/products/{productid:[a-zA-Z0-9]+}/',
+      views:{
+        "menu":{
+          templateUrl: '/www/views/menu.html', 
+          controller: 'MenuController',
+        },  
+        "content":{
+          templateUrl: function($stateParams){
+              console.log($stateParams['usertype']);
+              return '/www/views/'+$stateParams['usertype']+'/product.id.html'
+          },
+          controller: 'ProductController',
+        }
+      },
+      resolve:{
+          $menudata:['$stateParams','$userservice',
+            function($stateParams,$userservice){
+              return $userservice.getDetails();
+            }],
+          $productType:function(){return "product";},  
+          $productdata:['$stateParams','$productservice',
+            function($stateParams,$productservice){
+              return $productservice.getById($stateParams['productid']);
+            }] 
+      },
+      
+    })   
+  ;
+  $urlRouterProvider.otherwise("/app/login");
+}])
+
 ;

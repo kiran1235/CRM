@@ -2,11 +2,13 @@
  * Created by kiran on 12/29/15.
  */
 app
-  .service('$vendorservice',['$rootScope','$http',function($rootScope,$http){
+  .service('$vendorservice',['$rootScope','$http','$location',function($rootScope,$http,$location){
     this.getVendors=function(){
+      
       return $http.get($rootScope.$domain+'/vendors');
     };
     this.getVendor=function(vendorid){
+         
       return $http.get($rootScope.$domain+'/vendors/'+vendorid);
     };
     this.createVendor=function(formObject){
@@ -19,7 +21,7 @@ app
           var str = [];
           for(var p in obj)
             str.push("entity["+encodeURIComponent(p) + "]=" + encodeURIComponent(obj[p]));
-          return str.join('&');
+            return str.join('&');
         },
       });
     }

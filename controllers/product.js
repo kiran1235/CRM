@@ -22,16 +22,15 @@ var Product = {
             models.Product.findOne({
                 include:[
                     {
-                        model: models.Inventory
-                    },
-                    {
-                        model: models.Vendor,attributes:["id","name"]
+                        model: models.Inventory,
+                        attributes:["id","instock","restock","serialnumber","unitprice","isdeleted","updatedAt"]
                     },
                     {
                       model: models.ProductImage, limit:1, order:'id desc'
                     },
                 ],
-                where: {id: id}
+                attributes:["id","name","model","category","subcategory","type"]
+                ,where: {id: id}
             }).then(function (product) {
                 if(product.length<=0){
                     throw new Error("Product Not Found");
@@ -46,15 +45,7 @@ var Product = {
     'getByVendor':function(id){
       return new Promise(function(resolve,reject) {
         models.Product.findAll({
-          include:[
-            {
-              model: models.Vendor,
-              where:{
-                id:id
-              },
-              attributes:["name"]
-            },
-          ], attributes:["id","name","category","subcategory","type","model"],
+           attributes:["id","name","category","subcategory","type","model"],
             where:{
                 status:1
             }

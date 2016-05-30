@@ -32,16 +32,15 @@ app
         }
       });
     };
-    $scope.save=function(){
+   $scope.save=function(){
       $locationservice
-          .find($scope.entity.addressline1+' '+$scope.entity.addressline2,$scope.entity.city,$scope.entity.state)
+          .find($scope.entity.primary.addressline1+' '+$scope.entity.primary.addressline2,$scope.entity.primary.city,$scope.entity.primary.state)
           .then(function(location){
-                $scope.entity.formattedaddress=location.data.results[0].formatted_address;
+                $scope.entity.primary.formattedaddress=location.data.results[0].formatted_address;
                 var ll=location.data.results[0].address_components.length-1;
-                $scope.entity.zipcode=location.data.results[0].address_components[ll].long_name;
-          
-                $scope.entity.latitude=location.data.results[0].geometry.location.lat;
-                $scope.entity.longitude=location.data.results[0].geometry.location.lng;
+                $scope.entity.primary.zipcode=location.data.results[0].address_components[ll].long_name;
+                $scope.entity.primary.latitude=location.data.results[0].geometry.location.lat;
+                $scope.entity.primary.longitude=location.data.results[0].geometry.location.lng;
               $vendorservice.createVendor($scope.entity).success(function(data){
                 if(data.rc>=0){
                   $mdDialog.cancel();
@@ -51,24 +50,24 @@ app
           });    
 
     };   
-   $scope.save=function(){
-      $locationservice
-          .find($scope.entity.addressline1+' '+$scope.entity.addressline2,$scope.entity.city,$scope.entity.state)
-          .then(function(location){
-                $scope.entity.formattedaddress=location.data.results[0].formatted_address;
-                var ll=location.data.results[0].address_components.length-1;
-                $scope.entity.zipcode=location.data.results[0].address_components[ll].long_name;
-                $scope.entity.latitude=location.data.results[0].geometry.location.lat;
-                $scope.entity.longitude=location.data.results[0].geometry.location.lng;
-              $vendorservice.createVendor($scope.entity).success(function(data){
-                if(data.rc>=0){
-                  $mdDialog.cancel();
-                  $state.go('vendor',{vendorid:data.VendorId});
-                }
-              });
-          });    
-
-    };      
+//   $scope.save=function(){
+//      $locationservice
+//          .find($scope.entity.addressline1+' '+$scope.entity.addressline2,$scope.entity.city,$scope.entity.state)
+//          .then(function(location){
+//                $scope.entity.formattedaddress=location.data.results[0].formatted_address;
+//                var ll=location.data.results[0].address_components.length-1;
+//                $scope.entity.zipcode=location.data.results[0].address_components[ll].long_name;
+//                $scope.entity.latitude=location.data.results[0].geometry.location.lat;
+//                $scope.entity.longitude=location.data.results[0].geometry.location.lng;
+//              $vendorservice.createVendor($scope.entity).success(function(data){
+//                if(data.rc>=0){
+//                  $mdDialog.cancel();
+//                  $state.go('vendor',{vendorid:data.VendorId});
+//                }
+//              });
+//          });    
+//
+//    };      
     $scope.cancel=function(){
       $mdDialog.cancel();
       if($scope.detailineditmode){
@@ -81,7 +80,7 @@ app
     $scope.detailineditmode=false;
     $scope.edit=function(vendor){
       $scope.detailineditmode=true;
-      $scope.selectedVendor=angular.copy(vendor);
+      $scope.entity=angular.copy(vendor);
     }
 
     function getPrimary(_vendor) {

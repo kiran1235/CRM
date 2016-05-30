@@ -2,14 +2,21 @@ var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-var cookieParser = require('cookie-parser');
+var cookie = require('cookie-parser');
+//var session = require('express-session')
+var session = require('cookie-session')
 var bodyParser = require('body-parser');
 var routes = require('./routes/index.js');
+var uuid=require('uuid');
+var requestparameters=require('./bin/requestparameters.js');
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+
+//Hello
 
 
 
@@ -31,13 +38,20 @@ app.use(function(req, res, next) {
 app.use(logger('dev'));
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb',extended: true, parameterLimit:50000 }));
-app.use(cookieParser());
+app.use(cookie());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components',express.static(path.join(__dirname, 'bower_components')));
 app.use('/www',express.static(path.join(__dirname, 'www')));
 app.use('/tmp',express.static(path.join(__dirname, 'tmp')));
-app.use('/', routes);
 
+app.use(session({
+  name: 'session',
+  keys: ['uuid', 'value','token']
+}));
+
+
+
+app.use('/', routes);
 
 /*
 app.configure(function (){
@@ -88,12 +102,12 @@ app.use(function(err, req, res, next) {
 //    }
 //});
 
-app.use(function(req, res, next) {
-  res.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS, DELETE, GET");
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+//app.use(function(req, res, next) {
+//  res.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS, DELETE, GET");
+//  res.header("Access-Control-Allow-Origin", "*");
+//  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//  next();
+//});
 
 
 

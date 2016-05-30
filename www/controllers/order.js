@@ -17,6 +17,77 @@ app
         _data=$data.data.data[_c];  
         _cnt=_data.length;  
         _i=0; _j=0; 
+        
+        _primary = {
+          id: _data.id,
+          createdAt: _data.createdAt,   
+          scheduleAt:_data.scheduleAt,
+          updatedAt:_data.updatedAt,
+          pickupAt:[],
+          deliveryAt:{
+            'formattedaddress':'Not Assigned',
+            'phone':'Not Assigned',
+            'city':'Not Assigned',
+            },    
+          status:_data.status,
+          employee:{name:'Not Assigned',id:0}  
+        };
+        
+        
+        if(_data.CustomerContactAddressBook){
+            _primary.deliveryAt={
+                'formattedaddress':_data.CustomerContactAddressBook.formattedaddress,
+                'phone':_data.CustomerContactAddressBook.phone,
+                'city':_data.CustomerContactAddressBook.city,
+            };
+        };
+        
+        _abcnt=0;
+          
+        if(_data.OrderVendors[_i] != undefined){
+            _abcnt = _data.OrderVendors[_i].length;
+        }
+
+        if (_abcnt > 0) {
+            for(_i=0;_i<_abcnt;_i++){
+                _primary.pickupAt.push({
+                    'VendorId': _data.OrderVendors[_i].VendorId,
+                    'city':_data.OrderVendors[_i].VendorContactAddressBook.city,
+                    'phone':_data.OrderVendors[_i].VendorContactAddressBook.phone
+                });
+            }
+            
+        }else{
+                _primary.pickupAt.push({
+                    'VendorId': '0',
+                    'city':'n/a',
+                    'phone':'n/a'
+                });
+        }
+          
+        if(_data.Employee != undefined){
+            _primary.employee.name = _data.Employee.name;
+            _primary.employee.id = _data.EmployeeId;
+        }          
+          
+        console.log(_primary);  
+        $scope.orders.push(_primary);
+      }    
+        
+    }
+
+    if($dataType=='order') {
+      _data = $data.data.data;
+      $scope.order = _data;
+    }
+      
+    if($dataType=='vendor'){
+      $scope.orders=[];
+      _count=$data.data.data.length;
+      for(_c=0;_c<_count;_c++){
+        _data=$data.data.data[_c];  
+        _cnt=_data.length;  
+        _i=0; _j=0; 
         _primary = {
           id: _data.id,
           createdAt: _data.createdAt,   
@@ -49,12 +120,8 @@ app
                 });
         }
         $scope.orders.push(_primary);
-      }    
-        
-    }
-
-    if($dataType=='order') {
-      _data = $data.data.data;
-      $scope.order = _data;
-    }
+      }        
+    }  
+      
+      
   }]);

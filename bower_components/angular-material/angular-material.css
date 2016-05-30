@@ -12992,13 +12992,14 @@ md-sidenav {
   box-sizing: border-box;
   position: absolute;
   -webkit-flex-direction: column;
-      -ms-flex-direction: column;
-          flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
   z-index: 60;
   width: 320px;
   max-width: 320px;
   bottom: 0;
-  overflow: auto; }
+  overflow: auto;
+  }
   md-sidenav ul {
     list-style: none; }
   md-sidenav.md-closed {
@@ -13972,16 +13973,17 @@ md-toolbar {
   display: -ms-flexbox;
   display: flex;
   -webkit-align-items: center;
-      -ms-flex-align: center;
-          align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
   -webkit-flex-direction: row;
-      -ms-flex-direction: row;
-          flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
   width: 100%;
-  height: 64px;
-  max-height: 64px;
+  height: 48px;
+  max-height: 48px;
   padding: 0 16px;
-  margin: 0; }
+  margin: 0;
+  }
   .md-toolbar-tools h1, .md-toolbar-tools h2, .md-toolbar-tools h3 {
     font-size: inherit;
     font-weight: inherit;

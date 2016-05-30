@@ -15,8 +15,12 @@ module.exports = function(sequelize, DataTypes) {
           type:DataTypes.TEXT,
           allowNull: false
       },
-      parentId:{
+      parentType:{
           type: DataTypes.TEXT,
+          allowNull: false
+      },
+      parentId:{
+          type: DataTypes.INTEGER,
           allowNull: false
       },
       authkey:{
@@ -26,7 +30,8 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: function(models) {
-          User.belongsTo(models.Employee,{onDelete: 'cascade', hooks: true,foreignKey: 'email' , foreignKeyConstraint:true })
+          User.belongsTo(models.Employee,{onDelete: 'cascade', hooks: true,foreignKey: 'parentId' , foreignKeyConstraint:true });
+          User.belongsTo(models.Vendor,{onDelete: 'cascade', hooks: true,foreignKey: 'parentId' , foreignKeyConstraint:true });
       }
     }
   });

@@ -6,13 +6,29 @@
 
 var express = require('express');
 var path = require('path');
+var url = require('url');
 var requestparameters=require('../bin/requestparameters.js');
+var user=require('../controllers/user.js');
 
 /** routers & controllers **/
 var vendor=require('../controllers/vendor.js');
 var vendorrouter = express.Router();
-vendorrouter.get('/vendors/',function(req,res,next){
+
+vendorrouter.all('/vendors*',function(req,res,next){
+    var referer = url.parse(req.headers['referer'],true);
+    console.log(referer['query']['token']);
+    user.auth({'authkey':referer['query']['token']}).then(function(currentuser){
+        //res.json({rc:-1,message:'invalid user details'});
+        //res.status(404).send('invalid user details');
+        next();
+    }).catch(function(){
+        res.status(404).send('invalid user details');
+        //res.json({rc:-1,message:'invalid user details'});
+    });
+    
+}).get('/vendors/',function(req,res,next){
   vendor.get().then(function(vendors){
+ 
     res.json({rc:0,data:vendors});
   });
 
@@ -26,29 +42,30 @@ vendorrouter.get('/vendors/',function(req,res,next){
     var newvendorid=0;
     var params=requestparameters.getPostParameters(req);
     params.isprimary=1;
-    vendor.create({
-        name:params.name
-    }).then(function(_newvendor){
-        newvendorid=_newvendor.id;
-        vendor.addContact(_newvendor,{
-          name:params.contactname,
-          isprimary:1
-        }).then(function(_newvendorcontact){
-            vendor.addContactAddressBook(_newvendorcontact,params).then(function(_newvendorcontact){
-              res.json({rc:0,message:'success vendor is addedd',VendorId:newvendorid});
-            }).catch(function(err){
-              vendor.destory(_newvendor).then(function(err) {
-                res.json({rc: -1, message: "Please Enter Valid Address", details: err.message});
-              });
-            });
-        }).catch(function(err){
-          vendor.destory(_newvendorcontact).then(function(err){
-            res.json({rc:-1,message:'Valid Contact Name is not provided',details:err.message});
-          });
-        })
-    }).catch(function(err){
-      res.json({rc:-1,message:'Valid Vendor Name is not provided',details:err.message});
-    });
+    
+//    vendor.create({
+//        name:params.name
+//    }).then(function(_newvendor){
+//        newvendorid=_newvendor.id;
+//        vendor.addContact(_newvendor,{
+//          name:params.contactname,
+//          isprimary:1
+//        }).then(function(_newvendorcontact){
+//            vendor.addContactAddressBook(_newvendorcontact,params).then(function(_newvendorcontact){
+//              res.json({rc:0,message:'success vendor is addedd',VendorId:newvendorid});
+//            }).catch(function(err){
+//              vendor.destory(_newvendor).then(function(err) {
+//                res.json({rc: -1, message: "Please Enter Valid Address", details: err.message});
+//              });
+//            });
+//        }).catch(function(err){
+//          vendor.destory(_newvendorcontact).then(function(err){
+//            res.json({rc:-1,message:'Valid Contact Name is not provided',details:err.message});
+//          });
+//        })
+//    }).catch(function(err){
+//      res.json({rc:-1,message:'Valid Vendor Name is not provided',details:err.message});
+//    });
 }).get('/vendors/:id/',function(req,res,next){
   vendor.getById(req.params.id).then(function(vendors){
     res.json({rc:0,data:vendors});

@@ -1,0 +1,54 @@
+<md-sidenav menu ng-show="menuready" md-component-id="left" md-is-locked-open="$mdMedia('gt-sm')" data-ng-init="init()">
+    <md-toolbar class="md-theme-indigo" hide-gt-sm>
+        <div class="md-toolbar-tools" layout="row">
+            <md-button class="md-icon-button" aria-label="Icon" ng-click="close()">
+                <md-icon aria-label="close" class="material-icons">close</md-icon>
+            </md-button>
+            <h3>CRM</h3>
+        </div>
+    </md-toolbar>
+    <md-content style="height:-webkit-calc(100%)" layout-padding>
+        <md-whiteframe class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="100" layout layout-align="center center">
+            <img class="icon icons8-Gender-Neutral-User" src="/www/assets/images/nophoto_user.png">    
+        </md-whiteframe>
+        <md-list>
+            <md-list-item ng-repeat="item in items">
+                <md-button ng-click="load(item.title)">
+                    <md-icon aria-label="business" class="material-icons">{{item.icon}}</md-icon>
+                    {{item.title}}
+                </md-button>
+            </md-list-item>
+            <md-divider ></md-divider>
+            <!--
+            <md-list-item>
+                <md-button ng-click="load('customers')">
+                    <md-icon aria-label="account_box" class="material-icons">account_box</md-icon>
+                    Customers
+                </md-button>
+            </md-list-item>
+            <md-divider ></md-divider>
+            <md-list-item>
+                <md-button ng-click="load('orders')">
+                    <md-icon aria-label="shopping_cart" class="material-icons">shopping_cart</md-icon>
+                    Orders
+                </md-button>
+            </md-list-item>
+            <md-divider ></md-divider>
+            <md-list-item>
+                <md-button ng-click="load('inventory')">
+                    <md-icon aria-label="assignment" class="material-icons">assignment</md-icon>
+                    Inventory
+                </md-button>
+            </md-list-item>
+            <md-divider ></md-divider>
+            <md-list-item>
+                <md-button ng-click="load('employees')">
+                    <md-icon aria-label="group" class="material-icons">group</md-icon>
+                    Employees
+                </md-button>
+            </md-list-item>
+            <md-divider ></md-divider>
+            -->
+        </md-list>
+    </md-content>
+</md-sidenav>

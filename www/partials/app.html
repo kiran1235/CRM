@@ -1,0 +1,41 @@
+<div ui-view layout="column" layout-align="start stretch" flex>
+    <div ui-view="top"></div>
+    <div ng-show="isLogged" layout="column" layout-align="start stretch" flex="100">
+        <div ui-view="content" layout="column" layout-align="start stretch" flex="100"></div>
+    </div> 
+    <br>
+    <div ng-hide="isLogged" layout="row" layout-align="center center">
+        <md-whiteframe class="md-whiteframe-3dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="35" layout="row" layout-align="center center">
+            <md-content layout-padding>
+            <h2 layout="row" layout-align="center center" ng-if="!errormessage">Welcome</h2>
+            <h2 layout="row" layout-align="center center" class="md-title  md-warn" ng-if="errormessage">{{errormessage}}</h2>    
+            <form name="loginform" ng-submit="login()">
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>Email Address</label>
+                        <md-icon><i class="material-icons">account_box</i></md-icon>
+                        <input ng-model="entity.username" md-maxlength="140" required>
+                        <div ng-messages="entity.username.$error" role="alert" multiple>
+                            <div ng-message="required" class="my-message">Required</div>
+                        </div>
+                </md-input-container>
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>Password</label>
+                        <md-icon><i class="material-icons">vpn_key</i></md-icon>
+                        <input type="password" ng-model="entity.password" md-maxlength="140" required>
+                        <div ng-messages="entity.password.$error" role="alert" multiple>
+                            <div ng-message="required" class="my-message">Required</div>
+                        </div>
+                </md-input-container> 
+            <div layout="row" layout-align="center center" ng-hide="processing">
+                <md-button class="md-raised md-primary" type="submit">Login</md-button>
+            </div> 
+            <div layout="row" layout-sm="column" layout-align="space-around" ng-show="processing">
+                <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            </div>                
+            </form>
+                
+            </md-content> 
+          </md-whiteframe>        
+    </div>     
+</div>
+   

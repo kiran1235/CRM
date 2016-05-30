@@ -21,11 +21,11 @@
             </thead>
             <tbody md-body>
                 <tr md-row md-auto-select  ng-repeat="(index,order) in orders | orderBy: '-id'">
-                <td md-cell><a href="#" ui-sref="order({orderid:{{order.id}}})">{{order.id}}</a></td>
+                <td md-cell><a href="#" ui-sref="open(order)">{{order.id}}</a></td>
                 <td md-cell>{{order.scheduleAt || "N/A"}}</td>
                 <td md-cell>{{order.status || "N/A"}}</td>
                 <td md-cell>{{order.deliveryAt.formattedaddress || "N/A"}}<br>Phone: {{order.deliveryAt.phone || "N/A"}}</td> 
-                <td md-cell><a ui-sref="employee({employeeid:{{order.EmployeeId||0}}})">{{order.Employee.name || "Not Assigned"}}</a></td>     
+                <td md-cell><a ui-sref="employee({employeeid:{{order.EmployeeId||0}}})">{{order.employee.name || "Not Assigned"}}</a></td>     
                 </tr>
             </tbody>
         </table>

@@ -1,3 +1,10 @@
+md-toolbar{
+    min-height:32px !important;
+    font-size:16pt;
+}
+
+
+
 /* Rules for sizing the icon.*/
 .material-icons.md-18 { font-size: 18px; }
 .material-icons.md-24 { font-size: 24px; }
@@ -14,6 +21,11 @@
 .left-border-style-1{
   border-left:1px solid rgba(0,0,0,0.12);
 }
+
+md-sidenav{
+    max-width: 180px;
+}
+
 .md-sidenav-left .sidebar-no-padding{
   padding:0px;
   margin:0px;
@@ -105,4 +117,9 @@ table.md-table tbody.md-body>tr.md-row, table.md-table tfoot.md-foot>tr.md-row{
     font-weight: normal;
     font-size:10pt;
     font-style: italic;
+}
+
+
+h2.md-warn{
+    color:firebrick;
 }
