@@ -1,0 +1,39 @@
+<md-button ng-click="showNewVendorDialog()">
+    <md-icon aria-label="add_box" class="material-icons">add_box</md-icon>
+    New Vendors
+</md-button>
+<md-button ng-click="load('vendors')">
+    <md-icon aria-label="search" class="material-icons">search</md-icon>
+    Search Vendors
+</md-button>
+<md-divider ></md-divider>
+
+<div flex layout-wrap>
+    <!-- exact table from live demo -->
+    <md-table-container>
+        <table md-table md-progress="promise" style="min-width:820px;">
+            <thead md-head md-order="query.order" md-on-reorder="onReorder">
+            <tr md-row>
+                <th md-column md-order-by="nameToLower" style="width:20%;">
+                    <span>
+                            Vendor Name
+                    </span>
+                </th>
+                <th md-column style="width:50%;"><span>Address</span></th>
+                <th md-column style="width:5%;"><span>City</span></th>
+                <th md-column md-numeric style="width:5%;">Phone</th>
+                <th md-column md-numeric style="width:20%;">&nbsp;</th>
+            </tr>
+            </thead>
+            <tbody md-body>
+                <tr md-row md-auto-select  ng-repeat="(index,vendor) in vendors | orderBy: '-id'">
+                <td md-cell><a ui-sref="app.user.vendor({usertype:'admin',userid:{{user.id}},vendorid:{{vendor.id}}})">{{vendor.name}}</a></td>
+                <td md-cell>{{vendor.address|| "N/A"}}</td>
+                <td md-cell>{{vendor.city || "N/A"}}</td>
+                <td md-cell>{{vendor.phone|| "N/A"}}</td>
+                <td md-cell><button ng-controller="OrderController" ng-click="showOrderByVendors(vendor.id)">Orders</button>&nbsp;</td>
+                </tr>
+            </tbody>
+        </table>
+    </md-table-container>
+</div>

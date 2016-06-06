@@ -1,0 +1,125 @@
+md-toolbar{
+    min-height:32px !important;
+    font-size:16pt;
+}
+
+
+
+/* Rules for sizing the icon.*/
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
+
+/* Rules for using icons as black on a light background. */
+.material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
+.material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+
+/* Rules for using icons as white on a dark background.*/
+.material-icons.md-light { color: rgba(255, 255, 255, 1); }
+.material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+.left-border-style-1{
+  border-left:1px solid rgba(0,0,0,0.12);
+}
+
+md-sidenav{
+    max-width: 180px;
+}
+
+.md-sidenav-left .sidebar-no-padding{
+  padding:0px;
+  margin:0px;
+}
+.md-sidenav-left md-list-item{
+  height:20px;
+}
+.md-sidenav-left md-list-item h3{
+  margin:0px;
+  -webkit-margin-after: 0px;
+  -webkit-margin-before: 0px;
+  font-weight: normal;
+}
+.card-media{
+  background-color:#f1f1f1;
+}
+
+.md-headline{
+  font-size:12pt;
+  text-transform: capitalize;
+}
+
+md-input-container{
+  margin:5px 0px;
+}
+.crm-toolbar-notify{
+  height:32px;
+  min-height:32px;
+}
+
+.link-no-decoration{
+    text-decoration: none;
+}
+
+.card-button{
+  text-decoration: none;
+  color:currentColor !important;
+  border-radius: 2px;
+  cursor:pointer;
+
+}
+
+.card-button:hover{
+  background:#f1f1f1;
+}
+
+.card-button ul{
+  list-style-position: inside;list-style: none;
+  padding:0px;
+  margin:0px;
+}
+
+.card-button li{
+  margin:2px 0px 0px 2px;
+  padding:0px;
+  font-size: small;
+}
+
+.button-group button, .button-group .md-icon-button{
+ margin:0px;
+ width:0px;
+ min-width:32px;
+}
+
+
+table.md-table thead.md-head>tr.md-row{
+  height:36px;
+}
+
+table.md-table tbody.md-body>tr.md-row, table.md-table tfoot.md-foot>tr.md-row{
+  height:32px;
+}
+
+.offset-0{
+    margin:0px;
+    padding:0px;
+}
+
+.offset-2{
+    margin:2px;
+    padding:2px;
+}
+
+.h2{
+   font-weight: bold; 
+}
+
+.h2 > .h3 {
+    font-weight: normal;
+    font-size:10pt;
+    font-style: italic;
+}
+
+
+h2.md-warn{
+    color:firebrick;
+}

@@ -1,0 +1,21 @@
+{
+  "name": "crm",
+  "version": "0.0.1",
+  "ignore": [],
+  "dependencies": {
+    "angular": "1.4.8",
+    "angular-animate": "1.4.8",
+    "angular-aria": "1.4.8",
+    "angular-messages": "1.4.8",
+    "angular-material": "1.0.1",
+    "angular-mass-autocomplete": "~0.2.3",
+    "angular-material-data-table": "~0.9.0",
+    "angular-md5": "~0.1.10",
+    "ng-file-upload-shim": "~11.1.1",
+    "angular-cache": "^4.6.0"
+  },
+  "main": [
+    "./www/js/app.js",
+    "./www/css/app.css"
+  ]
+}

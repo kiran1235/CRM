@@ -1,0 +1,28 @@
+<md-toolbar layout="row" ng-controller="appNavigationController">
+    <div ng-hide="isLogged" class="md-toolbar-tools" flex-auto layout-align="start start">
+        <h2>
+            {{title}}
+        </h2>
+    </div>
+    
+    <div ng-show="isLogged" class="md-toolbar-tools" flex-auto layout-align="start start">
+        <md-button class="md-icon-button" hide-gt-sm aria-label="Icon" ng-click="toggleLeft()">
+            <md-icon aria-label="Menu" class="material-icons">menu</md-icon>
+        </md-button>
+        <h2>
+            {{title}}
+        </h2>
+    </div>
+    <div ng-show="isLogged" class="md-toolbar-tools" flex-auto hide-sm hide-xs layout-align="end end">
+        <md-button class="md-icon-button" aria-label="Lock">
+            <md-icon aria-label="lock" class="material-icons">lock</md-icon>
+        </md-button>
+        <p>
+            {{user.name}}
+        </p>
+        <md-button class="md-icon-button" aria-label="Chat" ng-click="toggleRight()">
+            <md-icon aria-label="view_comfy" class="material-icons">view_comfy</md-icon>
+        </md-button>
+    </div>
+</md-toolbar>
+<md-progress-linear ng-show="display_view_progress_bar" class="md-warn" md-mode="indeterminate"></md-progress-linear>    

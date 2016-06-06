@@ -1,0 +1,24 @@
+<md-dialog flex layout-padding aria-label="Orders" ng-controller="OrderController" ng-init="init()">
+    <table md-table>
+        <thead md-head>
+        <tr md-row>
+            <th md-column md-order-by="nameToLower" style="width:2%;">
+                <span>Order</span>
+            </th>
+            <th md-column style="width:5%;"><span>ScheduleAt</span></th>
+            <th md-column style="width:5%;" hide-sm hide-xs><span>DeliveredAt</span></th>
+            <th md-column style="width:5%;" hide-xs><span>AssignedTo</span></th>
+            <th md-column md-text style="width:2%;">Status</th>
+        </tr>
+        </thead>
+        <tbody md-body>
+            <tr md-row ng-repeat="order in orders | orderBy: '-id'">
+                <td md-cell><a href="#" ui-sref="app.user.order({usertype:'admin',userid:{{user.id}},orderid:{{order.id||0}}})" > {{order.id}}</a></td>
+                <td md-cell>{{order.scheduleAt.date || "N/A"}} {{order.scheduleAt.time}}</td>
+                <td md-cell hide-sm hide-xs>{{order.deliveryDate.date || "N/A"}} {{order.deliveryDate.time}}</td>
+                <td md-cell hide-xs>{{order.employee.name || "N/A"}}</td>
+                <td md-cell>{{order.status || "N/A"}}</td>
+            </tr>
+        </tbody>
+    </table>
+</md-dialog>

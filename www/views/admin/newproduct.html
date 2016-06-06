@@ -1,0 +1,43 @@
+    <md-content flex="100" layout-padding>
+        <form name="newProduct" ng-submit="save()">
+            <input type="hidden" ng-model="entity.vendorid"  readonly>
+            <md-input-container class="md-block" flex-gt-sm>
+                <input ng-model="entity.vendorname"  placeholder="Vendor name" readonly>
+            </md-input-container>
+
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Vendor name</label>
+                <input ng-model="entity.name" md-maxlength="140" required>
+                <div ng-messages="newProduct.name.$error" role="alert" multiple>
+                    <div ng-message="required" class="my-message">You must provide Product Name.</div>
+                </div>
+            </md-input-container>
+            <div layout-gt-sm="row">
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>Type</label>
+                    <input ng-model="entity.type">
+                </md-input-container>
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>Model</label>
+                    <input ng-model="entity.model">
+                </md-input-container>
+            </div>
+            <div layout-gt-sm="row">
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>Category</label>
+                    <input ng-model="entity.category">
+                </md-input-container>
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>Subcatogry</label>
+                    <input ng-model="entity.subcategory">
+                </md-input-container>
+            </div>
+            <md-input-container class="md-block" flex-gt-sm>
+            <input ng-model="entity.serialnumber" md-maxlength="140" placeholder="SKU #, Barcode">
+            </md-input-container>
+            <div layout="row" layout-align="end end">
+                <md-button class="md-raised md-primary" type="submit">Save</md-button>
+                <md-button class="md-raised" ng-click="cancel()">Cancel</md-button>
+            </div>
+        </form>
+    </md-content>
