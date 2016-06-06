@@ -15,10 +15,8 @@ var Customer = {
                     model: models.CustomerContact,
                     include:{
                       model:models.CustomerContactAddressBook,
-                        attributes:["phone","formattedaddress","city","zipcode"],order:'id desc'
-                    },attributes:["id","isprimary"],where:{
-                        isdeleted:0
-                    }
+                      attributes:["id","phone","formattedaddress","city","zipcode","isprimary"],order:'id desc'
+                    },attributes:["id"]
                   },
                 ],              
              attributes:["id","name"]

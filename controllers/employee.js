@@ -10,6 +10,12 @@ var Employee = {
     'get':function(options){
        return new Promise(function(resolve,reject) {
            models.Employee.findAll({
+                include:[
+                  {
+                    model: models.EmployeeAddressBook,
+                    attributes:["phone","formattedaddress","city","zipcode"],order:'id desc'
+                  },
+                ],               
              attributes:["id","name","email"],
                where:{isdeleted:0}
            }).then(function (employees) {
@@ -25,8 +31,10 @@ var Employee = {
                 include:[
                   {
                     model: models.EmployeeAddressBook,
+                    attributes:["id","addressline1","addressline2","city","country","email","phone","zipcode"],order:'id desc'
                   },
                 ]
+              ,attributes:["name","gender","dob","doj","dol","id"]  
               ,where: {id: id}
             }).then(function (employee) {
                 if(!employee){
@@ -35,7 +43,6 @@ var Employee = {
                     resolve(employee);
                 }
             }).catch(function (error) {
-                console.log("ddd");
                 reject(error);
             });
         });

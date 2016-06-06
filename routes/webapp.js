@@ -8,7 +8,7 @@ var express = require('express');
 var path = require('path');
 var url = require('url');
 var requestparameters=require('../bin/requestparameters.js');
-var user=require('../controllers/user.js');
+
 var dateutil = require('../bin/date.js');
 var multer = require('multer');
 var storage = multer.diskStorage({ //multers disk storage settings
@@ -22,7 +22,10 @@ var storage = multer.diskStorage({ //multers disk storage settings
 });
 
 /** routers & controllers **/
-var vendor=require('../controllers/user.js');
+var user=require('../controllers/user.js');
+var employee=require('../controllers/employee.js');
+var customer=require('../controllers/customer.js');
+var vendor=require('../controllers/vendor.js');
 var order=require('../controllers/order.js');
 var product=require('../controllers/product.js');
 var inventory=require('../controllers/inventory.js');
@@ -77,7 +80,11 @@ webapprouter
 .all('/webapp/products/*',function(req,res,next){
     user.auth({'authkey':req.headers['x-session-token']}).then(function(currentuser){
         req.currentuser=currentuser;
-        next();
+        if(req.currentuser.parentType=='Employee'){
+            res.status(404).send('invalid request');
+        }else{
+            next();
+        }        
     }).catch(function(){
         res.status(404).send('invalid user details');
     });
@@ -88,10 +95,12 @@ webapprouter
             res.json({rc:0,data:user,menuoptions:[{title:"orders",icon:"shopping_cart"}]});            
         }else if(user.Vendor){
             res.json({rc:0,data:user,menuoptions:[{title:"products",icon:"store_mall_directory"},{title:"orders",icon:"shopping_cart"}]});
+        }else if(user.parentType=='admin'){
+            res.json({rc:0,data:user,menuoptions:[{title:"customers",icon:"person"},{title:"employees",icon:"local_shipping"},{title:"vendors",icon:"business"},{title:"products",icon:"store_mall_directory"},{title:"orders",icon:"shopping_cart"}]});
+        }else{
+            res.status(404).send('invalid user details');
         }
-
     }).catch(function(error){
-       console.log(error); 
        res.json({rc:-1,message:'invalid user details'});
     });
 
@@ -117,6 +126,15 @@ webapprouter
         }).then(function(orders){
           res.json({rc:0,data:orders});
         });        
+    }else if(req.currentuser.parentType=='admin'){
+        order.get({
+            from: '01/01/2015',
+            to:_to
+        }).then(function(orders){
+          res.json({rc:0,data:orders});
+        });        
+    }else{
+        res.status(404).send('invalid request');
     }
 })
 .get('/webapp/orders/:id',function(req,res,next){
@@ -131,6 +149,14 @@ webapprouter
         order.getById({id:req.params.id,VendorId:req.currentuser.parentId}).then(function(order){
           res.json({rc:0,data:order});
         });
+    }else if(req.currentuser.parentType=='admin'){
+        order.getById({
+            id:req.params.id
+        }).then(function(orders){
+          res.json({rc:0,data:orders});
+        });        
+    }else{
+        res.status(404).send('invalid request');
     }
 })
 .put('/webapp/orders/:id/confirm',function(req,res,next){
@@ -151,19 +177,42 @@ webapprouter
     res.json({rc:0,data:orders});
   });
 })
+.get('/webapp/orders/customers/:id',function(req,res,next){
+  order.getByCustomerId({customerid:req.params.id}).then(function(orders){
+    res.json({rc:0,data:orders});
+  });
+})
+.get('/webapp/orders/employees/:id',function(req,res,next){
+  var _now=dateutil.now();
+  var _from=dateutil.getFormatDate(_now);  
+  var _to=dateutil.getFormatDate(dateutil.addDays(_now,15));
+    
+        order.getByEmployeeID({
+            from: '01/01/2015',
+            to:_to,
+            id:req.params.id
+        }).then(function(orders){
+          res.json({rc:0,data:orders});
+        });
+})
 .get('/webapp/products/',function(req,res,next){
-  if(req.currentuser.parentType=='Employee'){
-      res.status(404).send('invalid request');
-  }
-  else if(req.currentuser.parentType=='Vendor'){
-        
+    if(req.currentuser.parentType=='Vendor'){
         product.getByVendor(req.currentuser.parentId).then(function(products){
           res.json({rc:0,data:products});
         }).catch(function(err){
           console.log(err);  
           res.json({rc:-1,message:err.message,data:{}});
         });
-    }    
+    }else if(req.currentuser.parentType=='admin'){
+        product.get().then(function(products){
+          res.json({rc:0,data:products});
+        }).catch(function(err){
+          console.log(err);  
+          res.json({rc:-1,message:err.message,data:{}});
+        });
+    }else{
+        res.status(404).send('invalid request');
+    }
 })
 .get('/webapp/products/:id/',function(req,res,next){
   product.getById(req.params.id).then(function(products){
@@ -245,5 +294,71 @@ webapprouter
       res.json({rc:-1,message:'few Inventory details are not provided',details:err});
     });
 })
+.get('/webapp/vendors/',function(req,res,next){
+  vendor.get().then(function(vendors){
+    res.json({rc:0,data:vendors});
+  });
+}).post('/webapp/vendors/',function(req,res,next){
+    var newvendorid=0;
+    var params=requestparameters.getPostParameters(req);
+    params.isprimary=1;
+    vendor.create({
+        name:params.name
+    }).then(function(_newvendor){
+        newvendorid=_newvendor.id;
+        vendor.addContact(_newvendor,{
+          name:params.contactname,
+          isprimary:1
+        }).then(function(_newvendorcontact){
+            vendor.addContactAddressBook(_newvendorcontact,params).then(function(_newvendorcontact){
+              res.json({rc:0,message:'success vendor is addedd',VendorId:newvendorid});
+            }).catch(function(err){
+              vendor.destory(_newvendor).then(function(err) {
+                res.json({rc: -1, message: "Please Enter Valid Address", details: err.message});
+              });
+            });
+        }).catch(function(err){
+          vendor.destory(_newvendorcontact).then(function(err){
+            res.json({rc:-1,message:'Valid Contact Name is not provided',details:err.message});
+          });
+        })
+    }).catch(function(err){
+      res.json({rc:-1,message:'Valid Vendor Name is not provided',details:err.message});
+    });
+}).get('/webapp/vendors/:id/',function(req,res,next){
+  vendor.getById(req.params.id).then(function(vendors){
+    res.json({rc:0,data:vendors});
+  }).catch(function(err){
+    res.json({rc:-1,message:'no vendor found',details:err.message});
+  });
+}).delete('/webapp/vendors/:id',function(req,res,next){
+  vendor.delete(req.params.id).then(function(vendor){
+    res.json({rc:0,data:vendor});
+  });
+}).put('/webapp/vendors/:id',function(req,res,next){
+  vendor.update(req.params.id,{name:req.body['entity[name]']}).then(function(result){
+    res.json({rc:0,message:'vendor details are updated',details:result});
+  }).catch(function(err){
+    console.log(err);
+    res.json({rc:-1,message:'error occurred while updating vendor',details:err.message});
+  });
+}).get('/webapp/employees/',function(req,res,next){
+  employee.get().then(function(employees){
+    res.json({rc:0,data:employees});
+  });
+}).get('/webapp/employees/:id',function(req,res,next){
+  employee.getById(req.params.id).then(function(employee){
+    res.json({rc:0,data:employee});
+  });
+}).get('/webapp/customers/',function(req,res,next){
+  customer.get().then(function(customers){
+    res.json({rc:0,data:customers});
+  });
+}).get('/webapp/customers/:id',function(req,res,next){
+  customer.getById(req.params.id).then(function(customer){
+    res.json({rc:0,data:customer});
+  });
+})
+
 ;
 module.exports = webapprouter;

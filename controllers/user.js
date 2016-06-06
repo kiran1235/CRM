@@ -44,7 +44,7 @@ var User = {
        return new Promise(function(resolve,reject) {
            models.User.findOne({
                include:[{model:models.Employee,attributes:["id","name"]},{model:models.Vendor,attributes:["id","name"]}],
-               attributes:["id","email"],
+               attributes:["id","email","parentType"],
                where:{authkey:options['authkey']}
            }).then(function (user) {
                 if(!user){

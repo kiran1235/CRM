@@ -15,12 +15,6 @@ var Order = {
                 include:[
                 {
                     model:models.OrderVendor,attributes:["id","VendorId","processedAt","status"],
-                    include:[{
-                       model:models.VendorContactAddressBook,attributes:["formattedaddress","city","country","phone","latitude","longitude"]
-                    }]
-                },
-                {
-                    model:models.CustomerContactAddressBook,attributes:["formattedaddress","phone","city","latitude","longitude"],
                 },
                 {
                     model:models.Employee,attributes:["name"],
@@ -32,7 +26,7 @@ var Order = {
                        $gte: options['from'],
                        $lte: options['to']
                    }
-               },attributes:["id","scheduleAt","EmployeeId","status","createdAt","updatedAt"]
+               },attributes:["id","name","EmployeeId","CustomerId","status","scheduleAt","deliveryAt"]
            }).then(function (orders) {
                resolve(orders);
            }).catch(function (error) {
@@ -216,7 +210,26 @@ var Order = {
                reject(error);
            });
        });        
-    },    
+    }, 
+    'getByCustomerId':function(options){
+       return new Promise(function(resolve,reject) {
+           models.Order.findAll({
+                include:[
+                {
+                    model:models.Employee,attributes:["name"],
+                }
+               ]
+               ,attributes:["id","name","EmployeeId","CustomerId","status","scheduleAt","deliveryAt"]
+               ,where:{
+                  CustomerId:options['customerid'] 
+               }
+           }).then(function (orders) {
+               resolve(orders);
+           }).catch(function (error) {
+               reject(error);
+           });
+       });        
+    },     
     'generate':function(len){
         var text = "";
         var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

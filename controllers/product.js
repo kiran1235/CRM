@@ -10,6 +10,13 @@ var Product = {
     'get':function(options){
        return new Promise(function(resolve,reject) {
            models.Product.findAll({
+                include:[{
+                   model: models.Vendor,attributes:["id","name"]
+                }],               
+                attributes:["id","name","category","subcategory","type","model"],
+                where:{
+                    status:1
+                } 
            }).then(function (products) {
                resolve(products);
            }).catch(function (error) {
@@ -45,6 +52,9 @@ var Product = {
     'getByVendor':function(id){
       return new Promise(function(resolve,reject) {
         models.Product.findAll({
+           include:[{
+              model: models.Vendor,attributes:["id"],where:{id:id}
+           }],
            attributes:["id","name","category","subcategory","type","model"],
             where:{
                 status:1
